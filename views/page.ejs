@@ -1,0 +1,25 @@
+<%-include('partials/header.ejs')-%>
+    <h1>Hi <%=userthing%>, are you ready to start your notebook?</h1>
+    <form action="/page" method="POST">
+    
+        <div class="form-group">
+            <input type="text" class="form-control text-left" name="title" placeholder="Title of new page">
+            <textarea class="form-control" name="content" rows="5" cols="30" placeholder="Contents of page"></textarea>
+        </div>
+        <button type="submit" class="btn btn-light prettyBtn">New Page</button>
+    </form>
+
+    <!-- Getting the page to only show the userContent with the owner name (username) -->
+    <h2>Most Recent</h2>
+    <%for(let i=0; i <(userContent.length-1);  i++){%>
+    <% if(userthing == userContent[i].noteBookContents.owner){%>
+            <p class="note-heading"><%=userContent[i].noteBookContents.title%></p>
+            <p class="note-body"><%=userContent[i].noteBookContents.content%></p>
+            <h2>---</h2>
+            <% } %>
+    <% } %>
+
+<div class="logoutBtn">
+<a class="btn btn-light" href="/logout" role="button">Log Out</a>
+</div>
+<%- include("partials/footer.ejs")-%>

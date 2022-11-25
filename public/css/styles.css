@@ -1,0 +1,61 @@
+body {
+  /* background: rgb(192, 79, 181); */
+  background-color: #c04fb5;
+  background-image: url("https://www.transparenttextures.com/patterns/circles.png");
+  padding: 0 16px;
+}
+
+.container {
+  margin-top: 100px;
+  padding-bottom: 70px;
+  background-color: white;
+  background-image: url("https://www.transparenttextures.com/patterns/circles.png");
+}
+.footer {
+  position: absolute;
+  text-align: center;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #1abc9c;
+}
+
+.footer p {
+  margin-top: 25px;
+  font-size: 12px;
+  color: #fff;
+}
+.footer-padding {
+  padding-bottom: 60px;
+}
+.logoutBtn {
+  position: relative;
+  margin-top: 25%;
+  margin-bottom: 0%;
+}
+.navbar {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  border: 0;
+  border-radius: 0;
+  margin-bottom: 0;
+  font-size: 12px;
+  letter-spacing: 5px;
+}
+.navbar-nav li a:hover {
+  color: #1abc9c !important;
+}
+.note-heading {
+  margin-bottom: 0px;
+  background-color: aqua;
+  background-image: url("https://www.transparenttextures.com/patterns/circles.png");
+}
+.note-body {
+  margin-top: 0px;
+  background-color: aquamarine;
+  background-image: url("https://www.transparenttextures.com/patterns/circles.png");
+}
+
+.prettyBtn {
+  margin-top: 10px;
+}
