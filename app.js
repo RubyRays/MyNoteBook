@@ -1,3 +1,4 @@
+//adding the requirements 
 require('dotenv').config();
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -83,7 +84,7 @@ passport.use(new GoogleStrategy({
     userProfileURL:"https://www.googleapis.com/oauth2/v3/userinfo"
 },
     function(accessToken, refreshToken, profile, cb){
-        NoteUser.findOrCreate({googleId: profile.id}, function(err, user){
+        NoteUser.findOrCreate({googleId: profile.id, username: "User#"+profile.id}, function(err, user){
             return cb(err, user);
         })
     }
@@ -125,28 +126,33 @@ app.get("/page", function(req,res){
 
 
        
-                //setting the owner name to be equal to the username
-                NoteUser.find({"owner": {$eq: theUser},"noteBookContents": {$ne: null}}, function(err, foundUsers){
-                    //console.log(thepost2);
-                    //console.log("Show: "+ foundUsers);
-                    if(err){
-                        console.log(err);
+        //setting the owner name to be equal to the username
+        NoteUser.find({"owner": {$eq: theUser},"noteBookContents": {$ne: null}}, function(err, foundUsers){
+            //console.log(thepost2);
+            //console.log("Show: "+ foundUsers);
+            if(err){
+                console.log(err);
+                
                         
-                        
-                    }else{
-                        if(foundUsers){
-                            //rendering the info got back from the ejs and the username where 
-                            //needed on screen
-                            res.render("page", {userContent:foundUsers, userthing: theUser} );
-                        }
-                      }
-                   });
+            }else{
+                if(foundUsers){
+                    //rendering the info got back from the ejs and the username where 
+                     //needed on screen
+                    res.render("page", {userContent:foundUsers, userthing: theUser} );
+                 }
+              }
+           });
         
     }else{
         res.redirect("/login");
     }    
 
 });
+
+
+
+
+//log out page using the logout function
 app.get("/logout", function(req,res){
     req.logout(function(err){
         if(err){
