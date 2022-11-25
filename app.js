@@ -177,6 +177,8 @@ app.post("/register", function(req, res){
     })
 });  
 
+//login page that takes in the information input by the user and 
+//authenticates it before rendering the page
 app.post("/login", function(req,res){
    const user = new NoteUser({
     username: req.body.username,
@@ -197,14 +199,15 @@ app.post("/login", function(req,res){
 
 });
 
+//creates a new notebook post that is then added to the noteBookContents
 app.post("/page", function(req,res){
-    // const submittedEntry = req.body.title;
-    // const submittedContent = req.body.content;
+        //creates a new post
            const post=new Note({
             title: req.body.title,
             content: req.body.content,
             owner: req.user.username
         });
+        //inserts the post data into the notebookContents of the authenticated user
     NoteUser.insertMany({noteBookContents: post}, function(err){
         if(err){
             console.log(err);
@@ -214,16 +217,16 @@ app.post("/page", function(req,res){
         }
     });
 
-
+    //finds the current user using the user.id provided by the passport package
     NoteUser.findById(req.user.id,function(err, foundUser){
         if(err){
             console.log(err);
         }else{
             if(foundUser){
-                // foundUser.title = submittedEntry;
-                // foundUser.content= submittedContent;
+                //saves the posted contents into the noteBookContents
                 foundUser.noteBookContents=post;
-                //console.log(noteBookContents)
+                
+                //saves the userinfo and redirects to the page
                 foundUser.save(function(){
                     res.redirect("/page");
                 });
@@ -234,14 +237,7 @@ app.post("/page", function(req,res){
 });
 
 
-
-
-
-
-
-
-
-
+//listener
 app.listen(3000, function(){
     console.log("Server is running on port 3000");
 })
