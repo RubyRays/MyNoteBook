@@ -253,7 +253,6 @@ app.get("/userContent/:pageId", function(req,res){
     const storedTitle = post.noteBookContents.title;
     const storedOwnership= post.noteBookContents.owner;
     console.log("owner is: "+ req.user.username);
-    console.log("Stored: "+storedId);
     console.log(post);
 
     //redirects to the login 
