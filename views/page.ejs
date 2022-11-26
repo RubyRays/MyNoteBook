@@ -14,7 +14,8 @@
     <%for(let i=0; i <(userContent.length-1);  i++){%>
     <% if(userthing == userContent[i].noteBookContents.owner){%>
             <p class="note-heading"><%=userContent[i].noteBookContents.title%></p>
-            <p class="note-body"><%=userContent[i].noteBookContents.content%></p>
+            <p class="note-body"><%=userContent[i].noteBookContents.content.substring(0, 100) + "..."%></p>
+            <p><a href="/userContent/<%=userContent[i].noteBookContents.title%>">Go to page</a></p>
             <h2>---</h2>
             <% } %>
     <% } %>
