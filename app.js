@@ -112,6 +112,9 @@ app.get("/register", function(req, res){
 app.get("/login", function(req, res){
     res.render("login");
 }); 
+app.get("/404",function(req,res){
+    res.render("404");
+});
 app.get("/page", function(req,res){
     //find the value from that specific user
     //res.render("page", {username: username});
@@ -258,6 +261,8 @@ app.get("/userContent/:pageId", function(req,res){
                 content: post.noteBookContents.content
                
             });
+        }else{
+            res.redirect("/404");
         }
     }else{
         res.redirect("/login");
