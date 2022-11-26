@@ -9,7 +9,7 @@ const passport = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
-
+const _ = require("lodash");
 
 
 const app = express();
@@ -47,7 +47,7 @@ const noteUserSchema =new mongoose.Schema({
     username: String,
     email: String,
     password: String,
-    noteBookContents:notesSchema,
+    noteBookContents: notesSchema,
     googleId: String
 
 });
@@ -235,6 +235,38 @@ app.post("/page", function(req,res){
         }
     });
 });
+
+
+//creating a page to show the entries of users
+app.get("/userContent/:pageId", function(req,res){
+    //gets the title of the page that is going to be
+    //created after the click --create page
+    const pageEntry = req.params.pageId;
+    console.log(pageEntry);
+    
+    //find the entry that has the same title as the pageEntry
+    NoteUser.findOne({"title": pageEntry},function(err, post){
+    const storedId = post.noteBookContents.title;
+    console.log("Stored: "+storedId);
+    console.log(post);
+
+    //redirects to the login 
+     if(req.isAuthenticated()){
+        if(storedId == pageEntry){
+            res.render("userContent",{
+                title: post.noteBookContents.title,
+                content: post.noteBookContents.content
+               
+            });
+        }
+    }else{
+        res.redirect("/login");
+    }
+            
+
+
+    })
+})
 
 
 //listener
