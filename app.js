@@ -246,16 +246,21 @@ app.get("/userContent/:pageId", function(req,res){
     //created after the click --create page
     const pageEntry = req.params.pageId;
     console.log(pageEntry);
+    console.log(req.user.username);
     
     //find the entry that has the same title as the pageEntry
     NoteUser.findOne({"title": pageEntry},function(err, post){
-    const storedId = post.noteBookContents.title;
+    const storedTitle = post.noteBookContents.title;
+    const storedOwnership= post.noteBookContents.owner;
+    console.log("owner is: "+ req.user.username);
     console.log("Stored: "+storedId);
     console.log(post);
 
     //redirects to the login 
      if(req.isAuthenticated()){
-        if(storedId == pageEntry){
+        //show user content only if the titles are the same and the user who owns the
+        //entry is the one currently logged in
+        if(storedTitle== pageEntry && req.user.username == storedOwnership){
             res.render("userContent",{
                 title: post.noteBookContents.title,
                 content: post.noteBookContents.content
