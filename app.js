@@ -249,20 +249,24 @@ app.get("/userContent/:pageId", function(req,res){
     console.log(req.user.username);
     
     //find the entry that has the same title as the pageEntry
+    //This find function does not work- it is supposed to find the one with the same title but
+    //it does not for some reason
+    
     NoteUser.findOne({"title": pageEntry},function(err, post){
     const storedTitle = post.noteBookContents.title;
+    const storedContent= post.noteBookContents.content;
     const storedOwnership= post.noteBookContents.owner;
     console.log("owner is: "+ req.user.username);
-    console.log(post);
-
+    console.log("Tite:"+ storedTitle);
+    
     //redirects to the login 
      if(req.isAuthenticated()){
         //show user content only if the titles are the same and the user who owns the
         //entry is the one currently logged in
-        if(storedTitle== pageEntry && req.user.username == storedOwnership){
+        if(storedTitle==pageEntry && req.user.username == storedOwnership){
             res.render("userContent",{
-                title: post.noteBookContents.title,
-                content: post.noteBookContents.content
+                title: storedTitle,
+                content: storedContent
                
             });
         }else{
@@ -275,6 +279,7 @@ app.get("/userContent/:pageId", function(req,res){
 
 
     })
+
 })
 
 
