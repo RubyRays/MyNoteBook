@@ -247,21 +247,16 @@ app.get("/userContent/:pageId", function(req,res){
     NoteUser.findOne({"username": theUser},function(err, post){
     const newPage = post.noteBookContents;
 
-    const storedTitle= post;
-    console.log("owner is: "+ req.user.username);
-    console.log("Tite:"+ storedTitle);
     
     //redirects to the login if the user is not authenticated
      if(req.isAuthenticated()){
 
-        //if(storedTitle==pageEntry && theUser == storedOwnership){
+
         //renders the userContent page
         //the data passed into it is the title of the page that the user is looking for
         //also the contents of the relavant noteBookContents of the found post     
         res.render("userContent",{newPage:newPage, userthing: pageEntry});
-        // }else{
-        //     res.redirect("/404");
-        // }
+
     }else{
         res.redirect("/login");
     }
