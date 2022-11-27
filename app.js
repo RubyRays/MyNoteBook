@@ -47,7 +47,7 @@ const noteUserSchema =new mongoose.Schema({
     username: String,
     email: String,
     password: String,
-    noteBookContents: notesSchema,
+    noteBookContents: [notesSchema],
     googleId: String
 
 });
@@ -122,25 +122,20 @@ app.get("/page", function(req,res){
     if(req.isAuthenticated()){
         
         const theUser = req.user.username;
-        const theTitle= req.user.title;
-        const theId= req.user.id;
-        const thePost=req.user.post;
-        
-
-
        
-        //setting the owner name to be equal to the username
-        NoteUser.find({"owner": {$eq: theUser},"noteBookContents": {$ne: null}}, function(err, foundUsers){
-            //console.log(thepost2);
-            //console.log("Show: "+ foundUsers);
+        //finding the user related entries by the id of currently logged in user
+        NoteUser.findById(req.user.id, function(err, foundUsers){
+
             if(err){
                 console.log(err);
                 
                         
             }else{
                 if(foundUsers){
+                    console.log("These are the found users: "+ foundUsers + "THE END ")
                     //rendering the info got back from the ejs and the username where 
                      //needed on screen
+                     //passing in the found data
                     res.render("page", {userContent:foundUsers, userthing: theUser} );
                  }
               }
@@ -210,15 +205,8 @@ app.post("/page", function(req,res){
             content: req.body.content,
             owner: req.user.username
         });
-        //inserts the post data into the notebookContents of the authenticated user
-    NoteUser.insertMany({noteBookContents: post}, function(err){
-        if(err){
-            console.log(err);
-        }
-        else{
-            console.log("The list was updated");
-        }
-    });
+        //saving the information entered into the note document 
+        post.save();
 
     //finds the current user using the user.id provided by the passport package
     NoteUser.findById(req.user.id,function(err, foundUser){
@@ -226,14 +214,19 @@ app.post("/page", function(req,res){
             console.log(err);
         }else{
             if(foundUser){
-                //saves the posted contents into the noteBookContents
-                foundUser.noteBookContents=post;
+                //looking for the data in the notes collection where the owner name
+                //is the same as the username of the currently logged in user
+                Note.find({"owner": req.user.username}, function(err, user2){
+                    console.log(user2);
+                    
                 
-                //saves the userinfo and redirects to the page
+                //saves the posted contents into the noteBookContents
+                foundUser.noteBookContents=user2;
+                //saves the userinfo into noteUser collection and redirects to the page
                 foundUser.save(function(){
                     res.redirect("/page");
                 });
-            
+            })
             }
         }
     });
@@ -245,33 +238,30 @@ app.get("/userContent/:pageId", function(req,res){
     //gets the title of the page that is going to be
     //created after the click --create page
     const pageEntry = req.params.pageId;
-    console.log(pageEntry);
-    console.log(req.user.username);
+    const theUser = req.user.username;
+    console.log("page title: "+ pageEntry);
+    console.log("username:" + req.user.username);
     
-    //find the entry that has the same title as the pageEntry
-    //This find function does not work- it is supposed to find the one with the same title but
-    //it does not for some reason
-    
-    NoteUser.findOne({"title": pageEntry},function(err, post){
-    const storedTitle = post.noteBookContents.title;
-    const storedContent= post.noteBookContents.content;
-    const storedOwnership= post.noteBookContents.owner;
+
+    //search for the record with the same username as the currently logged in user
+    NoteUser.findOne({"username": theUser},function(err, post){
+    const newPage = post.noteBookContents;
+
+    const storedTitle= post;
     console.log("owner is: "+ req.user.username);
     console.log("Tite:"+ storedTitle);
     
-    //redirects to the login 
+    //redirects to the login if the user is not authenticated
      if(req.isAuthenticated()){
-        //show user content only if the titles are the same and the user who owns the
-        //entry is the one currently logged in
-        if(storedTitle==pageEntry && req.user.username == storedOwnership){
-            res.render("userContent",{
-                title: storedTitle,
-                content: storedContent
-               
-            });
-        }else{
-            res.redirect("/404");
-        }
+
+        //if(storedTitle==pageEntry && theUser == storedOwnership){
+        //renders the userContent page
+        //the data passed into it is the title of the page that the user is looking for
+        //also the contents of the relavant noteBookContents of the found post     
+        res.render("userContent",{newPage:newPage, userthing: pageEntry});
+        // }else{
+        //     res.redirect("/404");
+        // }
     }else{
         res.redirect("/login");
     }

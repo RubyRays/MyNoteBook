@@ -1,10 +1,15 @@
 <%- include("partials/header"); -%>
 
+
+<% newPage.forEach(function(newPageContent){%>
+    <% if(newPageContent.title == userthing){%>
     <h1>
-        <%=title%>
+        <%=newPageContent.title%>
     </h1>
     <p>
-        <%=content%>
+        <%=newPageContent.content%>
     </p>
+    <%}%>
+    <% }) %>
 
     <%- include("partials/footer"); -%>

@@ -11,14 +11,14 @@
 
     <!-- Getting the page to only show the userContent with the owner name (username) -->
     <h2>Most Recent</h2>
-    <%for(let i=0; i <(userContent.length-1);  i++){%>
-    <% if(userthing == userContent[i].noteBookContents.owner){%>
-            <p class="note-heading"><%=userContent[i].noteBookContents.title%></p>
-            <p class="note-body"><%=userContent[i].noteBookContents.content.substring(0, 100) + "..."%></p>
-            <p><a href="/userContent/<%=userContent[i].noteBookContents.title%>">Go to page</a></p>
+    <!-- userContent is from the find function where it sends all the things that it found and this for loop loops around it -->
+    <% userContent.noteBookContents.forEach(function(newContent){%>
+            <p class="note-heading"><%=newContent.title%></p>
+            <p class="note-body"><%=newContent.content.substring(0, 100) + "..."%></p>
+            <p><a href="/userContent/<%=newContent.title%>">Go to page</a></p>
             <h2>---</h2>
-            <% } %>
-    <% } %>
+           
+    <% }) %>
 
 <div class="logoutBtn">
 <a class="btn btn-light" href="/logout" role="button">Log Out</a>
