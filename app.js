@@ -235,35 +235,37 @@ app.post("/page", function(req,res){
 
 //creating a page to show the entries of users
 app.get("/userContent/:pageId", function(req,res){
+    
+
     //gets the title of the page that is going to be
     //created after the click --create page
     const pageEntry = req.params.pageId;
-    const theUser = req.user.username;
-    console.log("page title: "+ pageEntry);
-    console.log("username:" + req.user.username);
-    
-
-    //search for the record with the same username as the currently logged in user
-    NoteUser.findOne({"username": theUser},function(err, post){
-    const newPage = post.noteBookContents;
 
     
     //redirects to the login if the user is not authenticated
      if(req.isAuthenticated()){
+    const theUser = req.user.username;
+    console.log("page title: "+ pageEntry);
+    console.log("username:" + req.user.username);
+    //search for the record with the same username as the currently logged in user
+    NoteUser.findOne({"username": theUser},function(err, post){
+    const newPage = post.noteBookContents;
+   
 
 
-        //renders the userContent page
-        //the data passed into it is the title of the page that the user is looking for
-        //also the contents of the relavant noteBookContents of the found post     
-        res.render("userContent",{newPage:newPage, userthing: pageEntry});
+    //renders the userContent page
+    //the data passed into it is the title of the page that the user is looking for
+    //also the contents of the relavant noteBookContents of the found post     
+    res.render("userContent",{newPage:newPage, userthing: pageEntry});
 
-    }else{
-        res.redirect("/login");
-    }
+
             
 
 
     })
+    }else{
+        res.redirect("/login");
+    }
 
 })
 
