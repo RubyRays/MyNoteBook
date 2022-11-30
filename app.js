@@ -132,7 +132,7 @@ app.get("/page", function(req,res){
                         
             }else{
                 if(foundUsers){
-                    console.log("These are the found users: "+ foundUsers + "THE END ")
+                    //console.log("These are the found users: "+ foundUsers + "THE END ")
                     //rendering the info got back from the ejs and the username where 
                      //needed on screen
                      //passing in the found data
@@ -233,6 +233,26 @@ app.post("/page", function(req,res){
 });
 
 
+app.post("/delete", function(req, res){
+    //distinguishing things to delete
+    const clickedEntry = req.body.deleteEntry;
+    Note.findByIdAndRemove(clickedEntry, function(err){
+        if(!err){
+            
+            console.log("Entry Deleted");
+            res.redirect("/page");
+        }
+    });
+
+    
+
+    
+})
+
+
+
+
+
 //creating a page to show the entries of users
 app.get("/userContent/:pageId", function(req,res){
     
@@ -245,8 +265,8 @@ app.get("/userContent/:pageId", function(req,res){
     //redirects to the login if the user is not authenticated
      if(req.isAuthenticated()){
     const theUser = req.user.username;
-    console.log("page title: "+ pageEntry);
-    console.log("username:" + req.user.username);
+    // console.log("page title: "+ pageEntry);
+    // console.log("username:" + req.user.username);
     //search for the record with the same username as the currently logged in user
     NoteUser.findOne({"username": theUser},function(err, post){
     const newPage = post.noteBookContents;

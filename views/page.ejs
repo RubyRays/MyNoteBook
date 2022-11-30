@@ -10,14 +10,15 @@
     </form>
 
     <!-- Getting the page to only show the userContent with the owner name (username) -->
-    <h2>Most Recent</h2>
     <!-- userContent is from the find function where it sends all the things that it found and this for loop loops around it -->
-    <% userContent.noteBookContents.forEach(function(newContent){%>
+    <% userContent.noteBookContents.reverse().forEach(function(newContent){%>
+            <form action="/delete" method="POST">
+            <button type="submit" class="delete-btn" name="deleteEntry" value="<%= newContent._id %>"><i class="fa-solid fa-eraser"></i></button>
             <p class="note-heading"><%=newContent.title%></p>
             <p class="note-body"><%=newContent.content.substring(0, 100) + "..."%></p>
             <p><a href="/userContent/<%=newContent.title%>">Go to page</a></p>
             <h2>---</h2>
-           
+           </form>
     <% }) %>
 
 <div class="logoutBtn">
