@@ -236,13 +236,33 @@ app.post("/page", function(req,res){
 app.post("/delete", function(req, res){
     //distinguishing things to delete
     const clickedEntry = req.body.deleteEntry;
+
+    //finds the entry that has the same id as the clicked entry and 
+    //removes it
     Note.findByIdAndRemove(clickedEntry, function(err){
         if(!err){
             
             console.log("Entry Deleted");
-            res.redirect("/page");
+            
         }
     });
+    //Finds the entry with the id of the currently logged in user
+    //looks at the notebookContents array and finds the id inside that 
+    //corresponds to the clickedEntry (the delete button that corresponds to the entry)
+    //then it excludes it from the list after the update
+    //this causes the items to be erased from the NoteUser collection.
+    NoteUser.findOneAndUpdate({_id:req.user.id},
+         {$pull:{noteBookContents:{_id: clickedEntry}}},
+         {new:true, useFindAndModify: false},
+         function(err){
+            if(err){
+                console.log(err);
+            }else{
+                res.redirect("/page");
+                
+            }
+         }
+        )
 
     
 
