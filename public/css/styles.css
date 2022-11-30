@@ -11,6 +11,16 @@ body {
   background-color: white;
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
 }
+
+.delete-btn {
+  border-style: none;
+  background-color: none;
+}
+.delete-btn :hover {
+  border-style: solid;
+  border-width: 0.1rem;
+}
+
 .footer {
   position: absolute;
   text-align: center;
