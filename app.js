@@ -237,6 +237,7 @@ app.post("/delete", function(req, res){
     //distinguishing things to delete
     const clickedEntry = req.body.deleteEntry;
 
+    if(req.isAuthenticated){
     //finds the entry that has the same id as the clicked entry and 
     //removes it
     Note.findByIdAndRemove(clickedEntry, function(err){
@@ -262,10 +263,12 @@ app.post("/delete", function(req, res){
                 
             }
          }
-        )
-
+        );
+    }else{
+        res.redirect("/login");
+    }
     
-
+//lllloo
     
 })
 
