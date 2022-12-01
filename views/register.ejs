@@ -1,6 +1,8 @@
 <%-include('partials/header.ejs')-%>
-
-<main class="form-signin w-100 m-auto">
+<div class="container mt-5">
+    <div class="row">
+    <div class="col-sm-8">
+    <!-- <main class="form-signin w-100 m-auto"> -->
     <form action="/register" class="form-signin" method="post">
         
         <h1 class="h3 mb-3 fw-normal">Register</h1>
@@ -13,16 +15,20 @@
         <button class="w-100 btn btn-primary" type="submit">Register</button>
 
     </form>
-</main>
-<div class="col-sm-4">
-    <div class="card social-block">
+<!-- </main> -->
+</div>
+
+<div class="col-sm-4 social-btn-container">
+    <div class="card social-block social-btn-container">
         <div class="card-body">
-            <a class="btn btn-block btn-social btn-google" href="/auth/google" role="button">
+            <a class="btn btn-block btn-social btn-google col-sm-12" href="/auth/google" role="button">
                 <i class="fab fa-google"></i>
                 Sign Up with Google
             </a>
         </div>
     </div>
+</div>
+</div>
 </div>
 
 <%- include("partials/footer.ejs")-%>

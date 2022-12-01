@@ -20,6 +20,7 @@ h1 {
 p {
   font-size: 1.5rem;
 }
+
 .container {
   margin-top: 100px;
   padding-bottom: 70px;
@@ -87,4 +88,10 @@ p {
 
 .page-btn :active {
   color: white;
+}
+
+.social-btn-container {
+  background-color: white;
+  background-image: url("https://www.transparenttextures.com/patterns/circles.png");
+  border-style: none;
 }
