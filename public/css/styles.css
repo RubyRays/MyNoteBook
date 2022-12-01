@@ -20,6 +20,10 @@ h1 {
 p {
   font-size: 1.5rem;
 }
+footer {
+  color: white;
+  text-align: center;
+}
 
 .container {
   margin-top: 100px;
@@ -56,10 +60,12 @@ p {
 
 .logoutBtn {
   position: relative;
-  margin-top: 25%;
+  margin-top: 5%;
   margin-bottom: 0%;
 }
-
+.login-register-style {
+  margin-top: 1rem;
+}
 .note-heading {
   background-color: aqua;
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
