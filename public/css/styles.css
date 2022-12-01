@@ -8,10 +8,10 @@ a {
   text-decoration: none;
 }
 a :link {
-  color: black;
+  color: #000000;
 }
 a :hover {
-  color: white;
+  color: #ffffff;
 }
 
 h1 {
@@ -21,14 +21,14 @@ p {
   font-size: 1.5rem;
 }
 footer {
-  color: white;
+  color: #ffffff;
   text-align: center;
 }
 
 .container {
   margin-top: 100px;
   padding-bottom: 70px;
-  background-color: white;
+  background-color: #ffffff;
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
 }
 
@@ -67,7 +67,7 @@ footer {
   margin-top: 1rem;
 }
 .note-heading {
-  background-color: aqua;
+  background-color: #00ffff;
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
   border-bottom: solid;
   border-bottom-width: 0.1rem;
@@ -75,11 +75,11 @@ footer {
 }
 .note-body {
   margin-top: 0px;
-  background-color: aquamarine;
+  background-color: #7fffd4;
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
 }
 .page-btn {
-  background-color: aquamarine;
+  background-color: #7fffd4;
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
   border-style: none;
   color: black;
@@ -94,11 +94,11 @@ footer {
 }
 
 .page-btn :active {
-  color: white;
+  color: #ffffff;
 }
 
 .social-btn-container {
-  background-color: white;
+  background-color: #ffffff;
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
   border-style: none;
 }
