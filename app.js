@@ -32,8 +32,17 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-mongoose.connect("mongodb://localhost:27017/noteUserDB");
+const dbUsername= process.env.DBUSERNAME;
+const dbPassword= process.env.DBPASSWORD;
+const cluster =  process.env.CLUSTER;
 
+
+// mongoose.connect("mongodb://localhost:27017/noteUserDB");
+const dbUrl= "mongodb+srv://"+dbUsername+":"+dbPassword+cluster+"/notesAppDB?retryWrites=true&w=majority"
+
+mongoose.connect(dbUrl).then(()=>{
+    console.info("Database connected");
+}).catch(err=> {console.log("Error",err);});
 
 const notesSchema = new mongoose.Schema({
     title: String,
@@ -237,7 +246,7 @@ app.post("/delete", function(req, res){
     //distinguishing things to delete
     const clickedEntry = req.body.deleteEntry;
 
-    if(req.isAuthenticated){
+    if(req.isAuthenticated()){
     //finds the entry that has the same id as the clicked entry and 
     //removes it
     Note.findByIdAndRemove(clickedEntry, function(err){
