@@ -226,7 +226,7 @@ app.post("/page", function(req,res){
                 //looking for the data in the notes collection where the owner name
                 //is the same as the username of the currently logged in user
                 Note.find({"owner": req.user.username}, function(err, user2){
-                    console.log(user2);
+                    //console.log(user2);
                     
                 
                 //saves the posted contents into the noteBookContents
