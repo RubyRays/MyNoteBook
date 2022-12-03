@@ -8,6 +8,9 @@
   },
   "author": "Jereen Leblanc",
   "license": "ISC",
+    "engines": {
+    "node": "v14.17.0"
+  },
   "dependencies": {
     "body-parser": "^1.20.1",
     "dotenv": "^16.0.3",

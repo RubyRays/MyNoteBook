@@ -322,7 +322,14 @@ app.get("/userContent/:pageId", function(req,res){
 })
 
 
-//listener
-app.listen(3000, function(){
-    console.log("Server is running on port 3000");
-})
+
+//customising the port to be used for local and heroku....
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 3000;
+}
+
+
+app.listen(port, function(){
+    console.log("Server has started successfully");
+});
