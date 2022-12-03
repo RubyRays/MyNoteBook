@@ -37,12 +37,12 @@ const dbPassword= process.env.DBPASSWORD;
 const cluster =  process.env.CLUSTER;
 
 
-// mongoose.connect("mongodb://localhost:27017/noteUserDB");
-const dbUrl= "mongodb+srv://"+dbUsername+":"+dbPassword+cluster+"/notesAppDB?retryWrites=true&w=majority"
+mongoose.connect("mongodb://localhost:27017/noteUserDB");
+// const dbUrl= "mongodb+srv://"+dbUsername+":"+dbPassword+cluster+"/notesAppDB?retryWrites=true&w=majority"
 
-mongoose.connect(dbUrl).then(()=>{
-    console.info("Database connected");
-}).catch(err=> {console.log("Error",err);});
+// mongoose.connect(dbUrl).then(()=>{
+//     console.info("Database connected");
+// }).catch(err=> {console.log("Error",err);});
 
 const notesSchema = new mongoose.Schema({
     title: String,
