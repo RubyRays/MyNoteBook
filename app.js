@@ -10,6 +10,7 @@ const passportLocalMongoose = require("passport-local-mongoose");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
 const _ = require("lodash");
+const data = require(__dirname+"/data.js");
 
 
 const app = express();
@@ -32,9 +33,9 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-const dbUsername= process.env.DBUSERNAME;
-const dbPassword= process.env.DBPASSWORD;
-const cluster =  process.env.CLUSTER;
+// const dbUsername= process.env.DBUSERNAME;
+// const dbPassword= process.env.DBPASSWORD;
+// const cluster =  process.env.CLUSTER;
 
 
 mongoose.connect("mongodb://localhost:27017/noteUserDB");
@@ -47,19 +48,30 @@ mongoose.connect("mongodb://localhost:27017/noteUserDB");
 const notesSchema = new mongoose.Schema({
     title: String,
     content:String,
-    owner: String
+    owner: String,
+    state: String,
+    date: String,
+    time: String
 });
 
 const Note = new mongoose.model("Note", notesSchema);
+const editHolderSchema = new mongoose.Schema({
+    title: String,
+    content: String
+})
+const EditHolder = new mongoose.model("EditHolder", editHolderSchema);
 
 const noteUserSchema =new mongoose.Schema({
     username: String,
     email: String,
     password: String,
     noteBookContents: [notesSchema],
-    googleId: String
+    googleId: String,
+    
 
 });
+
+
 
 
 noteUserSchema.plugin(passportLocalMongoose);
@@ -124,6 +136,7 @@ app.get("/login", function(req, res){
 app.get("/404",function(req,res){
     res.render("404");
 });
+
 app.get("/page", function(req,res){
     //find the value from that specific user
     //res.render("page", {username: username});
@@ -131,7 +144,7 @@ app.get("/page", function(req,res){
     if(req.isAuthenticated()){
         
         const theUser = req.user.username;
-       
+        
         //finding the user related entries by the id of currently logged in user
         NoteUser.findById(req.user.id, function(err, foundUsers){
 
@@ -191,6 +204,7 @@ app.post("/login", function(req,res){
     username: req.body.username,
     email:req.body.email,
     password: req.body.password
+
    });
 
    req.login(user, function(err){
@@ -208,14 +222,31 @@ app.post("/login", function(req,res){
 
 //creates a new notebook post that is then added to the noteBookContents
 app.post("/page", function(req,res){
+    let date=data.getDay();
+    let time= data.getTime();
+        //     //creates a new post
+        //    const edit=new EditHolder({
+        //     title: req.body.title2,
+        //     content: req.body.content2,
+            
+        // });
+        // edit.save();
+        // res.redirect("/edit");
+    // if(req.body.title != null){
         //creates a new post
            const post=new Note({
             title: req.body.title,
             content: req.body.content,
-            owner: req.user.username
+            owner: req.user.username,
+            date: date,
+            time: time
         });
+    
         //saving the information entered into the note document 
         post.save();
+   
+
+     
 
     //finds the current user using the user.id provided by the passport package
     NoteUser.findById(req.user.id,function(err, foundUser){
@@ -239,7 +270,9 @@ app.post("/page", function(req,res){
             }
         }
     });
-});
+ }
+// }
+);
 
 
 app.post("/delete", function(req, res){
@@ -277,8 +310,88 @@ app.post("/delete", function(req, res){
         res.redirect("/login");
     }
     
-//lllloo
+
     
+})
+
+app.post("/edit", function(req,res){
+    // const toEdit = req.body.editEntry;
+    // Note.findById(toEdit, function(err, foundEntry){
+    //     console.log(foundEntry);
+    //     if(!err){
+    //         const writingState = foundEntry.state;
+    //         if(writingState=="normal-mode"){
+    //         Note.updateOne(
+    //             {state: toEdit,  },
+    //             {set: "editMode"},
+    //             function(err){
+    //             if(!err){
+    //                 console.log("edit")
+    //                 // res.send("Successfully updated page entry.");
+    //                 res.redirect("/page")
+    //             }
+    //         }
+    //         )}else{
+            //     Note.updateOne(
+            //         {state: toEdit},
+            //         {set: "normal-mode"},
+            //         function(err){
+            //     if(!err){
+            //         console.log("normal");
+            //         // res.send("Successfully updated page entry.");
+            //         res.redirect("/page");
+
+            //     }
+
+            // }
+            //     )
+            // }         
+//         }
+//     })
+        //distinguishing things to delete
+    const editedEntry = req.body.Edit;
+    console.log("passed here");
+    if(req.isAuthenticated()){
+    //finds the entry that has the same id as the clicked entry and 
+    //removes it
+    EditHolder.findOne({title: editedEntry}, function(err, ){
+
+    console.log("passed here");
+    Note.updateOne(
+        {_id: editedEntry},
+        {$set:{title: req.body.title2, content: req.body.content2}},
+         function(err){
+        if(!err){
+            
+            console.log("entry edited");
+            
+        }
+    });
+    //Finds the entry with the id of the currently logged in user
+    //looks at the notebookContents array and finds the id inside that 
+    //corresponds to the clickedEntry (the delete button that corresponds to the entry)
+    //then it excludes it from the list after the update
+    //this causes the items to be erased from the NoteUser collection.
+    NoteUser.updateOne(
+         {noteBookContents:{title: editedEntry}},
+         {$set: {noteBookContents: {title: req.body.title2, content: req.body.content2}}},
+         function(err){
+            if(err){
+                console.log(err);
+                
+            }else{
+                res.redirect("/page");
+                
+            }
+         }
+        );
+     });
+    }else{
+        res.redirect("/login");
+    }
+    
+   
+
 })
 
 

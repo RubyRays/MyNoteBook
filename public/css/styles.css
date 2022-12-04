@@ -32,7 +32,7 @@ footer {
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
 }
 
-.delete-btn {
+.action-btn {
   background-color: none;
   border-style: none;
   margin-top: 1rem;
@@ -40,7 +40,9 @@ footer {
 .delete-btn :hover {
   color: #bc2d1a;
 }
-
+.edit-btn :hover {
+  color: green;
+}
 .footer {
   position: absolute;
   text-align: center;
@@ -57,10 +59,19 @@ footer {
 .footer-padding {
   padding-bottom: 60px;
 }
+.edit-mode {
+  visibility: hidden;
+}
+.normal-mode {
+  background-color: #c04fb5;
+}
+.icon-style-form {
+  display: inline-block;
+}
 
 .logoutBtn {
   position: relative;
-  margin-top: 5%;
+  margin-top: 25%;
   margin-bottom: 0%;
 }
 .login-register-style {
