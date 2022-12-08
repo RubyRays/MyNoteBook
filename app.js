@@ -140,6 +140,7 @@ app.get("/404",function(req,res){
 app.get("/page", function(req,res){
     //find the value from that specific user
     //res.render("page", {username: username});
+    
    
     if(req.isAuthenticated()){
         
@@ -158,7 +159,7 @@ app.get("/page", function(req,res){
                     //rendering the info got back from the ejs and the username where 
                      //needed on screen
                      //passing in the found data
-                    res.render("page", {userContent:foundUsers, userthing: theUser} );
+                    res.render("page", {userContent:foundUsers, userthing: theUser } );
                  }
               }
            });
@@ -238,6 +239,7 @@ app.post("/page", function(req,res){
             title: req.body.title,
             content: req.body.content,
             owner: req.user.username,
+            state: "normal-mode",
             date: date,
             time: time
         });
@@ -313,79 +315,74 @@ app.post("/delete", function(req, res){
 
     
 })
-
-app.post("/edit", function(req,res){
-    // const toEdit = req.body.editEntry;
-    // Note.findById(toEdit, function(err, foundEntry){
-    //     console.log(foundEntry);
-    //     if(!err){
-    //         const writingState = foundEntry.state;
-    //         if(writingState=="normal-mode"){
-    //         Note.updateOne(
-    //             {state: toEdit,  },
-    //             {set: "editMode"},
-    //             function(err){
-    //             if(!err){
-    //                 console.log("edit")
-    //                 // res.send("Successfully updated page entry.");
-    //                 res.redirect("/page")
-    //             }
-    //         }
-    //         )}else{
-            //     Note.updateOne(
-            //         {state: toEdit},
-            //         {set: "normal-mode"},
-            //         function(err){
-            //     if(!err){
-            //         console.log("normal");
-            //         // res.send("Successfully updated page entry.");
-            //         res.redirect("/page");
-
-            //     }
-
-            // }
-            //     )
-            // }         
-//         }
-//     })
-        //distinguishing things to delete
-    const editedEntry = req.body.Edit;
-    console.log("passed here");
-    if(req.isAuthenticated()){
-    //finds the entry that has the same id as the clicked entry and 
-    //removes it
-    EditHolder.findOne({title: editedEntry}, function(err, ){
-
-    console.log("passed here");
-    Note.updateOne(
-        {_id: editedEntry},
-        {$set:{title: req.body.title2, content: req.body.content2}},
-         function(err){
-        if(!err){
-            
-            console.log("entry edited");
-            
-        }
-    });
-    //Finds the entry with the id of the currently logged in user
-    //looks at the notebookContents array and finds the id inside that 
-    //corresponds to the clickedEntry (the delete button that corresponds to the entry)
-    //then it excludes it from the list after the update
-    //this causes the items to be erased from the NoteUser collection.
+app.post("/preEdit", function(req, res){
+    const editState = req.body.editEntry;
     NoteUser.updateOne(
-         {noteBookContents:{title: editedEntry}},
-         {$set: {noteBookContents: {title: req.body.title2, content: req.body.content2}}},
-         function(err){
+        {_id: req.user.id, "noteBookContents":{"$elemMatch": {"_id": editState}}},
+        {$set: {"noteBookContents.$.state":"edit-mode"}},
+        function(err){
             if(err){
                 console.log(err);
-                
             }else{
                 res.redirect("/page");
                 
             }
          }
-        );
-     });
+    );
+})
+
+app.post("/edit", function(req,res){
+    const toEdit = req.body.editEntry;
+
+        //distinguishing things to delete
+    // const editedEntry = req.body.Edit;
+    // console.log("passed here");
+    if(req.isAuthenticated()){
+    // //finds the entry that has the same id as the clicked entry and 
+    // //removes it
+    // EditHolder.findOne({title: editedEntry}, function(err, ){
+
+    // console.log("passed here");
+    // Note.updateOne(
+    //     {_id: editedEntry},
+    //     {$set:{title: req.body.title2, content: req.body.content2}},
+    //      function(err){
+    //     if(!err){
+            
+    //         console.log("entry edited");
+            
+    //     }
+    // });
+    // //Finds the entry with the id of the currently logged in user
+    // //looks at the notebookContents array and finds the id inside that 
+    // //corresponds to the clickedEntry (the delete button that corresponds to the entry)
+    // //then it excludes it from the list after the update
+    // //this causes the items to be erased from the NoteUser collection.
+    // NoteUser.updateOne(
+    //      {noteBookContents:{title: editedEntry}},
+    //      {$set: {noteBookContents: {title: req.body.title2, content: req.body.content2}}},
+    //      function(err){
+    //         if(err){
+    //             console.log(err);
+                
+    //         }else{
+    //             res.redirect("/page");
+                
+    //         }
+    //      }
+    //     );
+    //  });
+        NoteUser.updateOne(
+        {_id: req.user.id, "noteBookContents":{"$elemMatch": {"_id": toEdit}}},
+        {$set: {"noteBookContents.$.state":"normal-mode"}},
+        function(err){
+            if(err){
+                console.log(err);
+            }else{
+                res.redirect("/page");
+            }
+         }
+    );
     }else{
         res.redirect("/login");
     }

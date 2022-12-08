@@ -60,10 +60,10 @@ footer {
   padding-bottom: 60px;
 }
 .edit-mode {
-  visibility: hidden;
+  background-color: #c04fb5;
 }
 .normal-mode {
-  background-color: #c04fb5;
+  visibility: hidden;
 }
 .icon-style-form {
   display: inline-block;
