@@ -317,61 +317,49 @@ app.post("/delete", function(req, res){
 })
 app.post("/preEdit", function(req, res){
     const editState = req.body.editEntry;
-    NoteUser.updateOne(
-        {_id: req.user.id, "noteBookContents":{"$elemMatch": {"_id": editState}}},
-        {$set: {"noteBookContents.$.state":"edit-mode"}},
-        function(err){
-            if(err){
-                console.log(err);
-            }else{
-                res.redirect("/page");
-                
+    //find the state of the entry being clicked and toggle it between edit-mode and normal-mode
+ 
+        NoteUser.updateOne(
+            {_id: req.user.id, "noteBookContents":{"$elemMatch": {"_id": editState}}},
+            {$set: {"noteBookContents.$.state":"edit-mode"}},
+            function(err){
+                if(err){
+                    console.log(err);
+                }else{
+                    console.log("edit page button pressed");
+                    res.redirect("/page");
+                }
             }
-         }
-    );
-})
+        );
+                })
+    //     }else{
+    //         console.log(err);
+    //     }
+    // })
+ 
 
 app.post("/edit", function(req,res){
-    const toEdit = req.body.editEntry;
+    const toEdit = req.body.Edit;
+    const title= req.body.title2;
+    const content=req.body.content2;
 
         //distinguishing things to delete
     // const editedEntry = req.body.Edit;
     // console.log("passed here");
     if(req.isAuthenticated()){
-    // //finds the entry that has the same id as the clicked entry and 
-    // //removes it
-    // EditHolder.findOne({title: editedEntry}, function(err, ){
 
-    // console.log("passed here");
-    // Note.updateOne(
-    //     {_id: editedEntry},
-    //     {$set:{title: req.body.title2, content: req.body.content2}},
-    //      function(err){
-    //     if(!err){
-            
-    //         console.log("entry edited");
-            
-    //     }
-    // });
-    // //Finds the entry with the id of the currently logged in user
-    // //looks at the notebookContents array and finds the id inside that 
-    // //corresponds to the clickedEntry (the delete button that corresponds to the entry)
-    // //then it excludes it from the list after the update
-    // //this causes the items to be erased from the NoteUser collection.
-    // NoteUser.updateOne(
-    //      {noteBookContents:{title: editedEntry}},
-    //      {$set: {noteBookContents: {title: req.body.title2, content: req.body.content2}}},
-    //      function(err){
-    //         if(err){
-    //             console.log(err);
-                
-    //         }else{
-    //             res.redirect("/page");
-                
-    //         }
-    //      }
-    //     );
-    //  });
+        NoteUser.updateOne(
+        {_id: req.user.id, "noteBookContents":{"$elemMatch": {"_id": toEdit}}},
+        {$set: {"noteBookContents.$.title":title, "noteBookContents.$.content":content }},
+        function(err){
+            if(err){
+                console.log(err);
+            }else{
+                console.log("edit page button pressed");
+                res.redirect("/page");
+            }
+         }
+    );
         NoteUser.updateOne(
         {_id: req.user.id, "noteBookContents":{"$elemMatch": {"_id": toEdit}}},
         {$set: {"noteBookContents.$.state":"normal-mode"}},
@@ -379,10 +367,12 @@ app.post("/edit", function(req,res){
             if(err){
                 console.log(err);
             }else{
-                res.redirect("/page");
+                console.log("edit page button pressed");
+                
             }
          }
     );
+        
     }else{
         res.redirect("/login");
     }
