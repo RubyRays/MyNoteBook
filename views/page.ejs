@@ -31,7 +31,7 @@
             </div>
             <!-- displays the users entry -->
             <h1 class="note-heading"><%=newContent.title%> <%=newContent.date%> <%=newContent.time%></h1>
-            <p class="note-body"><%=newContent.content + "..."%></p>
+            <p class="note-body"><%=newContent.content.substring(0,100) + "..."%></p>
 
 
             <!-- button that takes the user to the page with the rest of the entry -->
