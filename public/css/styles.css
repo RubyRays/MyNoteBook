@@ -40,6 +40,9 @@ footer {
 .delete-btn :hover {
   color: #bc2d1a;
 }
+.date-style {
+  font-size: small;
+}
 .edit-btn :hover {
   color: green;
 }
@@ -83,11 +86,13 @@ footer {
   border-bottom: solid;
   border-bottom-width: 0.1rem;
   margin-bottom: 0px;
+  word-wrap: break-word;
 }
 .note-body {
   margin-top: 0px;
   background-color: #7fffd4;
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
+  word-wrap: break-word;
 }
 .page-btn {
   background-color: #7fffd4;
