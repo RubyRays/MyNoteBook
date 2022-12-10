@@ -1,6 +1,6 @@
 <%- include("partials/header"); -%>
 
-
+<div class="userContent-style">
 <% newPage.forEach(function(newPageContent){%>
     <% if(newPageContent.title == userthing){%>
     <h1 class="page-entry">
@@ -11,5 +11,8 @@
     </p>
     <%}%>
     <% }) %>
-
+<div class="back-btn">
+    <a class="btn btn-light" href="/page" role="button"><i class="fa-solid fa-circle-arrow-left"></i></a>
+</div>
+</div>
     <%- include("partials/footer"); -%>

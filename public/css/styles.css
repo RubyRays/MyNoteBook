@@ -37,6 +37,10 @@ footer {
   border-style: none;
   margin-top: 1rem;
 }
+.back-btn {
+  position: relative;
+  bottom: -4rem;
+}
 .delete-btn :hover {
   color: #bc2d1a;
 }
@@ -123,4 +127,9 @@ footer {
   background-color: #ffffff;
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
   border-style: none;
+}
+
+.userContent-style {
+  position: relative;
+  height: 100%;
 }
