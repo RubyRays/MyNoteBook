@@ -52,7 +52,8 @@ const notesSchema = new mongoose.Schema({
     owner: String,
     state: String,
     date: String,
-    time: String
+    time: String,
+    imageURL: String
 });
 
 const Note = new mongoose.model("Note", notesSchema);
@@ -258,6 +259,9 @@ function makeCall (ipinfoApi, callback){
             const unit= "metric"
             //api url for the weather api
             const weatherUrl = "https://api.openweathermap.org/data/2.5/weather?q="+query+"&appid="+apiKey+"&units="+unit;
+            function makeCall2(weatherUrl, callback){
+
+            
             https.get(weatherUrl, function(response){
             response.on("data", function(data){
             //converts data to json
@@ -266,20 +270,13 @@ function makeCall (ipinfoApi, callback){
             const imageURL = "http://openweathermap.org/img/wn/"+icon+"@2x.png";
              //designating the path
             const temp = weatherData.main.temp;
-              console.log(temp);
+              callback(imageURL);
             })
         })
     }
-    makeCall(ipinfoApi, function(results){
-        console.log("city: "+results);
-        handleResults(results);
-    })
-
-
-
-
-    let date=data.getDay();
-    let time= data.getTime();
+    function handleResults2(results2){
+        let date=data.getDay();
+        let time= data.getTime();
 
         //creates a new post
            const post=new Note({
@@ -288,37 +285,47 @@ function makeCall (ipinfoApi, callback){
             owner: req.user.username,
             state: "normal-mode",
             date: date,
-            time: time
+            time: time,
+            imageURL: results2
         });
     
         //saving the information entered into the note document 
         post.save();
-   
-
-     
-
-    //finds the current user using the user.id provided by the passport package
-    NoteUser.findById(req.user.id,function(err, foundUser){
-        if(err){
-            console.log(err);
-        }else{
-            if(foundUser){
+        //finds the current user using the user.id provided by the passport package
+        NoteUser.findById(req.user.id,function(err, foundUser){
+            if(err){
+                console.log(err);
+            }else{
+                if(foundUser){
                 //looking for the data in the notes collection where the owner name
                 //is the same as the username of the currently logged in user
-                Note.find({"owner": req.user.username}, function(err, user2){
+                    Note.find({"owner": req.user.username}, function(err, user2){
                     //console.log(user2);
                     
                 
                 //saves the posted contents into the noteBookContents
-                foundUser.noteBookContents=user2;
+                    foundUser.noteBookContents=user2;
                 //saves the userinfo into noteUser collection and redirects to the page
-                foundUser.save(function(){
-                    res.redirect("/page");
+                    foundUser.save(function(){
+                        res.redirect("/page");
                 });
             })
             }
         }
     });
+    }
+    makeCall2(weatherUrl, function(results2){
+        handleResults2(results2);
+    })
+    }
+    makeCall(ipinfoApi, function(results){
+        console.log("city: "+results);
+        handleResults(results);
+    })
+
+     
+
+
  }
 // }
 );

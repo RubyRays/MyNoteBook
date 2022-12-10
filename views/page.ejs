@@ -30,7 +30,8 @@
             </form>
             </div>
             <!-- displays the users entry -->
-            <h1 class="note-heading"><%=newContent.title.substring(0,20) + "..."%> <span class="date-style"><%=newContent.date%> <%=newContent.time%></span></h1>
+            <h1 class="note-heading"><%=newContent.title.substring(0,20) + "..."%> <span class="date-style"><%=newContent.date%> <%=newContent.time%>
+                <img src="<%= newContent.imageURL%>" alt="weather icon"></span></h1>
             <p class="note-body"><%=newContent.content.substring(0,100) + "..."%></p>
 
 
