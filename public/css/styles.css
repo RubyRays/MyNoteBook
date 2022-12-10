@@ -80,6 +80,11 @@ footer {
 .login-register-style {
   margin-top: 1rem;
 }
+.page-entry {
+  word-wrap: break-word;
+  margin-bottom: auto;
+}
+
 .note-heading {
   background-color: #00ffff;
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
@@ -88,6 +93,7 @@ footer {
   margin-bottom: 0px;
   word-wrap: break-word;
 }
+
 .note-body {
   margin-top: 0px;
   background-color: #7fffd4;

@@ -3,10 +3,10 @@
 
 <% newPage.forEach(function(newPageContent){%>
     <% if(newPageContent.title == userthing){%>
-    <h1>
+    <h1 class="page-entry">
         <%=newPageContent.title%>
     </h1>
-    <p>
+    <p class="page-entry">
         <%=newPageContent.content%>
     </p>
     <%}%>
