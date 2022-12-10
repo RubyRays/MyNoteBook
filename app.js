@@ -11,6 +11,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
 const _ = require("lodash");
 const data = require(__dirname+"/data.js");
+const https = require("https");
 
 
 const app = express();
@@ -144,6 +145,7 @@ app.get("/page", function(req,res){
    
     if(req.isAuthenticated()){
         
+        
         const theUser = req.user.username;
         
         //finding the user related entries by the id of currently logged in user
@@ -223,17 +225,62 @@ app.post("/login", function(req,res){
 
 //creates a new notebook post that is then added to the noteBookContents
 app.post("/page", function(req,res){
+    // googleApiKey=process.env.GoogleAPIKey;
+    // const googleGpsAPI= "https://www.googleapis.com/geolocation/v1/geolocate?key="
+    // https.get(googleGpsAPI, function(response){
+    //     console.log(response.statusCode);
+
+    //     response.on("data", function(data){
+    //         const locationData = JSON.parse(data);
+    //         const long=locationData.location.lng;
+    //     })
+    // })
+    
+    token=process.env.IPINFO_TOKEN;
+    const ipinfoApi ="https://ipinfo.io?token="+token;
+function makeCall (ipinfoApi, callback){
+    https.get(ipinfoApi, function(response){
+        console.log(response.statusCode);
+        response.on("data", function(data){
+
+            const ipData= JSON.parse(data);
+            const city = ipData.city;
+          
+             console.log(city);
+             callback(city);
+            // return city;
+        })
+    })
+}
+        function handleResults(results){
+            const query= results;
+            const apiKey = process.env.WEATHER_API_KEY;
+            const unit= "metric"
+            //api url for the weather api
+            const weatherUrl = "https://api.openweathermap.org/data/2.5/weather?q="+query+"&appid="+apiKey+"&units="+unit;
+            https.get(weatherUrl, function(response){
+            response.on("data", function(data){
+            //converts data to json
+            const weatherData = JSON.parse(data);
+            const icon = weatherData.weather[0].icon;
+            const imageURL = "http://openweathermap.org/img/wn/"+icon+"@2x.png";
+             //designating the path
+            const temp = weatherData.main.temp;
+              console.log(temp);
+            })
+        })
+    }
+    makeCall(ipinfoApi, function(results){
+        console.log("city: "+results);
+        handleResults(results);
+    })
+
+
+
+
     let date=data.getDay();
     let time= data.getTime();
-        //     //creates a new post
-        //    const edit=new EditHolder({
-        //     title: req.body.title2,
-        //     content: req.body.content2,
-            
-        // });
-        // edit.save();
-        // res.redirect("/edit");
-    // if(req.body.title != null){
+
         //creates a new post
            const post=new Note({
             title: req.body.title,
@@ -332,10 +379,7 @@ app.post("/preEdit", function(req, res){
             }
         );
                 })
-    //     }else{
-    //         console.log(err);
-    //     }
-    // })
+
  
 
 app.post("/edit", function(req,res){
@@ -343,11 +387,12 @@ app.post("/edit", function(req,res){
     const title= req.body.title2;
     const content=req.body.content2;
 
-        //distinguishing things to delete
+    //distinguishing things to delete
     // const editedEntry = req.body.Edit;
     // console.log("passed here");
     if(req.isAuthenticated()){
 
+        //updates the title and content of the noteUser
         NoteUser.updateOne(
         {_id: req.user.id, "noteBookContents":{"$elemMatch": {"_id": toEdit}}},
         {$set: {"noteBookContents.$.title":title, "noteBookContents.$.content":content }},
@@ -360,6 +405,7 @@ app.post("/edit", function(req,res){
             }
          }
     );
+         //updates the state everytime the edit page button is clicked on
         NoteUser.updateOne(
         {_id: req.user.id, "noteBookContents":{"$elemMatch": {"_id": toEdit}}},
         {$set: {"noteBookContents.$.state":"normal-mode"}},
