@@ -1,0 +1,35 @@
+<%- include("partials/header"); -%>
+
+
+    <h1>Public Page / Journal</h1>
+
+<% publicPosts.reverse().forEach(function(post){%>
+    <div>
+       
+    <!-- displays the users entry -->
+    <h1 class="note-heading">
+        By <%=post.owner%> : <%=post.title.substring(0,20) + "..." %>
+        <span class="date-style">
+                <%=post.date%>
+                    <%=post.time%>
+            </span>
+    </h1>
+    <p class="note-body">
+        <%=post.content.substring(0,100) + "..." %>
+    </p>
+
+
+    <!-- button that takes the user to the page with the rest of the entry -->
+    <button class="page-btn"><a href="/userContent/<%=post.title%>">Go to page</a></button>
+
+
+    <h2>---</h2>
+    <!-- edit form that changes state to not editing and disappears after the edit is made -->
+    
+    </div>
+
+    <% }) %>
+
+
+
+<%- include("partials/footer"); -%>

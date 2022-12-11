@@ -41,6 +41,9 @@ footer {
   position: relative;
   bottom: -4rem;
 }
+.community-btn {
+  position: absolute;
+}
 .delete-btn :hover {
   color: #bc2d1a;
 }

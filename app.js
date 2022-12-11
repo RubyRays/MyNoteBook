@@ -12,6 +12,7 @@ const findOrCreate = require('mongoose-findorcreate');
 const _ = require("lodash");
 const data = require(__dirname+"/data.js");
 const https = require("https");
+const { isNull } = require('lodash');
 
 
 const app = express();
@@ -53,7 +54,8 @@ const notesSchema = new mongoose.Schema({
     state: String,
     date: String,
     time: String,
-    imageURL: String
+    imageURL: String,
+    shared: String
 });
 
 const Note = new mongoose.model("Note", notesSchema);
@@ -128,7 +130,6 @@ app.get("/auth/google/page",
     }    
 );
 
-
 app.get("/register", function(req, res){
     res.render("register");
 });  
@@ -173,7 +174,30 @@ app.get("/page", function(req,res){
 
 });
 
+app.get("/publicPage",function(req,res){
+     if(req.isAuthenticated()){
+        
+        
+        const theUser = req.user.username;
+        
+        //finding the user related entries by the id of currently logged in user
+        Note.find({"shared": {$eq: "true"}}, function(err, publicPosts){
 
+            if(err){
+                console.log(err);
+                
+                        
+            }else{
+               
+                    res.render("publicPage", {publicPosts: publicPosts});
+                 
+              }
+           });
+        
+    }else{
+        res.redirect("/login");
+    }    
+});
 
 
 //log out page using the logout function
@@ -286,7 +310,8 @@ function makeCall (ipinfoApi, callback){
             state: "normal-mode",
             date: date,
             time: time,
-            imageURL: results2
+            imageURL: results2,
+            shared: "false"
         });
     
         //saving the information entered into the note document 
@@ -398,7 +423,19 @@ app.post("/edit", function(req,res){
     // const editedEntry = req.body.Edit;
     // console.log("passed here");
     if(req.isAuthenticated()){
-
+        //updates the title and content of the note
+            Note.updateOne(
+            {_id: toEdit},
+            {$set: {"title":title, "content":content }},
+            function(err){
+                if(err){
+                    console.log(err);
+                }else{
+                    console.log("edit page button pressed");
+                   
+                }
+            }
+        );
         //updates the title and content of the noteUser
         NoteUser.updateOne(
         {_id: req.user.id, "noteBookContents":{"$elemMatch": {"_id": toEdit}}},
@@ -412,6 +449,7 @@ app.post("/edit", function(req,res){
             }
          }
     );
+
          //updates the state everytime the edit page button is clicked on
         NoteUser.updateOne(
         {_id: req.user.id, "noteBookContents":{"$elemMatch": {"_id": toEdit}}},
@@ -431,6 +469,46 @@ app.post("/edit", function(req,res){
     }
     
    
+
+})
+
+app.post("/share&unshare", function(req, res){
+    const toShare= req.body.share;
+    //finding the entry by its id
+    Note.findById(toShare, function(err, foundNoteEntry){
+        if(err){
+            console.log(err);
+        }else{
+            //checking the shared state
+            //if the state is false when clicked change it to true
+            //otherwise change it to false
+            if(foundNoteEntry.shared === "false"){
+                Note.updateOne(
+                    {_id: toShare},
+                    {$set: {"shared": "true"}},
+                    function(err){
+                        if(err){
+                            console.log(err);
+                        }else{
+                            res.redirect("/page")
+                        }
+                    }
+            ) 
+            }else{
+                Note.updateOne(
+                    {_id: toShare},
+                    {$set: {"shared": "false"}},
+                    function(err){
+                        if(err){
+                            console.log(err);
+                        }else{
+                            res.redirect("/page")
+                        }
+                    }
+                )               
+            }
+        }
+    })
 
 })
 

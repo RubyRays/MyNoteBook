@@ -28,6 +28,9 @@
             <form action="/preEdit" method="Post" class="icon-style-form">
                 <button type="submit" class="edit-btn action-btn" name="editEntry" value="<%= newContent._id %>"><i class="fa-solid fa-pencil fa-xl"></i></button>     
             </form>
+            <form action="/share&unshare" method="POST" class="icon-style-form">
+                <button type="submit" class="edit-btn action-btn" name="share" value="<%=newContent._id %>"><i class="fa-regular fa-share-from-square"></i></button>
+            </form>
             </div>
             <!-- displays the users entry -->
             <h1 class="note-heading"><%=newContent.title.substring(0,20) + "..."%> <span class="date-style"><%=newContent.date%> <%=newContent.time%>
@@ -52,8 +55,9 @@
             
             <h2>---</h2>
     <% }) %> 
-  
-
+<div class="community-btn">
+    <a class="btn btn-light" href="/publicPage" role="button"><i class="fa-sharp fa-solid fa-globe"></i></a>
+</div>
 
 <div class="logoutBtn">
 <a class="btn btn-light" href="/logout" role="button">Log Out</a>
