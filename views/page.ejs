@@ -1,4 +1,8 @@
 <%-include('partials/header.ejs')-%>
+   <p class="community-btn">
+    <a class="btn btn-light" href="/publicPage" role="button"><i class="fa-sharp fa-solid fa-globe fa-xl"></i></a>
+    <a class="btn btn-light" href="/logout" role="button">Log Out</a>
+    </p>
     <h1>Hi <%=userthing%>, are you ready to start your notebook?</h1>
     <form action="/page" method="POST" >
     
@@ -55,9 +59,7 @@
             
             <h2>---</h2>
     <% }) %> 
-<div class="community-btn">
-    <a class="btn btn-light" href="/publicPage" role="button"><i class="fa-sharp fa-solid fa-globe"></i></a>
-</div>
+
 
 <div class="logoutBtn">
 <a class="btn btn-light" href="/logout" role="button">Log Out</a>
