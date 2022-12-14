@@ -1,4 +1,10 @@
 <%-include('partials/header.ejs')-%>
+
+    <form action="/profileImg" method="post" enctype="multipart/form-data">
+         <input type="file" name="profileImage" id="">
+         <button type="submit" class="btn btn-light prettyBtn">Add image</button>
+    </form>
+       
    <p class="community-btn">
     <a class="btn btn-light" href="/publicPage" role="button"><i class="fa-sharp fa-solid fa-globe fa-xl"></i></a>
     <a class="btn btn-light" href="/logout" role="button">Log Out</a>

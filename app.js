@@ -12,7 +12,10 @@ const findOrCreate = require('mongoose-findorcreate');
 const _ = require("lodash");
 const data = require(__dirname+"/data.js");
 const https = require("https");
-const { isNull } = require('lodash');
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
 
 
 const app = express();
@@ -23,6 +26,18 @@ app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('view engine', 'ejs');
 
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_SECRET
+})
+const storage = new CloudinaryStorage({
+    cloudinary, 
+    folder: "MyNoteBook",
+    allowedFormats: ['jpeg', 'png', 'jpg']
+});
+
+const parser = multer({storage:storage});
 
 
 app.use(session({
@@ -173,7 +188,38 @@ app.get("/page", function(req,res){
     }    
 
 });
+//creating a page to show the entries of users
+app.get("/userContent/:pageId", function(req,res){
+    
 
+    //gets the title of the page that is going to be
+    //created after the click --create page
+    const pageEntry = req.params.pageId;
+
+    
+    //redirects to the login if the user is not authenticated
+     if(req.isAuthenticated()){
+    const theUser = req.user.username;
+
+    //search for the record with the same username as the currently logged in user
+    NoteUser.findOne({"username": theUser},function(err, post){
+    const newPage = post.noteBookContents;
+    
+    //renders the userContent page
+    //the data passed into it is the title of the page that the user is looking for
+    //also the contents of the relavant noteBookContents of the found post     
+    res.render("userContent",{newPage:newPage, userthing: pageEntry});
+
+
+            
+
+
+    })
+    }else{
+        res.redirect("/login");
+    }
+
+})
 app.get("/publicPage",function(req,res){
      if(req.isAuthenticated()){
         
@@ -513,44 +559,12 @@ app.post("/share&unshare", function(req, res){
 })
 
 
-
-
-
-//creating a page to show the entries of users
-app.get("/userContent/:pageId", function(req,res){
-    
-
-    //gets the title of the page that is going to be
-    //created after the click --create page
-    const pageEntry = req.params.pageId;
-
-    
-    //redirects to the login if the user is not authenticated
-     if(req.isAuthenticated()){
-    const theUser = req.user.username;
-    // console.log("page title: "+ pageEntry);
-    // console.log("username:" + req.user.username);
-    //search for the record with the same username as the currently logged in user
-    NoteUser.findOne({"username": theUser},function(err, post){
-    const newPage = post.noteBookContents;
-   
-
-
-    //renders the userContent page
-    //the data passed into it is the title of the page that the user is looking for
-    //also the contents of the relavant noteBookContents of the found post     
-    res.render("userContent",{newPage:newPage, userthing: pageEntry});
-
-
-            
-
-
-    })
-    }else{
-        res.redirect("/login");
-    }
-
+app.post("/profileImg", parser.single("profileImage"), function(req,res){
+    console.log(req.body, req.file);
+    res.redirect("/page");
 })
+
+
 
 
 
