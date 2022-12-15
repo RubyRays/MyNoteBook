@@ -32,9 +32,12 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_SECRET
 })
 const storage = new CloudinaryStorage({
-    cloudinary, 
-    folder: "MyNoteBook",
-    allowedFormats: ['jpeg', 'png', 'jpg']
+    cloudinary,
+    params: {
+        folder: "MyNoteBook",
+        allowedFormats: ['jpeg', 'png', 'jpg'] 
+    } 
+    
 });
 
 const parser = multer({storage:storage});
@@ -70,7 +73,8 @@ const notesSchema = new mongoose.Schema({
     date: String,
     time: String,
     imageURL: String,
-    shared: String
+    shared: String,
+
 });
 
 const Note = new mongoose.model("Note", notesSchema);
@@ -86,7 +90,10 @@ const noteUserSchema =new mongoose.Schema({
     password: String,
     noteBookContents: [notesSchema],
     googleId: String,
-    
+    profileImage:{
+        url: String,
+        filename: String
+    }
 
 });
 
@@ -124,7 +131,10 @@ passport.use(new GoogleStrategy({
     userProfileURL:"https://www.googleapis.com/oauth2/v3/userinfo"
 },
     function(accessToken, refreshToken, profile, cb){
-        NoteUser.findOrCreate({googleId: profile.id, username: "User#"+profile.id}, function(err, user){
+        NoteUser.findOrCreate({googleId: profile.id, username: "User#"+profile.id,     profileImage:{
+        url: "https://res.cloudinary.com/dbvhtpmx4/image/upload/v1671056080/samples/sheep.jpg",
+        filename:'samples/sheep' ,
+    }   }, function(err, user){
             return cb(err, user);
         })
     }
@@ -259,7 +269,10 @@ app.post("/register", function(req, res){
     
     //looking for a way to trap the current username and values hopefully it is here
     //this is the place where the user is authenitcated
-    NoteUser.register({username:req.body.username, email:req.body.email}, req.body.password, function(err,user){
+    NoteUser.register({username:req.body.username, email:req.body.email, profileImage:{
+                url: "https://res.cloudinary.com/dbvhtpmx4/image/upload/v1671056080/samples/sheep.jpg",
+        filename:'samples/sheep',
+    }   }, req.body.password, function(err,user){
         if(err){
             console.log(err);
             res.redirect("/");//if there are errors redirect to home
@@ -277,8 +290,8 @@ app.post("/login", function(req,res){
    const user = new NoteUser({
     username: req.body.username,
     email:req.body.email,
-    password: req.body.password
-
+    password: req.body.password,
+ 
    });
 
    req.login(user, function(err){
@@ -357,7 +370,8 @@ function makeCall (ipinfoApi, callback){
             date: date,
             time: time,
             imageURL: results2,
-            shared: "false"
+            shared: "false",
+
         });
     
         //saving the information entered into the note document 
@@ -560,8 +574,21 @@ app.post("/share&unshare", function(req, res){
 
 
 app.post("/profileImg", parser.single("profileImage"), function(req,res){
-    console.log(req.body, req.file);
-    res.redirect("/page");
+    
+    console.log(req.file.path);
+
+    NoteUser.updateOne(
+        {_id:req.user.id},
+        {$set: {"profileImage":{"url":req.file.path, "filename": req.file.filename }}},
+        function(err){
+                        if(err){
+                            console.log(err);
+                        }else{
+                            res.redirect("/page")
+                        }
+                    }
+    )
+
 })
 
 

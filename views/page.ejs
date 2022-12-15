@@ -1,8 +1,10 @@
 <%-include('partials/header.ejs')-%>
+    
+    <img src="<%=userContent.profileImage.url%>" class="profile-image" alt="...">
 
     <form action="/profileImg" method="post" enctype="multipart/form-data">
          <input type="file" name="profileImage" id="">
-         <button type="submit" class="btn btn-light prettyBtn">Add image</button>
+         <button type="submit" class="btn btn-light prettyBtn">New avatar</button>
     </form>
        
    <p class="community-btn">
@@ -39,7 +41,7 @@
                 <button type="submit" class="edit-btn action-btn" name="editEntry" value="<%= newContent._id %>"><i class="fa-solid fa-pencil fa-xl"></i></button>     
             </form>
             <form action="/share&unshare" method="POST" class="icon-style-form">
-                <button type="submit" class="edit-btn action-btn" name="share" value="<%=newContent._id %>"><i class="fa-regular fa-share-from-square"></i></button>
+                <button type="submit" class="edit-btn action-btn " name="share" value="<%=newContent._id %>"><i class="fa-regular fa-share-from-square"></i></button>
             </form>
             </div>
             <!-- displays the users entry -->
@@ -60,10 +62,10 @@
                 <input type="text" class="form-control text-left" name="title2" value="<%=newContent.title%>" required>
                 <textarea class="form-control" name="content2" rows="5" cols="30" required><%=newContent.content%></textarea>
                 <button type="submit" class="btn btn-light prettyBtn" name="Edit" value="<%= newContent._id %>">edit Page</button>
+                <h2>---</h2>
             </form>
             </div>
             
-            <h2>---</h2>
     <% }) %> 
 
 
