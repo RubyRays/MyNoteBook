@@ -70,10 +70,11 @@ footer {
   padding-bottom: 60px;
 }
 .edit-mode {
-  background-color: #c04fb5;
+  background-color: none;
 }
 .normal-mode {
   visibility: hidden;
+  display: none;
 }
 .icon-style-form {
   display: inline-block;
@@ -124,6 +125,11 @@ footer {
 
 .page-btn :active {
   color: #ffffff;
+}
+.profile-image {
+  border-radius: 2rem;
+  position: relative;
+  width: 10rem;
 }
 
 .social-btn-container {
