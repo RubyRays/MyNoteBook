@@ -574,12 +574,19 @@ app.post("/share&unshare", function(req, res){
 
 
 app.post("/profileImg", parser.single("profileImage"), function(req,res){
-    
-    console.log(req.file.path);
+    const path = req.file.path;
+    const filename= req.file.filename;
+    //find the currently referenced image and delete it
+    NoteUser.findById(req.user.id, function(err, foundUser){
+        if(foundUser.profileImage.filename != 'samples/sheep'){
+             cloudinary.uploader.destroy(foundUser.profileImage.filename);
+        }
+       
+    })
 
     NoteUser.updateOne(
         {_id:req.user.id},
-        {$set: {"profileImage":{"url":req.file.path, "filename": req.file.filename }}},
+        {$set: {"profileImage":{"url":path, "filename": filename }}},
         function(err){
                         if(err){
                             console.log(err);
@@ -589,6 +596,8 @@ app.post("/profileImg", parser.single("profileImage"), function(req,res){
                     }
     )
 
+    //delete the image that is being pointed to at that moment before updating url
+    // cloudinary.uploader.destroy(filename);
 })
 
 
