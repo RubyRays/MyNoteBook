@@ -80,6 +80,7 @@ footer {
   border-bottom-left-radius: 1rem;
   border-bottom-right-radius: 1rem;
   padding-bottom: 1rem;
+  white-space: pre-line;
 }
 
 .edit-mode {
@@ -126,6 +127,7 @@ footer {
   word-wrap: break-word;
   border-bottom-right-radius: 1rem;
   font-size: medium;
+  white-space: pre-line;
 }
 
 .note-weather-image {
