@@ -26,8 +26,9 @@ footer {
 }
 
 .container {
-  margin-top: 100px;
-  padding-bottom: 70px;
+  border-radius: 2rem;
+  margin-top: 5rem;
+  padding-bottom: 2rem;
   background-color: #ffffff;
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
 }
@@ -35,15 +36,14 @@ footer {
 .action-btn {
   background-color: none;
   border-style: none;
-  margin-top: 1rem;
+  margin-top: 2rem;
 }
 .back-btn {
   position: relative;
-  bottom: -4rem;
+  margin-top: 1rem;
+  padding-top: 3rem;
 }
-.community-btn {
-  position: relative;
-}
+
 .delete-btn :hover {
   color: #bc2d1a;
 }
@@ -69,6 +69,19 @@ footer {
 .footer-padding {
   padding-bottom: 60px;
 }
+
+.full-title {
+  border-bottom-color: #000000;
+  border-bottom-style: solid;
+  padding-top: 2rem;
+}
+.full-body {
+  background-color: #fff;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  padding-bottom: 1rem;
+}
+
 .edit-mode {
   background-color: none;
 }
@@ -92,14 +105,18 @@ footer {
   word-wrap: break-word;
   margin-bottom: auto;
 }
+.note {
+  margin-left: -1rem;
+}
 
 .note-heading {
-  background-color: #00ffff;
+  background-color: #c04fb5;
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
   border-bottom: solid;
   border-bottom-width: 0.1rem;
   margin-bottom: 0px;
   word-wrap: break-word;
+  border-top-right-radius: 1rem;
 }
 
 .note-body {
@@ -107,6 +124,15 @@ footer {
   background-color: #7fffd4;
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
   word-wrap: break-word;
+  border-bottom-right-radius: 1rem;
+  font-size: medium;
+}
+
+.note-weather-image {
+  position: relative;
+  margin-top: -2rem;
+  margin-bottom: auto;
+  margin-left: 0%;
 }
 .page-btn {
   background-color: #7fffd4;
@@ -127,9 +153,17 @@ footer {
   color: #ffffff;
 }
 .profile-image {
-  border-radius: 2rem;
+  border-radius: 3rem;
   position: relative;
   width: 10rem;
+  height: 5%;
+}
+.profile-form-style {
+  padding-top: 2%;
+  width: 20rem;
+  height: 10rem;
+  background-color: none;
+  font-size: small;
 }
 
 .social-btn-container {
@@ -138,7 +172,16 @@ footer {
   border-style: none;
 }
 
+.top-buttons {
+  position: relative;
+}
+
 .userContent-style {
   position: relative;
   height: 100%;
+}
+.update-btn {
+  position: absolute;
+  margin-top: -5rem;
+  margin-left: -4rem;
 }

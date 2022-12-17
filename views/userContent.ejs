@@ -2,13 +2,15 @@
 
 <div class="userContent-style">
 <% newPage.forEach(function(newPageContent){%>
-    <% if(newPageContent.title == userthing){%>
-    <h1 class="page-entry">
+    <% if(newPageContent.title == userthing || newPageContent == newPageContent[0]){%>
+    <div class="container-fluid">
+    <h1 class="page-entry full-title">
         <%=newPageContent.title%>
     </h1>
-    <p class="page-entry">
+    <p class="page-entry full-body">
         <%=newPageContent.content%>
     </p>
+    </div>
     <%}%>
     <% }) %>
 <div class="back-btn">

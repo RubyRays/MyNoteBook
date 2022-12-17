@@ -78,11 +78,7 @@ const notesSchema = new mongoose.Schema({
 });
 
 const Note = new mongoose.model("Note", notesSchema);
-const editHolderSchema = new mongoose.Schema({
-    title: String,
-    content: String
-})
-const EditHolder = new mongoose.model("EditHolder", editHolderSchema);
+
 
 const noteUserSchema =new mongoose.Schema({
     username: String,
@@ -105,6 +101,7 @@ noteUserSchema.plugin(findOrCreate);
 
 
 const NoteUser = new mongoose.model("NoteUser", noteUserSchema);
+
 
 
 passport.use(NoteUser.createStrategy());
@@ -139,6 +136,8 @@ passport.use(new GoogleStrategy({
         })
     }
 ))
+
+
 
 app.get("/", function(req, res){
     res.render("home");
@@ -254,7 +253,38 @@ app.get("/publicPage",function(req,res){
         res.redirect("/login");
     }    
 });
+//creating a page to show the entries of users
+app.get("/publicContent/:pageTitle", function(req,res){
+    
 
+    //gets the title of the page that is going to be
+    //created after the click --create page
+    const pageEntry = req.params.pageTitle;
+
+    
+    //redirects to the login if the user is not authenticated
+     if(req.isAuthenticated()){
+    
+
+    //search for the record with the same username as the currently logged in user
+    Note.find({},function(err, post){
+    const newPublicContent = post;
+    console.log(post);
+    //renders the publicContent page
+    //the data passed into it is the title of the page that the user is looking for
+    //also the contents of the relavant noteBookContents of the found post     
+    res.render("publicContent",{newPublicContent:newPublicContent, pageEntry: pageEntry});
+
+    
+            
+
+
+    })
+    }else{
+        res.redirect("/login");
+    }
+
+})
 
 //log out page using the logout function
 app.get("/logout", function(req,res){
@@ -266,7 +296,43 @@ app.get("/logout", function(req,res){
     res.redirect("/");
 })
 app.post("/register", function(req, res){
-    
+    let date=data.getDay();
+    let time= data.getTime();
+    const note0 = new Note({
+        title: "User "+req.body.username+" created.",
+        date:date,
+        time:time
+    })
+    note0.save();
+
+    // const note1 = new NoteUser({
+    //     title: "Welcome",
+    //     content: "This is what a note looks like.",
+    //     owner: req.body.username
+    // })
+    // const note2= new NoteUser({
+
+    //     title: "Icons: eraser, pencil, share button",
+    //     content: "The eraser deletes the note directly below, the pencil activates the edit feature and the share button adds or removes the note from the public page",
+    //         owner: req.body.username 
+    // })
+
+    // const note3 =new NoteUser({
+        
+    //     title: "Additional Features",
+    //     content: "The globe above leads to the public page while the profile picture can be changed according to the image uploaded.",
+    //         owner: req.body.username
+    // })
+
+    // const defaultNotes = [note1, note2, note3];
+
+    // NoteUser.noteBookContents.insertMany(defaultNotes, function(err){
+    //     if(err){
+    //         console.log(err);
+    //     }else{
+    //         console.log("sucessfully added default notes");
+    //     }
+    // })
     //looking for a way to trap the current username and values hopefully it is here
     //this is the place where the user is authenitcated
     NoteUser.register({username:req.body.username, email:req.body.email, profileImage:{
@@ -324,15 +390,15 @@ app.post("/page", function(req,res){
     const ipinfoApi ="https://ipinfo.io?token="+token;
 function makeCall (ipinfoApi, callback){
     https.get(ipinfoApi, function(response){
-        console.log(response.statusCode);
+        // console.log(response.statusCode);
         response.on("data", function(data){
 
             const ipData= JSON.parse(data);
             const city = ipData.city;
           
-             console.log(city);
+            
              callback(city);
-            // return city;
+            
         })
     })
 }
@@ -362,7 +428,7 @@ function makeCall (ipinfoApi, callback){
         let time= data.getTime();
 
         //creates a new post
-           const post=new Note({
+        const post=new Note({
             title: req.body.title,
             content: req.body.content,
             owner: req.user.username,
@@ -404,7 +470,7 @@ function makeCall (ipinfoApi, callback){
     })
     }
     makeCall(ipinfoApi, function(results){
-        console.log("city: "+results);
+        // console.log("city: "+results);
         handleResults(results);
     })
 

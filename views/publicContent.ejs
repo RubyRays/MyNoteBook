@@ -1,0 +1,20 @@
+<%- include("partials/header"); -%>
+
+    <div class="userContent-style">
+        <% newPublicContent.forEach(function(newPageContent){%>
+            <% if(newPageContent.title==pageEntry || newPageContent==newPageContent[0]){%>
+                <div class="container-fluid">
+                    <h1 class="page-entry full-title">
+                        <%=newPageContent.title%>
+                    </h1>
+                    <p class="page-entry full-body">
+                        <%=newPageContent.content%>
+                    </p>
+                </div>
+                <%}%>
+                    <% }) %>
+                        <div class="back-btn">
+                            <a class="btn btn-light" href="/page" role="button"><i class="fas fa-home"></i></a>
+                        </div>
+    </div>
+    <%- include("partials/footer"); -%>
