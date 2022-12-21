@@ -53,17 +53,21 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+//---------------------------------------------
 // const dbUsername= process.env.DBUSERNAME;
 // const dbPassword= process.env.DBPASSWORD;
 // const cluster =  process.env.CLUSTER;
-
+//--------------------------------------------
 
 mongoose.connect("mongodb://localhost:27017/noteUserDB");
+//-----------------------------------------------------------------------
 // const dbUrl= "mongodb+srv://"+dbUsername+":"+dbPassword+cluster+"/notesAppDB?retryWrites=true&w=majority"
 
 // mongoose.connect(dbUrl).then(()=>{
 //     console.info("Database connected");
 // }).catch(err=> {console.log("Error",err);});
+
+//----------------------------------------------------------------------
 
 const notesSchema = new mongoose.Schema({
     title: String,
@@ -121,6 +125,7 @@ passport.deserializeUser(function(user, cb){
     });
 });
 
+//-----------------Google--------------------------
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET, 
@@ -136,8 +141,7 @@ passport.use(new GoogleStrategy({
         })
     }
 ))
-
-
+//-------------------------------------------------------------------
 
 app.get("/", function(req, res){
     res.render("home");
@@ -164,6 +168,8 @@ app.get("/404",function(req,res){
     res.render("404");
 });
 
+
+//-------------------User page--------------------
 app.get("/page", function(req,res){
     //find the value from that specific user
     //res.render("page", {username: username});
@@ -197,6 +203,8 @@ app.get("/page", function(req,res){
     }    
 
 });
+
+//---------------creating multiple new pages for the users page---------------------------
 //creating a page to show the entries of users
 app.get("/userContent/:pageId", function(req,res){
     
@@ -229,6 +237,8 @@ app.get("/userContent/:pageId", function(req,res){
     }
 
 })
+
+//--------------------Public page------------------------------------
 app.get("/publicPage",function(req,res){
      if(req.isAuthenticated()){
         
@@ -253,6 +263,9 @@ app.get("/publicPage",function(req,res){
         res.redirect("/login");
     }    
 });
+
+
+//----------------Creating multiple new pages for the public page----------------------------------
 //creating a page to show the entries of users
 app.get("/publicContent/:pageTitle", function(req,res){
     
@@ -269,7 +282,7 @@ app.get("/publicContent/:pageTitle", function(req,res){
     //search for the record with the same username as the currently logged in user
     Note.find({},function(err, post){
     const newPublicContent = post;
-    console.log(post);
+    
     //renders the publicContent page
     //the data passed into it is the title of the page that the user is looking for
     //also the contents of the relavant noteBookContents of the found post     
@@ -286,6 +299,8 @@ app.get("/publicContent/:pageTitle", function(req,res){
 
 })
 
+
+//-----------------Login------------------------------------------
 //log out page using the logout function
 app.get("/logout", function(req,res){
     req.logout(function(err){
@@ -295,6 +310,8 @@ app.get("/logout", function(req,res){
     });
     res.redirect("/");
 })
+
+//-----------register----------------------------------------------
 app.post("/register", function(req, res){
     let date=data.getDay();
     let time= data.getTime();
@@ -304,7 +321,7 @@ app.post("/register", function(req, res){
         time:time
     })
     note0.save();
-
+//------------------------------------------------------------------
     // const note1 = new NoteUser({
     //     title: "Welcome",
     //     content: "This is what a note looks like.",
@@ -333,7 +350,7 @@ app.post("/register", function(req, res){
     //         console.log("sucessfully added default notes");
     //     }
     // })
-    //looking for a way to trap the current username and values hopefully it is here
+//----------------------------------------------------------------------------------
     //this is the place where the user is authenitcated
     NoteUser.register({username:req.body.username, email:req.body.email, profileImage:{
                 url: "https://res.cloudinary.com/dbvhtpmx4/image/upload/v1671056080/samples/sheep.jpg",
@@ -373,18 +390,8 @@ app.post("/login", function(req,res){
 
 });
 
-//creates a new notebook post that is then added to the noteBookContents
+//renders the notebook user page
 app.post("/page", function(req,res){
-    // googleApiKey=process.env.GoogleAPIKey;
-    // const googleGpsAPI= "https://www.googleapis.com/geolocation/v1/geolocate?key="
-    // https.get(googleGpsAPI, function(response){
-    //     console.log(response.statusCode);
-
-    //     response.on("data", function(data){
-    //         const locationData = JSON.parse(data);
-    //         const long=locationData.location.lng;
-    //     })
-    // })
     
     token=process.env.IPINFO_TOKEN;
     const ipinfoApi ="https://ipinfo.io?token="+token;
@@ -470,7 +477,7 @@ function makeCall (ipinfoApi, callback){
     })
     }
     makeCall(ipinfoApi, function(results){
-        // console.log("city: "+results);
+        
         handleResults(results);
     })
 
@@ -478,7 +485,7 @@ function makeCall (ipinfoApi, callback){
 
 
  }
-// }
+
 );
 
 
@@ -638,7 +645,8 @@ app.post("/share&unshare", function(req, res){
 
 })
 
-
+//---deals with the profile image upload and only allows one image associated to the user
+//to be stored in the cloudinary notebook folder
 app.post("/profileImg", parser.single("profileImage"), function(req,res){
     const path = req.file.path;
     const filename= req.file.filename;
@@ -662,11 +670,7 @@ app.post("/profileImg", parser.single("profileImage"), function(req,res){
                     }
     )
 
-    //delete the image that is being pointed to at that moment before updating url
-    // cloudinary.uploader.destroy(filename);
 })
-
-
 
 
 
