@@ -15,6 +15,7 @@ const https = require("https");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const e = require('express');
 
 
 
@@ -352,19 +353,49 @@ app.post("/register", function(req, res){
     // })
 //----------------------------------------------------------------------------------
     //this is the place where the user is authenitcated
-    NoteUser.register({username:req.body.username, email:req.body.email, profileImage:{
-                url: "https://res.cloudinary.com/dbvhtpmx4/image/upload/v1671056080/samples/sheep.jpg",
-        filename:'samples/sheep',
-    }   }, req.body.password, function(err,user){
-        if(err){
-            console.log(err);
-            res.redirect("/");//if there are errors redirect to home
+    const {password, username,email}= req.body;
+    let errorMessage =[];
+                  NoteUser.findOne({email:email}, function(err){
+                    if(!err){
+                        errorMessage.push({msg:"Email already used"});
+                    }
+                  })
+        if(errorMessage.length > 0){
+            res.render('register', (errorMessage, username, email));
+            console.log(errorMessage);
         }else{
-            passport.authenticate("local")(req, res, function(){
-                res.redirect("/page");//redirect to the page
-            })
-        }
-    })
+            NoteUser.findOne({username: username})
+                .then(user=>{
+                    if(user){
+                    errorMessage.push({msg: "User exsists"});
+                    res.render("register", {errorMessage, username,email,password })
+                    }
+                })
+            }
+            if(password.length <8){
+                errorMessage.push({msg:"Password needs to be atleast 8 characters"});
+            }
+        
+
+        if(errorMessage.length == 0){
+        NoteUser.register({username:req.body.username, email:req.body.email, profileImage:{
+                    url: "https://res.cloudinary.com/dbvhtpmx4/image/upload/v1671056080/samples/sheep.jpg",
+            filename:'samples/sheep',
+        }   },
+        
+        req.body.password, function(err,user){
+            if(err){
+                console.log(err);
+                
+                res.redirect("/register");//if there are errors redirect to home
+            }else{
+                passport.authenticate("local")(req, res, function(){
+                    res.redirect("/page");//redirect to the page
+                })
+            }
+        })
+    
+    }
 });  
 
 //login page that takes in the information input by the user and 
