@@ -464,9 +464,7 @@ async function sendMail(){
     //this is the place where the user is authenitcated
     const {password, username,email}= req.body;
     let errorMessage =[];
-    sendMail()
-        .then((result)=> console.log(result))
-        .catch((error)=> console.log(error));
+
     NoteUser.findOne({email:email}, function(err){
         if(!err){
             errorMessage.push({msg:"Email already used"});
@@ -474,7 +472,7 @@ async function sendMail(){
         })
     if(errorMessage.length > 0){
         res.render('register', (errorMessage, username, email));
-        console.log(errorMessage);
+        
     }else{
         NoteUser.findOne({username: username})
             .then(user=>{
@@ -502,9 +500,11 @@ async function sendMail(){
             req.body.password, function(err,user){
             if(err){
                 console.log(err);
-                
                 res.redirect("/register");//if there are errors redirect to home
-            }else{
+            }else{    
+                sendMail()
+                .then((result)=> console.log(result))
+                .catch((error)=> console.log(error));
                 passport.authenticate("local")(req, res, function(){
                     res.redirect("/page");//redirect to the page
                 })
@@ -519,7 +519,7 @@ async function sendMail(){
 app.post("/login", function(req,res){
    const user = new NoteUser({
     username: req.body.username,
-    email:req.body.email,
+    // email:req.body.email,
     password: req.body.password,
  
    });
