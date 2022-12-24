@@ -768,20 +768,38 @@ app.post("/share&unshare", function(req, res) {
                     function(err){
                         if(err){
                             console.log(err);
-                        }else{
-                            res.redirect("/page")
                         }
                     }
-            ) 
-            }else{
-                Note.updateOne(
-                    {_id: toShare},
-                    {$set: {"shared": "false"}},
+            )
+                NoteUser.updateOne(
+                    {_id: req.user.id, "noteBookContents": {"$elemMatch":{"_id": toShare}}},
+                    {$set: {"noteBookContents.$.shared": "true"}},
                     function(err){
                         if(err){
                             console.log(err);
                         }else{
-                            res.redirect("/page")
+                            res.redirect("/page");
+                        }
+                    }
+                )
+            }else{
+                Note.updateOne(
+                    {_id:toShare},
+                    {$set: {"shared": "false"}},
+                    function(err){
+                        if(err){
+                            console.log(err);
+                        }
+                    }
+                )
+                NoteUser.updateOne(
+                    {_id: req.user.id, "noteBookContents": {"$elemMatch":{"_id": toShare}}},
+                    {$set: {"noteBookContents.$.shared": "false"}},
+                    function(err){
+                        if(err){
+                            console.log(err);
+                        }else{
+                            res.redirect("/page");
                         }
                     }
                 )               

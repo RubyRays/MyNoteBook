@@ -178,6 +178,12 @@ footer {
   border-style: none;
   margin-top: 0.4rem;
 }
+.share-true {
+  color: green;
+}
+.share-false {
+  color: grey;
+}
 
 .top-buttons {
   position: relative;

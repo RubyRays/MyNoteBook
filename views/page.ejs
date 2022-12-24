@@ -39,7 +39,7 @@
             </form>
             <!-- share button to toggle the shared post -->
             <form action="/share&unshare" method="POST" class="icon-style-form">
-                <button type="submit" class="edit-btn action-btn " name="share" value="<%=newContent._id %>" alt="share"><i class="fa-regular fa-share-from-square"></i></button>
+                <button type="submit" class="edit-btn action-btn share-<%=newContent.shared%>" name="share" value="<%=newContent._id %>" alt="share"><i class="fa-regular fa-share-from-square"></i></button>
             </form>
             </div>
 
