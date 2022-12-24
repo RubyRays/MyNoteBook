@@ -16,8 +16,13 @@ const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const e = require('express');
-
-
+const nodemailer = require("nodemailer");
+const {google} = require ("googleapis");
+const { OAuth2Client } = require('google-auth-library');
+const OAuth2 = google.auth.OAuth2
+// const OAuth2_client = new OA
+const oAuth2Client= new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI)
+oAuth2Client.setCredentials({refresh_token: process.env.REFRESH_TOKEN})
 
 const app = express();
 
@@ -42,6 +47,7 @@ const storage = new CloudinaryStorage({
 });
 
 const parser = multer({storage:storage});
+
 
 
 app.use(session({
@@ -87,7 +93,8 @@ const Note = new mongoose.model("Note", notesSchema);
 
 const noteUserSchema =new mongoose.Schema({
     username: String,
-    email: String,
+    email: {type: String, unique: true},
+    isVerified: {type: Boolean, default: false},
     password: String,
     noteBookContents: [notesSchema],
     googleId: String,
@@ -142,7 +149,7 @@ passport.use(new GoogleStrategy({
         })
     }
 ))
-//-------------------------------------------------------------------
+
 
 app.get("/", function(req, res){
     res.render("home");
@@ -217,16 +224,16 @@ app.get("/userContent/:pageId", function(req,res){
     
     //redirects to the login if the user is not authenticated
      if(req.isAuthenticated()){
-    const theUser = req.user.username;
+        const theUser = req.user.username;
 
-    //search for the record with the same username as the currently logged in user
-    NoteUser.findOne({"username": theUser},function(err, post){
-    const newPage = post.noteBookContents;
+        //search for the record with the same username as the currently logged in user
+        NoteUser.findOne({"username": theUser},function(err, post){
+        const newPage = post.noteBookContents;
     
-    //renders the userContent page
-    //the data passed into it is the title of the page that the user is looking for
-    //also the contents of the relavant noteBookContents of the found post     
-    res.render("userContent",{newPage:newPage, userthing: pageEntry});
+        //renders the userContent page
+        //the data passed into it is the title of the page that the user is looking for
+        //also the contents of the relavant noteBookContents of the found post     
+        res.render("userContent",{newPage:newPage, userthing: pageEntry});
 
 
             
@@ -280,20 +287,20 @@ app.get("/publicContent/:pageTitle", function(req,res){
      if(req.isAuthenticated()){
     
 
-    //search for the record with the same username as the currently logged in user
-    Note.find({},function(err, post){
-    const newPublicContent = post;
-    
-    //renders the publicContent page
-    //the data passed into it is the title of the page that the user is looking for
-    //also the contents of the relavant noteBookContents of the found post     
-    res.render("publicContent",{newPublicContent:newPublicContent, pageEntry: pageEntry});
+        //search for the record with the same username as the currently logged in user
+        Note.find({},function(err, post){
+        const newPublicContent = post;
+        
+        //renders the publicContent page
+        //the data passed into it is the title of the page that the user is looking for
+        //also the contents of the relavant noteBookContents of the found post     
+        res.render("publicContent",{newPublicContent:newPublicContent, pageEntry: pageEntry});
 
-    
-            
+        
+                
 
 
-    })
+        })
     }else{
         res.redirect("/login");
     }
@@ -312,7 +319,7 @@ app.get("/logout", function(req,res){
     res.redirect("/");
 })
 
-//-----------register----------------------------------------------
+//-----------REGISTER----------------------------------------------
 app.post("/register", function(req, res){
     let date=data.getDay();
     let time= data.getTime();
@@ -322,7 +329,7 @@ app.post("/register", function(req, res){
         time:time
     })
     note0.save();
-//------------------------------------------------------------------
+
     // const note1 = new NoteUser({
     //     title: "Welcome",
     //     content: "This is what a note looks like.",
@@ -352,38 +359,90 @@ app.post("/register", function(req, res){
     //     }
     // })
 //----------------------------------------------------------------------------------
+//------------------------------------------------------------------
+//NODEMAILER
+async function sendMail(){
+    try{
+        const accessToken = await oAuth2Client.getAccessToken();
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth:{
+                type: 'OAuth2',
+                user: process.env.MAIL_USERNAME,
+                pass: process.env.MAIL_PASSWORD,
+                clientId: process.env.CLIENT_ID, 
+                clientSecret: process.env.CLIENT_SECRET,
+                refreshToken: process.env.REFRESH_TOKEN,
+                accessToken: accessToken     
+            }
+        })
+
+        const mailOptions={
+            from: 'jereenleblanc.volunteer@rnd4impact.com',
+            to:'jereenleblanc.volunteer@rnd4impact.com',
+            subject: "testing email",
+            text: "This is a test"
+        };
+
+        const result = transporter.sendMail(mailOptions, function(err){
+            if(err){
+                console.log("Error: " + err);
+            }else{
+                console.log("Email sucessful");
+            }
+        })
+        return result;
+    }catch(error){
+        return error;
+    }
+}
+
+
+
+
+
+
+
+//--------------------------------------------------------------------
     //this is the place where the user is authenitcated
     const {password, username,email}= req.body;
     let errorMessage =[];
-                  NoteUser.findOne({email:email}, function(err){
-                    if(!err){
-                        errorMessage.push({msg:"Email already used"});
-                    }
-                  })
-        if(errorMessage.length > 0){
-            res.render('register', (errorMessage, username, email));
-            console.log(errorMessage);
-        }else{
-            NoteUser.findOne({username: username})
-                .then(user=>{
-                    if(user){
+    sendMail()
+        .then((result)=> console.log(result))
+        .catch((error)=> console.log(error),errorMessage.push({msg:"Email failed to send"}));
+    NoteUser.findOne({email:email}, function(err){
+        if(!err){
+            errorMessage.push({msg:"Email already used"});
+             }
+        })
+    if(errorMessage.length > 0){
+        res.render('register', (errorMessage, username, email));
+        console.log(errorMessage);
+    }else{
+        NoteUser.findOne({username: username})
+            .then(user=>{
+                if(user){
                     errorMessage.push({msg: "User exsists"});
                     res.render("register", {errorMessage, username,email,password })
                     }
                 })
             }
-            if(password.length <8){
-                errorMessage.push({msg:"Password needs to be atleast 8 characters"});
+    if(password.length <8){
+        errorMessage.push({msg:"Password needs to be atleast 8 characters"});
             }
         
 
-        if(errorMessage.length == 0){
-        NoteUser.register({username:req.body.username, email:req.body.email, profileImage:{
+    if(errorMessage.length == 0){
+        NoteUser.register({
+            username:req.body.username,
+            email:req.body.email,
+            verificationCode: randomNum,
+            profileImage:{
                     url: "https://res.cloudinary.com/dbvhtpmx4/image/upload/v1671056080/samples/sheep.jpg",
-            filename:'samples/sheep',
-        }   },
-        
-        req.body.password, function(err,user){
+                    filename:'samples/sheep',
+                }   
+            },
+            req.body.password, function(err,user){
             if(err){
                 console.log(err);
                 
@@ -481,20 +540,19 @@ function makeCall (ipinfoApi, callback){
         //saving the information entered into the note document 
         post.save();
         //finds the current user using the user.id provided by the passport package
-        NoteUser.findById(req.user.id,function(err, foundUser){
+        NoteUser.findById(req.user.id,function(err, foundUser) {
             if(err){
                 console.log(err);
             }else{
                 if(foundUser){
-                //looking for the data in the notes collection where the owner name
-                //is the same as the username of the currently logged in user
-                    Note.find({"owner": req.user.username}, function(err, user2){
-                    //console.log(user2);
+                    //looking for the data in the notes collection where the owner name
+                    //is the same as the username of the currently logged in user
+                    Note.find({"owner": req.user.username}, function(err, user2) {
                     
                 
-                //saves the posted contents into the noteBookContents
+                    //saves the posted contents into the noteBookContents
                     foundUser.noteBookContents=user2;
-                //saves the userinfo into noteUser collection and redirects to the page
+                    //saves the userinfo into noteUser collection and redirects to the page
                     foundUser.save(function(){
                         res.redirect("/page");
                 });
@@ -503,11 +561,11 @@ function makeCall (ipinfoApi, callback){
         }
     });
     }
-    makeCall2(weatherUrl, function(results2){
+    makeCall2(weatherUrl, function(results2) {
         handleResults2(results2);
     })
     }
-    makeCall(ipinfoApi, function(results){
+    makeCall(ipinfoApi, function(results) {
         
         handleResults(results);
     })
@@ -525,12 +583,12 @@ app.post("/delete", function(req, res){
     const clickedEntry = req.body.deleteEntry;
 
     if(req.isAuthenticated()){
-    //finds the entry that has the same id as the clicked entry and 
-    //removes it
-    Note.findByIdAndRemove(clickedEntry, function(err){
-        if(!err){
+        //finds the entry that has the same id as the clicked entry and 
+        //removes it
+        Note.findByIdAndRemove(clickedEntry, function(err) {
+            if(!err){
             
-            console.log("Entry Deleted");
+                console.log("Entry Deleted");
             
         }
     });
@@ -562,23 +620,23 @@ app.post("/preEdit", function(req, res){
     const editState = req.body.editEntry;
     //find the state of the entry being clicked and toggle it between edit-mode and normal-mode
  
-        NoteUser.updateOne(
-            {_id: req.user.id, "noteBookContents":{"$elemMatch": {"_id": editState}}},
-            {$set: {"noteBookContents.$.state":"edit-mode"}},
-            function(err){
-                if(err){
-                    console.log(err);
-                }else{
-                    console.log("edit page button pressed");
-                    res.redirect("/page");
-                }
+    NoteUser.updateOne(
+        {_id: req.user.id, "noteBookContents":{"$elemMatch": {"_id": editState}}},
+        {$set: {"noteBookContents.$.state":"edit-mode"}},
+        function(err){
+            if(err){
+                console.log(err);
+            }else{
+                console.log("edit page button pressed");
+                res.redirect("/page");
             }
-        );
-                })
+        }
+    );
+})
 
  
 
-app.post("/edit", function(req,res){
+app.post("/edit", function(req,res) {
     const toEdit = req.body.Edit;
     const title= req.body.title2;
     const content=req.body.content2;
@@ -586,9 +644,9 @@ app.post("/edit", function(req,res){
     //distinguishing things to delete
     // const editedEntry = req.body.Edit;
     // console.log("passed here");
-    if(req.isAuthenticated()){
+    if(req.isAuthenticated()) {
         //updates the title and content of the note
-            Note.updateOne(
+        Note.updateOne(
             {_id: toEdit},
             {$set: {"title":title, "content":content }},
             function(err){
@@ -636,17 +694,17 @@ app.post("/edit", function(req,res){
 
 })
 
-app.post("/share&unshare", function(req, res){
+app.post("/share&unshare", function(req, res) {
     const toShare= req.body.share;
     //finding the entry by its id
-    Note.findById(toShare, function(err, foundNoteEntry){
+    Note.findById(toShare, function(err, foundNoteEntry) {
         if(err){
             console.log(err);
         }else{
             //checking the shared state
             //if the state is false when clicked change it to true
             //otherwise change it to false
-            if(foundNoteEntry.shared === "false"){
+            if(foundNoteEntry.shared === "false") {
                 Note.updateOne(
                     {_id: toShare},
                     {$set: {"shared": "true"}},
@@ -678,9 +736,12 @@ app.post("/share&unshare", function(req, res){
 
 //---deals with the profile image upload and only allows one image associated to the user
 //to be stored in the cloudinary notebook folder
-app.post("/profileImg", parser.single("profileImage"), function(req,res){
+app.post("/profileImg", parser.single("profileImage"), function(req,res) {
+
     const path = req.file.path;
     const filename= req.file.filename;
+
+
     //find the currently referenced image and delete it
     NoteUser.findById(req.user.id, function(err, foundUser){
         if(foundUser.profileImage.filename != 'samples/sheep'){
