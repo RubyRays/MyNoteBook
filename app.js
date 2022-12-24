@@ -95,6 +95,7 @@ const noteUserSchema =new mongoose.Schema({
     username: String,
     email: {type: String, unique: true},
     isVerified: {type: Boolean, default: false},
+    verificationCode: String,
     password: String,
     noteBookContents: [notesSchema],
     googleId: String,
@@ -329,7 +330,18 @@ app.post("/register", function(req, res){
         time:time
     })
     note0.save();
+//-----------------------------------------------------
+function codeGenerator(){
+    let verificationCode= "";
+    for(i=0; i<8; i++){
+        verificationCode+=Math.floor((Math.random()*10)+1)
+    }
+    return verificationCode;
+}
 
+const code = codeGenerator();
+
+//------------------------------------------------------------------
     // const note1 = new NoteUser({
     //     title: "Welcome",
     //     content: "This is what a note looks like.",
@@ -381,7 +393,7 @@ async function sendMail(){
             from: 'jereenleblanc.volunteer@rnd4impact.com',
             to:'jereenleblanc.volunteer@rnd4impact.com',
             subject: "testing email",
-            text: "This is a test"
+            text: "This is the verification code: "+ code
         };
 
         const result = transporter.sendMail(mailOptions, function(err){
@@ -398,18 +410,13 @@ async function sendMail(){
 }
 
 
-
-
-
-
-
 //--------------------------------------------------------------------
     //this is the place where the user is authenitcated
     const {password, username,email}= req.body;
     let errorMessage =[];
     sendMail()
         .then((result)=> console.log(result))
-        .catch((error)=> console.log(error),errorMessage.push({msg:"Email failed to send"}));
+        .catch((error)=> console.log(error));
     NoteUser.findOne({email:email}, function(err){
         if(!err){
             errorMessage.push({msg:"Email already used"});
@@ -436,7 +443,7 @@ async function sendMail(){
         NoteUser.register({
             username:req.body.username,
             email:req.body.email,
-            verificationCode: randomNum,
+            verificationCode: code,
             profileImage:{
                     url: "https://res.cloudinary.com/dbvhtpmx4/image/upload/v1671056080/samples/sheep.jpg",
                     filename:'samples/sheep',
