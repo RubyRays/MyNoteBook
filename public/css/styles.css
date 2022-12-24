@@ -107,7 +107,8 @@ footer {
   margin-bottom: auto;
 }
 .message.txt {
-  font-size: 0.2rem;
+  font-size: 0.1rem;
+  color: blue;
 }
 .note {
   margin-left: -1rem;
@@ -175,6 +176,7 @@ footer {
   background-color: #ffffff;
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
   border-style: none;
+  margin-top: 0.4rem;
 }
 
 .top-buttons {
