@@ -1,0 +1,19 @@
+<%-include('partials/header.ejs')-%>
+
+    <div class="profile-form-style">
+        <form action="/profileImg" method="post" enctype="multipart/form-data">
+            <img src="<%=currentUser.profileImage.url%>" class="profile-image" alt="...">
+            <input type="file" name="profileImage" id="" required>
+            <button type="submit" class="btn btn-light btn-block update-btn">Update</button>
+        </form>
+    </div>
+    <form action="/verifyEmail" method="post">
+        <input type="text" class="form-control text-left" name="verificationCode" placeholder="Enter verification code" required>
+        <%-include('partials/verifyMessage.ejs')-%>
+        <button type="submit" class="btn btn-light btn-block">Submit</button>
+    </form>
+
+<div class="back-btn">
+    <a class="btn btn-light" href="/page" role="button"><i class="fas fa-home"></i></a>
+</div>
+<%- include("partials/footer.ejs")-%>

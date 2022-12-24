@@ -252,8 +252,6 @@ app.get("/publicPage",function(req,res){
      if(req.isAuthenticated()){
         
         
-        const theUser = req.user.username;
-        
         //finding the user related entries by the id of currently logged in user
         Note.find({"shared": {$eq: "true"}}, function(err, publicPosts){
 
@@ -307,9 +305,61 @@ app.get("/publicContent/:pageTitle", function(req,res){
     }
 
 })
+app.get("/settings", function(req, res){
+    if(req.isAuthenticated()){
+
+        //finding the user related entries by the id of currently logged in user
+        NoteUser.findById(req.user.id, function(err, currentUser){
+
+            if(err){
+                console.log(err);
+                
+                        
+            }else{
+                if(currentUser){
+                    //rendering the settings page
+                    res.render("settings", {currentUser:currentUser} );
+                 }
+              }
+           });
+        
+    }else{
+        res.redirect("/login");
+    }    
+})
+
+app.post("/verifyEmail", function(req, res){
+    const status = req.body.verificationCode
+    const userId =req.user.id
+    let verificationMessage=[]
+    NoteUser.findById(userId, function(err, currentUser){
+        if(err){
+            console.log(err);
+        }else{
+            if(status == currentUser.verificationCode){
+                NoteUser.updateOne(
+                    {_id:userId},
+                    {$set:{"isVerified": true}},
+                    function(err){
+                        if(err){
+                            console.log(err);
+                        }else{
+                            verificationMessage.push({msg: "Email has been verified!"});
+                            res.render("settings", {verificationMessage, currentUser:currentUser})
+                        }
+                    }
+                )
 
 
-//-----------------Login------------------------------------------
+            }else{
+                verificationMessage.push({msg: "Verification code not correct"});
+                res.render("settings",{verificationMessage, currentUser:currentUser});
+            }
+        }
+    })
+})
+
+//-----------------Logout------------------------------------------
 //log out page using the logout function
 app.get("/logout", function(req,res){
     req.logout(function(err){
@@ -740,6 +790,9 @@ app.post("/share&unshare", function(req, res) {
     })
 
 })
+
+
+
 
 //---deals with the profile image upload and only allows one image associated to the user
 //to be stored in the cloudinary notebook folder

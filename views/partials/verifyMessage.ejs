@@ -1,0 +1,12 @@
+<% if(typeof verificationMessage !='undefined' ) { %>
+    <% verificationMessage.forEach(function(status) {%>
+
+        <div class="alert  alert-dismissible fade show" role="alert">
+            <p className="text-warning message-txt">
+                <%= status.msg %>
+        </div>
+        <%})%>
+
+
+
+            <%}%>

@@ -1,12 +1,6 @@
 <%-include('partials/header.ejs')-%>
-    
-    <div class="profile-form-style" >
-    <form action="/profileImg" method="post" enctype="multipart/form-data">
-         <img src="<%=userContent.profileImage.url%>" class="profile-image" alt="...">
-         <input type="file" name="profileImage" id="" required>
-         <button type="submit" class="btn btn-light btn-block update-btn">Update</button>
-    </form>
-    </div>
+    <p><a class="btn btn-light" href="/settings" role="button"><i class="fa-solid fa-gear">Settings</i></a></p>
+    <img src="<%=userContent.profileImage.url%>" class="profile-image" alt="...">
     <h1>Hi <%=userthing%>, are you ready to start your notebook?</h1>
     <div class="top-buttons">
    <p >
