@@ -85,6 +85,7 @@ const notesSchema = new mongoose.Schema({
     time: String,
     imageURL: String,
     shared: String,
+    deleted: String
 
 });
 
@@ -142,7 +143,7 @@ passport.use(new GoogleStrategy({
     userProfileURL:"https://www.googleapis.com/oauth2/v3/userinfo"
 },
     function(accessToken, refreshToken, profile, cb){
-        NoteUser.findOrCreate({googleId: profile.id, username: "User#"+profile.id,     profileImage:{
+        NoteUser.findOrCreate({googleId: profile.id, username: profile.displayName,     profileImage:{
         url: "https://res.cloudinary.com/dbvhtpmx4/image/upload/v1671056080/samples/sheep.jpg",
         filename:'samples/sheep' ,
     }   }, function(err, user){
@@ -212,6 +213,20 @@ app.get("/page", function(req,res){
     }    
 
 });
+app.get("/trashBin", function(req,res) {
+    if(req.isAuthenticated()) {
+        Note.find({"owner": req.user.username, "deleted": "true"}, function(err, foundNoteEntry) {
+            if(err){
+                console.log(err);
+            }else{
+                console.log(foundNoteEntry);
+                res.render("trashBin", {foundNoteEntry:foundNoteEntry})
+            }
+        })
+    }else{
+        res.redirect("/login");
+    }
+})
 
 //---------------creating multiple new pages for the users page---------------------------
 //creating a page to show the entries of users
@@ -359,6 +374,7 @@ app.post("/verifyEmail", function(req, res){
     })
 })
 
+
 //-----------------Logout------------------------------------------
 //log out page using the logout function
 app.get("/logout", function(req,res){
@@ -440,8 +456,8 @@ async function sendMail(){
         })
 
         const mailOptions={
-            from: 'jereenleblanc.volunteer@rnd4impact.com',
-            to:'jereenleblanc.volunteer@rnd4impact.com',
+            from: process.env.MAIL_USERNAME,
+            to: req.body.email,
             subject: "testing email",
             text: "This is the verification code: "+ code
         };
@@ -640,15 +656,24 @@ app.post("/delete", function(req, res){
     const clickedEntry = req.body.deleteEntry;
 
     if(req.isAuthenticated()){
-        //finds the entry that has the same id as the clicked entry and 
-        //removes it
-        Note.findByIdAndRemove(clickedEntry, function(err) {
-            if(!err){
+    //     //finds the entry that has the same id as the clicked entry and 
+    //     //removes it
+    //     Note.findByIdAndRemove(clickedEntry, function(err) {
+    //         if(!err){
             
-                console.log("Entry Deleted");
+    //             console.log("Entry Deleted");
             
+    //     }
+    // });
+    Note.updateOne(
+        {_id: clickedEntry},
+        {$set: {"deleted": "true"}},
+        function(err) {
+            if(err) {
+                console.log(err);
+            }
         }
-    });
+        )
     //Finds the entry with the id of the currently logged in user
     //looks at the notebookContents array and finds the id inside that 
     //corresponds to the clickedEntry (the delete button that corresponds to the entry)
@@ -673,6 +698,61 @@ app.post("/delete", function(req, res){
 
     
 })
+
+app.post("/deletePermanent", function(req, res) {
+    const toDelete = req.body.deleteEntry;
+
+    if(req.isAuthenticated()) {
+        Note.findByIdAndRemove(toDelete, function(err) {
+            if(!err){
+                console.log("Entry Deleted Permanently");
+                res.redirect("/trashBin");
+            }
+        })
+    }else{
+        res.redirect("/login");
+    }
+})
+
+app.post("/salvage-data", function(req, res) {
+    const fix = req.body.salvage;
+    if(req.isAuthenticated()){
+            Note.updateOne(
+                {_id: fix},
+                {$set: {"deleted": "false"}},
+                function(err) {
+                    if(err) {
+                        console.log(err);
+                    }
+                }
+            )        
+
+            NoteUser.findById(req.user.id, function(err, foundUser) {
+                if(err){
+                    console.log(err);
+                } else {
+                    if(foundUser){
+                       Note.findById(fix, function(err, foundNoteEntry) {
+                            foundUser.noteBookContents=foundNoteEntry;
+                            foundUser.save(function() {
+                                res.redirect("/trashBin");
+                            })
+                       })
+                    }
+                }
+            })
+
+        
+    }else{
+        res.redirect("/login");
+    }
+})
+
+
+
+
+
+
 app.post("/preEdit", function(req, res){
     const editState = req.body.editEntry;
     //find the state of the entry being clicked and toggle it between edit-mode and normal-mode

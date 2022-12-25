@@ -1,0 +1,41 @@
+<%-include('partials/header.ejs')-%>
+<h1>Trash Bin</h1>
+<!-- add the deleted entries or the ones that are marked delete on note -->
+<% foundNoteEntry.reverse().forEach(function(deletedContent) { %>
+            <form action="/deletePermanent" method="POST" class="icon-style-form">
+                <button type="submit" class="delete-btn action-btn" name="deleteEntry" value="<%= deletedContent._id %>" alt="permanent delete">
+                    <i class="fa-solid fa-eraser fa-xl"></i></button>
+            </form>
+            <form action="/salvage-data" method="POST" class="icon-style-form">
+                <button type="submit" class="salvage-btn action-btn" name="salvage" value="<%=deletedContent.id %>" alt="resubmit entry data">
+                    <i class="fa-solid fa-wrench fa-xl"></i>
+                </button>
+            </form>
+            
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-10 col-md-10 col-sm-10 note">
+                            <h1 class="note-heading">
+                                <%=deletedContent.title.substring(0,20) + "..." %> <span class="date-style">
+                                        <%=deletedContent.date%>
+                                            <%=deletedContent.time%>
+                                    </span>
+                            </h1>
+                            <p class="note-body">
+                                <%=deletedContent.content.substring(0,100) + "..." %>
+                            </p>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 ">
+                            <p><img src="<%= deletedContent.imageURL%>" class="note-weather-image" alt="weather icon"></p>
+                        </div>
+                    </div>
+                </div>
+<%})%>
+
+ <div class="back-btn">
+    <a class="btn btn-light" href="/page" role="button"><i class="fas fa-home"></i></a>
+</div>
+
+
+
+<%- include("partials/footer.ejs")-%>
