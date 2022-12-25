@@ -199,10 +199,12 @@ app.get("/page", function(req,res){
                         
             }else{
                 if(foundUsers){
+                    
                     //console.log("These are the found users: "+ foundUsers + "THE END ")
                     //rendering the info got back from the ejs and the username where 
                      //needed on screen
                      //passing in the found data
+                    
                     res.render("page", {userContent:foundUsers, userthing: theUser } );
                  }
               }
@@ -456,7 +458,7 @@ async function sendMail(){
         })
 
         const mailOptions={
-            from: process.env.MAIL_USERNAME,
+            from: "jereenleblanc.volunteer@rnd4impact.com",
             to: req.body.email,
             subject: "testing email",
             text: "This is the verification code: "+ code
@@ -558,19 +560,19 @@ app.post("/page", function(req,res){
     
     token=process.env.IPINFO_TOKEN;
     const ipinfoApi ="https://ipinfo.io?token="+token;
-function makeCall (ipinfoApi, callback){
-    https.get(ipinfoApi, function(response){
-        // console.log(response.statusCode);
-        response.on("data", function(data){
+    function makeCall (ipinfoApi, callback){
+        https.get(ipinfoApi, function(response){
+            // console.log(response.statusCode);
+            response.on("data", function(data){
 
-            const ipData= JSON.parse(data);
-            const city = ipData.city;
-          
+                const ipData= JSON.parse(data);
+                const city = ipData.city;
             
-             callback(city);
-            
+                
+                callback(city);
+                
+            })
         })
-    })
 }
         function handleResults(results){
             const query= results;
@@ -596,7 +598,7 @@ function makeCall (ipinfoApi, callback){
     function handleResults2(results2){
         let date=data.getDay();
         let time= data.getTime();
-
+        if(req.body != null){
         //creates a new post
         const post=new Note({
             title: req.body.title,
@@ -612,6 +614,7 @@ function makeCall (ipinfoApi, callback){
     
         //saving the information entered into the note document 
         post.save();
+    }
         //finds the current user using the user.id provided by the passport package
         NoteUser.findById(req.user.id,function(err, foundUser) {
             if(err){
@@ -620,7 +623,7 @@ function makeCall (ipinfoApi, callback){
                 if(foundUser){
                     //looking for the data in the notes collection where the owner name
                     //is the same as the username of the currently logged in user
-                    Note.find({"owner": req.user.username}, function(err, user2) {
+                    Note.find({"owner": req.user.username, "deleted":{$ne:"true"}}, function(err, user2) {
                     
                 
                     //saves the posted contents into the noteBookContents
@@ -691,6 +694,7 @@ app.post("/delete", function(req, res){
             }
          }
         );
+        
     }else{
         res.redirect("/login");
     }
@@ -703,7 +707,7 @@ app.post("/deletePermanent", function(req, res) {
     const toDelete = req.body.deleteEntry;
 
     if(req.isAuthenticated()) {
-        Note.findByIdAndRemove(toDelete, function(err) {
+        Note.findByIdAndUpdate(toDelete, function(err) {
             if(!err){
                 console.log("Entry Deleted Permanently");
                 res.redirect("/trashBin");
