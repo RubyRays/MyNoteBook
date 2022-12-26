@@ -730,21 +730,8 @@ app.post("/salvage-data", function(req, res) {
                     }
                 }
             )        
+                res.redirect("/trashBin");
 
-            NoteUser.findById(req.user.id, function(err, foundUser) {
-                if(err){
-                    console.log(err);
-                } else {
-                    if(foundUser){
-                       Note.findById(fix, function(err, foundNoteEntry) {
-                            foundUser.noteBookContents=foundNoteEntry;
-                            foundUser.save(function() {
-                                res.redirect("/trashBin");
-                            })
-                       })
-                    }
-                }
-            })
 
         
     }else{
