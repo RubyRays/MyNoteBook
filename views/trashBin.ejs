@@ -7,7 +7,7 @@
                     <i class="fa-solid fa-eraser fa-xl"></i></button>
             </form>
             <form action="/salvage-data" method="POST" class="icon-style-form">
-                <button type="submit" class="salvage-btn action-btn" name="salvage" value="<%=deletedContent.id %>" alt="resubmit entry data">
+                <button type="submit" class="salvage-btn action-btn" name="salvage" value="<%=deletedContent._id %>" alt="resubmit entry data">
                     <i class="fa-solid fa-wrench fa-xl"></i>
                 </button>
             </form>
@@ -32,9 +32,12 @@
                 </div>
 <%})%>
 
- <div class="back-btn">
+  <div class="back-btn">
     <a class="btn btn-light" href="/page" role="button"><i class="fas fa-home"></i></a>
-</div>
+    
+</div>   
+
+
 
 
 

@@ -270,7 +270,7 @@ app.get("/publicPage",function(req,res){
         
         
         //finding the user related entries by the id of currently logged in user
-        Note.find({"shared": {$eq: "true"}}, function(err, publicPosts){
+        Note.find({"shared": {$eq: "true"}, "deleted":{$ne: "true"}}, function(err, publicPosts){
 
             if(err){
                 console.log(err);
@@ -397,7 +397,7 @@ app.post("/register", function(req, res){
         date:date,
         time:time
     })
-    note0.save();
+    
 //-----------------------------------------------------
 function codeGenerator(){
     let verificationCode= "";
@@ -523,6 +523,7 @@ async function sendMail(){
                 sendMail()
                 .then((result)=> console.log(result))
                 .catch((error)=> console.log(error));
+                note0.save();
                 passport.authenticate("local")(req, res, function(){
                     res.redirect("/page");//redirect to the page
                 })
@@ -707,7 +708,7 @@ app.post("/deletePermanent", function(req, res) {
     const toDelete = req.body.deleteEntry;
 
     if(req.isAuthenticated()) {
-        Note.findByIdAndUpdate(toDelete, function(err) {
+        Note.findByIdAndRemove(toDelete, function(err) {
             if(!err){
                 console.log("Entry Deleted Permanently");
                 res.redirect("/trashBin");
