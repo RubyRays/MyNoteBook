@@ -183,33 +183,33 @@ app.get("/404",function(req,res){
 app.get("/page", function(req,res){
     //find the value from that specific user
     //res.render("page", {username: username});
-    
-   
+
     if(req.isAuthenticated()){
-        
+       
         
         const theUser = req.user.username;
-        
-        //finding the user related entries by the id of currently logged in user
-        NoteUser.findById(req.user.id, function(err, foundUsers){
-
+          //finds the current user using the user.id provided by the passport package
+        NoteUser.findById(req.user.id,function(err, foundUser) {
             if(err){
                 console.log(err);
-                
-                        
             }else{
-                if(foundUsers){
+                if(foundUser){
+                    //looking for the data in the notes collection where the owner name
+                    //is the same as the username of the currently logged in user
+                    Note.find({"owner": req.user.username, "deleted":{$ne:"true"}}, function(err, user2) {
                     
-                    //console.log("These are the found users: "+ foundUsers + "THE END ")
-                    //rendering the info got back from the ejs and the username where 
-                     //needed on screen
-                     //passing in the found data
-                    
-                    res.render("page", {userContent:foundUsers, userthing: theUser } );
-                 }
-              }
-           });
-        
+                
+                    //saves the posted contents into the noteBookContents
+                    foundUser.noteBookContents=user2;
+                    //saves the userinfo into noteUser collection and redirects to the page
+                    foundUser.save(function(){
+                        res.render("page", {userContent: foundUser, userthing: theUser});
+                    })
+            })
+            }
+        }
+    });
+
     }else{
         res.redirect("/login");
     }    
@@ -221,7 +221,7 @@ app.get("/trashBin", function(req,res) {
             if(err){
                 console.log(err);
             }else{
-                console.log(foundNoteEntry);
+                // console.log(foundNoteEntry);
                 res.render("trashBin", {foundNoteEntry:foundNoteEntry})
             }
         })
@@ -492,14 +492,16 @@ async function sendMail(){
         res.render('register', (errorMessage, username, email));
         
     }else{
-        NoteUser.findOne({username: username})
-            .then(user=>{
-                if(user){
+        NoteUser.findOne({username: username}, function(err){
+            if(err == 'UserExistsError'){
+                console.log("error is here");
+            }else{
                     errorMessage.push({msg: "User exsists"});
                     res.render("register", {errorMessage, username,email,password })
-                    }
-                })
             }
+        })
+    }
+
     if(password.length <8){
         errorMessage.push({msg:"Password needs to be atleast 8 characters"});
             }
@@ -616,28 +618,10 @@ app.post("/page", function(req,res){
         //saving the information entered into the note document 
         post.save();
     }
-        //finds the current user using the user.id provided by the passport package
-        NoteUser.findById(req.user.id,function(err, foundUser) {
-            if(err){
-                console.log(err);
-            }else{
-                if(foundUser){
-                    //looking for the data in the notes collection where the owner name
-                    //is the same as the username of the currently logged in user
-                    Note.find({"owner": req.user.username, "deleted":{$ne:"true"}}, function(err, user2) {
-                    
-                
-                    //saves the posted contents into the noteBookContents
-                    foundUser.noteBookContents=user2;
-                    //saves the userinfo into noteUser collection and redirects to the page
-                    foundUser.save(function(){
-                        res.redirect("/page");
-                });
-            })
-            }
-        }
-    });
-    }
+
+        res.redirect("/page");
+
+     }
     makeCall2(weatherUrl, function(results2) {
         handleResults2(results2);
     })
