@@ -3,12 +3,12 @@
     <img src="<%=userContent.profileImage.url%>" class="profile-image" alt="...">
     <h1>Hi <%=userthing%>, are you ready to start your notebook?</h1>
     <div class="top-buttons">
-   <p >
-    <a class="btn btn-light" href="/publicPage" role="button"><i class="fa-sharp fa-solid fa-globe fa-xl"></i></a>
-    <a class="btn btn-light" href="/trashBin" role="button"><i class="fa-solid fa-trash"></i></a>
-    <a class="btn btn-light" href="/logout" role="button">Log Out</a>
-    </p>
-</div>   
+        <p>
+            <a class="btn btn-light" href="/publicPage" role="button"><i class="fa-sharp fa-solid fa-globe fa-xl"></i></a>
+            <a class="btn btn-light" href="/trashBin" role="button"><i class="fa-solid fa-trash"></i></a>
+            <a class="btn btn-light" href="/logout" role="button">Log Out</a>
+        </p>
+    </div>   
 
     <form action="/page" method="POST" >
     
@@ -46,30 +46,31 @@
 
             <!-- displays the users entry -->
             <div class="container-fluid">
-            <div class="row">
-            <div class="col-lg-10 col-md-10 col-sm-10 note">
-            <h1 class="note-heading"><%=newContent.title.substring(0,20) + "..."%> <span class="date-style"><%=newContent.date%> <%=newContent.time%></span></h1>
-            <p class="note-body"><%=newContent.content.substring(0,100) + "..."%></p>
-            </div>
-            <div class="col-lg-2 col-md-2 col-sm-2 ">
-            <p><img src="<%= newContent.imageURL%>" class="note-weather-image" alt="weather icon"></p>
-            </div>
-            </div>
+                <div class="row">
+                    <div class="col-lg-10 col-md-10 col-sm-10 note">
+                        <h1 class="note-heading"><%=newContent.title.substring(0,20) + "..."%> <span class="date-style"><%=newContent.date%> <%=newContent.time%></span></h1>
+                        <p class="note-body"><%=newContent.content.substring(0,100) + "..."%></p>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 ">
+                        <p><img src="<%= newContent.imageURL%>" class="note-weather-image" alt="weather icon"></p>
+                    </div>
+                </div>
             </div>
             <!-- button that takes the user to the page with the rest of the entry -->
             <button class="page-btn"><a href="/userContent/<%=newContent._id%>">Go to page</a></button>
          
             <h2>---</h2>
                 <!-- edit form that changes state to not editing and disappears after the edit is made -->
-                <form action="/edit" method="POST" class="icon-style-form ">
+            <form action="/edit" method="POST">
                 <!-- the class waits for the value of the state to change and the corresponding style is added-->
                 <div class="form-group <%=newContent.state%>">
-                <input type="text" class="form-control text-left" name="title2" value="<%=newContent.title%>" placeholder="Title" required>
-                <textarea class="form-control" name="content2" rows="5" cols="30" placeholder="Contents" required><%=newContent.content%></textarea>
-                <button type="submit" class="btn btn-light prettyBtn" name="Edit" value="<%= newContent._id %>">edit Page</button>
-                <h2>---</h2>
+                    <input type="text" class="form-control text-left" name="title2" value="<%=newContent.title%>" placeholder="Title" required>
+                    <textarea class="form-control" name="content2" rows="5" cols="30" placeholder="Contents" required><%=newContent.content%></textarea>
+                    <button type="submit" class="btn btn-light prettyBtn" name="Edit" value="<%= newContent._id %>">edit Page</button>
+                    <h2>---</h2>
+                </div>
             </form>
-            </div>
+            
             
     <% }) %> 
 

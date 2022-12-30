@@ -10,8 +10,10 @@
         <!-- if the username is found then generate a random number at the end -->
         <input type="text" name="username" class="form-control top" id="floatingInput" placeholder="User Name" value="<%= typeof username !='undefined' ? username:''%>" required
             autofocus>
-        <input type="email" name="email" class="form-control bottom" id="floatingPassword1" placeholder="Email" value="<%= typeof  email !='undefined' ?email: ''%>" required>
-        <input type="password" name="password" class="form-control bottom" id="floatingPassword2" placeholder="password" value="<% typeof password != 'undefined' ? email : ''%>" required>
+        <input type="email" name="email" class="form-control bottom" id="email" placeholder="Email" value="<%= typeof  email !='undefined' ?email: ''%>" required>
+        <input type="password" name="password" class="form-control bottom" id="floatingPassword" placeholder="password" value="<% typeof password != 'undefined' ? password : ''%>" required>
+        <!-- <input type="password" name="password2" class="form-control bottom" id="floatingPassword2" placeholder="Confirm password" value="<% typeof password2 != 'undefined' ? password2 : ''%>" required> -->
+
          <%-include('partials/errorMessage.ejs')-%>
 
         <button class="w-100 btn btn-primary" type="submit">Register</button>

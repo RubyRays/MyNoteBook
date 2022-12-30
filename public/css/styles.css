@@ -43,6 +43,9 @@ footer {
   margin-top: 1rem;
   padding-top: 3rem;
 }
+.code_form {
+  padding-top: 4rem;
+}
 
 .delete-btn :hover {
   color: #bc2d1a;
@@ -84,7 +87,7 @@ footer {
 }
 
 .edit-mode {
-  background-color: none;
+  width: 100%;
 }
 .normal-mode {
   visibility: hidden;
@@ -170,6 +173,9 @@ footer {
   height: 10rem;
   background-color: none;
   font-size: small;
+}
+.public-style {
+  margin-top: 2rem;
 }
 
 .social-btn-container {

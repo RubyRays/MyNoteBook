@@ -60,6 +60,22 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// app.use(async (req, res, next)=> {
+//     const error = new Error("Not found");
+//     error.status = 404;
+//     next(error);
+// })
+
+
+app.use((error, req, res, next)=>{
+    res.status(error.status);
+    res.json({
+        error:{
+            message: error.message
+        }
+    });
+});
+
 //---------------------------------------------
 // const dbUsername= process.env.DBUSERNAME;
 // const dbPassword= process.env.DBPASSWORD;
@@ -75,6 +91,15 @@ mongoose.connect("mongodb://localhost:27017/noteUserDB");
 // }).catch(err=> {console.log("Error",err);});
 
 //----------------------------------------------------------------------
+const reviewSchema = new mongoose.Schema({
+    content: String, 
+    likes: Number,
+    dislikes: Number,
+    author: String, 
+    target: {type: String, default: "here"}
+})
+
+const Review= new mongoose.model("Review", reviewSchema);
 
 const notesSchema = new mongoose.Schema({
     title: String,
@@ -85,7 +110,8 @@ const notesSchema = new mongoose.Schema({
     time: String,
     imageURL: String,
     shared: String,
-    deleted: String
+    deleted: String,
+    reviews: [reviewSchema]
 
 });
 
@@ -298,30 +324,70 @@ app.get("/publicContent/:pageTitle", function(req,res){
     //created after the click --create page
     const pageEntry = req.params.pageTitle;
 
-    
+    console.log(pageEntry);
     //redirects to the login if the user is not authenticated
      if(req.isAuthenticated()){
-    
+        Note.findById(pageEntry, function(err, foundEntry){
+            if(err){
+                console.log(err);
+            }else{
+                if(foundEntry){
+                   Review.find({"target":pageEntry}, function(err, foundReview){
+                    if(!err){
+                        
+                        foundEntry.reviews= foundReview;
+                        
+                        foundEntry.save(function(){
+                        //search for all records 
+                        Note.find({},function(err, post){
+                        const newPublicContent = post;
+                        
+                        //renders the publicContent page
+                        //the data passed into it is the title of the page that the user is looking for
+                        //also the contents of the relavant noteBookContents of the found post     
+                        res.render("publicContent",{newPublicContent:newPublicContent, pageEntry: pageEntry});
 
-        //search for the record with the same username as the currently logged in user
-        Note.find({},function(err, post){
-        const newPublicContent = post;
-        
-        //renders the publicContent page
-        //the data passed into it is the title of the page that the user is looking for
-        //also the contents of the relavant noteBookContents of the found post     
-        res.render("publicContent",{newPublicContent:newPublicContent, pageEntry: pageEntry});
+                        })    
+                           
+                        });                        
+                    }
 
-        
-                
-
-
+                   })
+                }
+            }
         })
+
+
     }else{
         res.redirect("/login");
     }
 
 })
+app.post("/review", function(req, res){
+    const pageEntry = req.body.reviewContent;
+    const content=req.body.content;
+     console.log("afadfa");
+    //redirects to the login if the user is not authenticated
+     if(req.isAuthenticated()){
+             
+    if(req.body != null){
+
+    const review = new Review({
+        content: content,
+        target:pageEntry 
+    });
+    review.save();
+}
+
+        res.redirect("/publicContent/"+pageEntry);
+    }else{
+        res.redirect("/login");
+    }
+
+})
+
+
+
 app.get("/settings", function(req, res){
     if(req.isAuthenticated()){
 
@@ -344,6 +410,28 @@ app.get("/settings", function(req, res){
         res.redirect("/login");
     }    
 })
+app.get("/verificationPage", function(req, res){
+    if(req.isAuthenticated()){
+
+        //finding the user related entries by the id of currently logged in user
+        NoteUser.findById(req.user.id, function(err, currentUser){
+
+            if(err){
+                console.log(err);
+                
+                        
+            }else{
+                if(currentUser){
+                    //rendering the settings page
+                    res.render("verificationPage", {currentUser:currentUser} );
+                 }
+              }
+           });
+        
+    }else{
+        res.redirect("/login");
+    }        
+})
 
 app.post("/verifyEmail", function(req, res){
     const status = req.body.verificationCode
@@ -362,7 +450,8 @@ app.post("/verifyEmail", function(req, res){
                             console.log(err);
                         }else{
                             verificationMessage.push({msg: "Email has been verified!"});
-                            res.render("settings", {verificationMessage, currentUser:currentUser})
+                            // req.flash("verificationPage", "verified");
+                            res.redirect("/page");
                         }
                     }
                 )
@@ -370,7 +459,7 @@ app.post("/verifyEmail", function(req, res){
 
             }else{
                 verificationMessage.push({msg: "Verification code not correct"});
-                res.render("settings",{verificationMessage, currentUser:currentUser});
+                res.render("verificationPage",{verificationMessage, currentUser:currentUser});
             }
         }
     })
@@ -379,7 +468,7 @@ app.post("/verifyEmail", function(req, res){
 
 //-----------------Logout------------------------------------------
 //log out page using the logout function
-app.get("/logout", function(req,res){
+app.get("/logout", function(req,res, next){
     req.logout(function(err){
         if(err){
             return next(err)
@@ -389,7 +478,7 @@ app.get("/logout", function(req,res){
 })
 
 //-----------REGISTER----------------------------------------------
-app.post("/register", function(req, res){
+app.post("/register", function(req, res, next){
     let date=data.getDay();
     let time= data.getTime();
     const note0 = new Note({
@@ -409,36 +498,6 @@ function codeGenerator(){
 
 const code = codeGenerator();
 
-//------------------------------------------------------------------
-    // const note1 = new NoteUser({
-    //     title: "Welcome",
-    //     content: "This is what a note looks like.",
-    //     owner: req.body.username
-    // })
-    // const note2= new NoteUser({
-
-    //     title: "Icons: eraser, pencil, share button",
-    //     content: "The eraser deletes the note directly below, the pencil activates the edit feature and the share button adds or removes the note from the public page",
-    //         owner: req.body.username 
-    // })
-
-    // const note3 =new NoteUser({
-        
-    //     title: "Additional Features",
-    //     content: "The globe above leads to the public page while the profile picture can be changed according to the image uploaded.",
-    //         owner: req.body.username
-    // })
-
-    // const defaultNotes = [note1, note2, note3];
-
-    // NoteUser.noteBookContents.insertMany(defaultNotes, function(err){
-    //     if(err){
-    //         console.log(err);
-    //     }else{
-    //         console.log("sucessfully added default notes");
-    //     }
-    // })
-//----------------------------------------------------------------------------------
 //------------------------------------------------------------------
 //NODEMAILER
 async function sendMail(){
@@ -480,34 +539,67 @@ async function sendMail(){
 
 //--------------------------------------------------------------------
     //this is the place where the user is authenitcated
-    const {password, username,email}= req.body;
-    let errorMessage =[];
 
-    NoteUser.findOne({email:email}, function(err){
-        if(!err){
-            errorMessage.push({msg:"Email already used"});
-             }
-        })
-    if(errorMessage.length > 0){
-        res.render('register', (errorMessage, username, email));
+           const {password, username,email}= req.body; 
+           let errorMessage =[];
+           
+            //return next();
+
+
+
+    // NoteUser.findOne({email:email}, function(err){
+    //     if(!err){
+    //         errorMessage.push({msg:"Email already used"});
+    //          }
+    //     })
+    // if(errorMessage.length > 0){
+    //     res.render('register', (errorMessage, username, email));
         
-    }else{
-        NoteUser.findOne({username: username}, function(err){
-            if(err == 'UserExistsError'){
-                console.log("error is here");
-            }else{
-                    errorMessage.push({msg: "User exsists"});
-                    res.render("register", {errorMessage, username,email,password })
+    // }else{
+    //     NoteUser.findOne({username: username}, function(err){
+    //         if(err == 'UserExistsError'){
+    //             console.log("error is here");
+    //         }else{
+    //                 errorMessage.push({msg: "User exsists"});
+    //                 res.render("register", {errorMessage, username,email,password })
+    //         }
+    //     })
+    // }
+
+    // if(password.length <8){
+    //     errorMessage.push({msg:"Password needs to be atleast 8 characters"});
+    //         }
+    // NoteUser.findOne({username:username}
+    //     .then(user=> {
+    //          if(user){
+    //             errorMessage.push({msg:"error here"});
+    //             res.render("register", {errorMessage, username,email,password });
+    //         }
+    //     })
+    //     .catch((err)=>console.log(err)));
+    // })
+    
+    
+    const user= NoteUser.findOne(username, function(err){
+        try{
+            if(!err){
+                
+                errorMessage.push({msg:"Email already used"});
             }
-        })
+        }catch{
+            console.log("error caught")
+
+        }
+
+    })
+    if(password.length < 8){
+        errorMessage.push({msg:"Password needs to be 8 or more characters long."});
+        
     }
-
-    if(password.length <8){
-        errorMessage.push({msg:"Password needs to be atleast 8 characters"});
-            }
-        
-
-    if(errorMessage.length == 0){
+    if(errorMessage > 0){
+        console.log(errorMessage);
+        res.render('register', {errorMessage, email, password});
+    }else{
         NoteUser.register({
             username:req.body.username,
             email:req.body.email,
@@ -518,16 +610,35 @@ async function sendMail(){
                 }   
             },
             req.body.password, function(err,user){
-            if(err){
-                console.log(err);
+             if(err){
+                try{
+                    next(err) 
+                }catch{(err)
+                    client.query("ROLLBACK")
+                    return next(new CustomHandleError(400, 'something '))
+                }
                 res.redirect("/register");//if there are errors redirect to home
+            
             }else{    
-                sendMail()
-                .then((result)=> console.log(result))
-                .catch((error)=> console.log(error));
+                // sendMail()
+                // .then((result)=> console.log(result))
+                // .catch((error)=> console.log(error));
                 note0.save();
+                
                 passport.authenticate("local")(req, res, function(){
-                    res.redirect("/page");//redirect to the page
+                    NoteUser.findById(req.user.id, function(err, found){
+                        if(err){
+                            console.log(err)
+                        }else{
+                            if(found.isVerified == true){
+                                res.redirect("/page");
+                            }else{
+                               
+                                res.redirect("/verificationPage");
+
+                            }
+                        }
+                    })
                 })
             }
         })
@@ -550,9 +661,18 @@ app.post("/login", function(req,res){
         console.log(err);
     }else{
         passport.authenticate("local")(req, res, function(){
-            res.redirect("/page");
-            
-        })
+                   NoteUser.findById(req.user.id, function(err, found){
+                        if(err){
+                            console.log(err)
+                        }else{
+                            if(found.isVerified == true){
+                                res.redirect("/page");
+                            }else{
+                                res.redirect("/verificationPage");
+                            }
+                        }
+                    })
+                })
     }
    });
 
@@ -612,6 +732,7 @@ app.post("/page", function(req,res){
             time: time,
             imageURL: results2,
             shared: "false",
+
 
         });
     
@@ -731,11 +852,24 @@ app.post("/salvage-data", function(req, res) {
 
 app.post("/preEdit", function(req, res){
     const editState = req.body.editEntry;
+    console.log(editState);
     //find the state of the entry being clicked and toggle it between edit-mode and normal-mode
  
-    NoteUser.updateOne(
-        {_id: req.user.id, "noteBookContents":{"$elemMatch": {"_id": editState}}},
-        {$set: {"noteBookContents.$.state":"edit-mode"}},
+    // NoteUser.updateOne(
+    //     {_id: req.user.id, "noteBookContents":{"$elemMatch": {"_id": editState}}},
+    //     {$set: {"noteBookContents.$.state":"edit-mode"}},
+    //     function(err){
+    //         if(err){
+    //             console.log(err);
+    //         }else{
+    //             console.log("edit page button pressed");
+    //             res.redirect("/page");
+    //         }
+    //     }
+    // );
+    Note.updateOne(
+        {_id: editState},
+        {$set: {"state": "edit-mode"}},
         function(err){
             if(err){
                 console.log(err);
@@ -743,8 +877,8 @@ app.post("/preEdit", function(req, res){
                 console.log("edit page button pressed");
                 res.redirect("/page");
             }
-        }
-    );
+        }        
+    )
 })
 
  

@@ -3,18 +3,36 @@
     <div class="userContent-style">
         <% newPublicContent.forEach(function(newPageContent){%>
             <% if(newPageContent._id==pageEntry){%>
-                <div class="container-fluid">
-                    <h1 class="page-entry full-title">
-                        <%=newPageContent.title%>
-                    </h1>
-                    <p class="page-entry full-body">
-                        <%=newPageContent.content%>
-                    </p>
+                <div class="container-fluid" >
+                    <div class="row">
+                        <div class="col-md-7">
+                            <h1 class="page-entry full-title">
+                                <%=newPageContent.title%>
+                            </h1>
+                            <p class="page-entry full-body">
+                                <%=newPageContent.content%>
+                            </p>
+                        </div>
+                        <div class="col-md-5">
+                            <form action="/review" method="POST" class="public-style">
+                                <!-- the class waits for the value of the state to change and the corresponding style is added-->
+                                <div class="form-group ">
+                                    <textarea class="form-control" name="content" rows="5" cols="30" placeholder="Contents" required></textarea>
+                                    <button type="submit" class="btn btn-light prettyBtn" name="reviewContent"  value="<%=newPageContent._id %>">Add review</button>
+                                    <h2>---</h2>
+                                </div>
+                            </form>
+                            <% for (var i = 0; i < newPageContent.reviews.length; i++) { %>
+                            <h1><%=newPageContent.reviews[i].content%></h1>
+                            <%}%>
+                    </div>
                 </div>
                 <%}%>
                     <% }) %>
+                        </div>
                         <div class="back-btn">
                             <a class="btn btn-light" href="/page" role="button"><i class="fas fa-home"></i></a>
                         </div>
     </div>
+
     <%- include("partials/footer"); -%>
