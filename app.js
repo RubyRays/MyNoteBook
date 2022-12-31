@@ -329,8 +329,9 @@ app.get("/publicContent/:pageTitle", function(req,res){
     //gets the title of the page that is going to be
     //created after the click --create page
     const pageEntry = req.params.pageTitle;
-
-    //console.log(pageEntry);
+    const currentUser = req.user.username;
+    console.log(currentUser)
+    
     //redirects to the login if the user is not authenticated
      if(req.isAuthenticated()){
         Note.findById(pageEntry, function(err, foundEntry){
@@ -351,7 +352,7 @@ app.get("/publicContent/:pageTitle", function(req,res){
                         //renders the publicContent page
                         //the data passed into it is the title of the page that the user is looking for
                         //also the contents of the relavant noteBookContents of the found post     
-                        res.render("publicContent",{newPublicContent:newPublicContent, pageEntry: pageEntry});
+                        res.render("publicContent",{newPublicContent:newPublicContent, pageEntry: pageEntry, currentUser: currentUser});
 
                         })    
                            
@@ -395,8 +396,8 @@ app.post("/review", function(req, res){
 
 app.post("/deleteReview", function(req, res){
         const clickedEntry = req.body.deleteReviews;
-        
-        Review.findByIdAndRemove(clickedEntry, function(err, found){
+        if(req.isAuthenticated()){
+        Review.findByIdAndRemove({_id:clickedEntry, author:{$eq:req.user.username}}, function(err, found){
             if(err){
                 console.log(err);
             }else{
@@ -406,6 +407,9 @@ app.post("/deleteReview", function(req, res){
 
             }
         });
+    }else{
+        res.redirect("/login");
+    }
 
 })
 
@@ -883,31 +887,40 @@ app.post("/preEdit", function(req, res){
     const editState = req.body.editEntry;
     console.log(editState);
     //find the state of the entry being clicked and toggle it between edit-mode and normal-mode
- 
-    // NoteUser.updateOne(
-    //     {_id: req.user.id, "noteBookContents":{"$elemMatch": {"_id": editState}}},
-    //     {$set: {"noteBookContents.$.state":"edit-mode"}},
-    //     function(err){
-    //         if(err){
-    //             console.log(err);
-    //         }else{
-    //             console.log("edit page button pressed");
-    //             res.redirect("/page");
-    //         }
-    //     }
-    // );
-    Note.updateOne(
-        {_id: editState},
-        {$set: {"state": "edit-mode"}},
-        function(err){
-            if(err){
-                console.log(err);
+    Note.findById(editState, function(err, foundEntry){
+        if(err){
+            console.log(err);
+        }else{
+            if(foundEntry.state == "edit-mode"){
+                Note.updateOne(
+                    {_id: editState},
+                    {$set: {"state": "normal-mode"}},
+                    function(err){
+                        if(err){
+                            console.log(err);
+                        }else{
+                           
+                            res.redirect("/page");
+                        }
+                    }        
+                )                
             }else{
-                console.log("edit page button pressed");
-                res.redirect("/page");
+                Note.updateOne(
+                    {_id: editState},
+                    {$set: {"state": "edit-mode"}},
+                    function(err){
+                        if(err){
+                            console.log(err);
+                        }else{
+                            
+                            res.redirect("/page");
+                        }
+                    }        
+                )                
             }
-        }        
-    )
+        }
+    })
+
 })
 
  
@@ -943,24 +956,24 @@ app.post("/edit", function(req,res) {
                 console.log(err);
             }else{
                 console.log("edit page button pressed");
-                res.redirect("/page");
-            }
-         }
-    );
-
-         //updates the state everytime the edit page button is clicked on
-        NoteUser.updateOne(
-        {_id: req.user.id, "noteBookContents":{"$elemMatch": {"_id": toEdit}}},
-        {$set: {"noteBookContents.$.state":"normal-mode"}},
-        function(err){
-            if(err){
-                console.log(err);
-            }else{
-                console.log("edit page button pressed");
                 
             }
          }
     );
+         //updates the state everytime the edit page button is clicked on
+        Note.updateOne(
+            {_id: toEdit},
+            {$set: {"state": "normal-mode"}},
+            function(err){
+                if(err){
+                    console.log(err);
+                }else{
+                    console.log("edit page button pressed");
+                    res.redirect("/page");
+                }
+            }        
+        )
+
         
     }else{
         res.redirect("/login");

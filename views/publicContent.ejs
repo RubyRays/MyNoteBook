@@ -23,12 +23,13 @@
                                 </div>
                             </form>
 
-                            <% newPageContent.reviews.forEach(function(reviewContent){%>
+                            <% newPageContent.reviews.reverse().forEach(function(reviewContent){%>
+                                    <% if(reviewContent.author == currentUser){%>
+                                    <form action="/deleteReview" method="post" class="icon-style-form">
 
-                                <form action="/deleteReview" method="post" class="icon-style-form">
-
-                                    <button type="submit"  name="deleteReviews" value="<%=reviewContent._id%>" alt="delete review"><i class="fa-solid fa-eraser "></i></button>
-                                </form>
+                                        <button type="submit"  name="deleteReviews" value="<%=reviewContent._id%>" alt="delete review"><i class="fa-solid fa-eraser "></i></button>
+                                    </form>
+                                   <%}%>
                                 <div class="review-style"> 
                                     
                                     <p>By <%= reviewContent.author%></p>
