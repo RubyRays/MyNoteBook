@@ -177,6 +177,9 @@ footer {
 .public-style {
   margin-top: 2rem;
 }
+.review-style {
+  background-color: #7fffd4;
+}
 
 .social-btn-container {
   background-color: #ffffff;

@@ -5,6 +5,8 @@ const bodyParser = require("body-parser");
 const ejs = require('ejs');
 const mongoose = require("mongoose");
 const session = require('express-session');
+const flash = require('connect-flash');
+const path = require('path');
 const passport = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -30,6 +32,8 @@ const app = express();
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
+app.set('views', path.join(__dirname, 'views'));
+app.use(flash());
 app.set('view engine', 'ejs');
 
 cloudinary.config({
@@ -198,7 +202,9 @@ app.get("/register", function(req, res){
     res.render("register");
 });  
 app.get("/login", function(req, res){
-    res.render("login");
+    // const errors = req.flash().error || [];
+    // res.render("login", {errors});
+    res.render('login');
 }); 
 app.get("/404",function(req,res){
     res.render("404");
@@ -324,7 +330,7 @@ app.get("/publicContent/:pageTitle", function(req,res){
     //created after the click --create page
     const pageEntry = req.params.pageTitle;
 
-    console.log(pageEntry);
+    //console.log(pageEntry);
     //redirects to the login if the user is not authenticated
      if(req.isAuthenticated()){
         Note.findById(pageEntry, function(err, foundEntry){
@@ -374,7 +380,8 @@ app.post("/review", function(req, res){
 
     const review = new Review({
         content: content,
-        target:pageEntry 
+        target:pageEntry,
+        author: req.user.username 
     });
     review.save();
 }
@@ -383,6 +390,22 @@ app.post("/review", function(req, res){
     }else{
         res.redirect("/login");
     }
+
+})
+
+app.post("/deleteReview", function(req, res){
+        const clickedEntry = req.body.deleteReviews;
+        
+        Review.findByIdAndRemove(clickedEntry, function(err, found){
+            if(err){
+                console.log(err);
+            }else{
+                if(found)
+                //redirects to the page where the target of the review is
+                 res.redirect("/publicContent/"+found.target);
+
+            }
+        });
 
 })
 
@@ -422,6 +445,7 @@ app.get("/verificationPage", function(req, res){
                         
             }else{
                 if(currentUser){
+                    
                     //rendering the settings page
                     res.render("verificationPage", {currentUser:currentUser} );
                  }
@@ -450,7 +474,7 @@ app.post("/verifyEmail", function(req, res){
                             console.log(err);
                         }else{
                             verificationMessage.push({msg: "Email has been verified!"});
-                            // req.flash("verificationPage", "verified");
+
                             res.redirect("/page");
                         }
                     }
@@ -568,11 +592,11 @@ async function sendMail(){
 
     // if(password.length <8){
     //     errorMessage.push({msg:"Password needs to be atleast 8 characters"});
-    //         }
+    // //         }
     // NoteUser.findOne({username:username}
     //     .then(user=> {
     //          if(user){
-    //             errorMessage.push({msg:"error here"});
+    //             // errorMessage.push({msg:"error here"});
     //             res.render("register", {errorMessage, username,email,password });
     //         }
     //     })
@@ -660,7 +684,12 @@ app.post("/login", function(req,res){
     if(err){
         console.log(err);
     }else{
-        passport.authenticate("local")(req, res, function(){
+        passport.authenticate("local", {
+            failureFlash: true, 
+            //redirects to login page if value is bad
+            failureRedirect: '/login',
+                })(req, res, function(){
+
                    NoteUser.findById(req.user.id, function(err, found){
                         if(err){
                             console.log(err)
