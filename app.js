@@ -844,7 +844,11 @@ app.post("/delete", function(req, res){
 
 app.post("/deletePermanent", function(req, res) {
     const toDelete = req.body.deleteEntry;
-
+    Review.deleteMany({"target":{$eq: toDelete}},function(err){
+        if(err){
+            console.log(err);
+        }
+    })
     if(req.isAuthenticated()) {
         Note.findByIdAndRemove(toDelete, function(err) {
             if(!err){
@@ -852,6 +856,7 @@ app.post("/deletePermanent", function(req, res) {
                 res.redirect("/trashBin");
             }
         })
+
     }else{
         res.redirect("/login");
     }

@@ -16,13 +16,14 @@
                         <div class="col-md-5">
                             <form action="/review" method="POST" class="public-style">
                                 <!-- the class waits for the value of the state to change and the corresponding style is added-->
+                                <label><h5>Reviews</h5></label>
                                 <div class="form-group ">
                                     <textarea class="form-control" name="content" rows="5" cols="30" placeholder="Contents" required></textarea>
                                     <button type="submit" class="btn btn-light prettyBtn" name="reviewContent"  value="<%=newPageContent._id %>">Add review</button>
                                     <h2>---</h2>
                                 </div>
                             </form>
-
+                            
                             <% newPageContent.reviews.reverse().forEach(function(reviewContent){%>
                                     <% if(reviewContent.author == currentUser){%>
                                     <form action="/deleteReview" method="post" class="icon-style-form">
