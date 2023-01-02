@@ -209,6 +209,25 @@ app.get("/login", function(req, res){
 app.get("/404",function(req,res){
     res.render("404");
 });
+// app.get('/nav', function(req, res){
+//     if(req.isAuthenticated){
+//     const user = req.user.id;
+//      NoteUser.findOne({_id:user}, function(err, foundUser){
+//         if(err){
+//             console.log(err);
+//         }else{
+//             if(foundUser){
+//                 const profilePicture= foundUser.profileImage.url;
+//                 console.log("-----------------------------------------ghjghjh:   "+profilePicture);
+//                 res.render('nav', {profilePicture:profilePicture });  
+//             }
+  
+//         }
+//      })
+   
+//     }
+
+// })
 
 
 //-------------------User page--------------------
@@ -375,7 +394,7 @@ app.post("/review", function(req, res){
     const content=req.body.content;
      console.log("afadfa");
     //redirects to the login if the user is not authenticated
-     if(req.isAuthenticated()){
+    if(req.isAuthenticated()){
              
     if(req.body != null){
 
