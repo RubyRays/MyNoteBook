@@ -245,6 +245,9 @@ app.get("/page", function(req,res){
                 console.log(err);
             }else{
                 if(foundUser){
+                    //for nav bar profile image
+                    // const profileImg = foundUser.profileImage.url;
+
                     //looking for the data in the notes collection where the owner name
                     //is the same as the username of the currently logged in user
                     Note.find({"owner": req.user.username, "deleted":{$ne:"true"}}, function(err, user2) {
@@ -254,7 +257,10 @@ app.get("/page", function(req,res){
                     foundUser.noteBookContents=user2;
                     //saves the userinfo into noteUser collection and redirects to the page
                     foundUser.save(function(){
-                        res.render("page", {userContent: foundUser, userthing: theUser});
+                        //for nav bar profile image
+                        // res.render("page", {profileImg, userContent: foundUser, userthing: theUser});
+                        res.render("page", { userContent: foundUser, userthing: theUser});
+                        
                     })
             })
             }
@@ -328,7 +334,6 @@ app.get("/publicPage",function(req,res){
                 
                         
             }else{
-               
                     res.render("publicPage", {publicPosts: publicPosts});
                  
               }
@@ -349,40 +354,45 @@ app.get("/publicContent/:pageTitle", function(req,res){
     //created after the click --create page
     const pageEntry = req.params.pageTitle;
     const currentUser = req.user.username;
+
     console.log(currentUser)
-    
+
     //redirects to the login if the user is not authenticated
      if(req.isAuthenticated()){
-        Note.findById(pageEntry, function(err, foundEntry){
-            if(err){
-                console.log(err);
-            }else{
-                if(foundEntry){
-                   Review.find({"target":pageEntry}, function(err, foundReview){
-                    if(!err){
-                        
-                        foundEntry.reviews= foundReview;
-                        
-                        foundEntry.save(function(){
-                        //search for all records 
-                        Note.find({},function(err, post){
-                        const newPublicContent = post;
-                        
-                        //renders the publicContent page
-                        //the data passed into it is the title of the page that the user is looking for
-                        //also the contents of the relavant noteBookContents of the found post     
-                        res.render("publicContent",{newPublicContent:newPublicContent, pageEntry: pageEntry, currentUser: currentUser});
 
-                        })    
-                           
-                        });                        
+
+
+                Note.findById(pageEntry, function(err, foundEntry){
+                    if(err){
+                        console.log(err);
+                    }else{
+                        if(foundEntry){
+                        Review.find({"target":pageEntry}, function(err, foundReview){
+                            if(!err){
+                                
+                                foundEntry.reviews= foundReview;
+                                
+                                foundEntry.save(function(){
+                                //search for all records 
+                                Note.find({},function(err, post){
+                                const newPublicContent = post;
+
+                                //renders the publicContent page
+                                //the data passed into it is the title of the page that the user is looking for
+                                //also the contents of the relavant noteBookContents of the found post     
+                                res.render("publicContent",{profileImg,newPublicContent:newPublicContent, pageEntry: pageEntry, currentUser: currentUser});
+
+                                })    
+                                
+                                });                        
+                            }
+
+                        })
+                        }
                     }
-
-                   })
-                }
-            }
-        })
-
+                })
+            
+        
 
     }else{
         res.redirect("/login");
