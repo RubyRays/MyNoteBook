@@ -380,7 +380,7 @@ app.get("/publicContent/:pageTitle", function(req,res){
                                 //renders the publicContent page
                                 //the data passed into it is the title of the page that the user is looking for
                                 //also the contents of the relavant noteBookContents of the found post     
-                                res.render("publicContent",{profileImg,newPublicContent:newPublicContent, pageEntry: pageEntry, currentUser: currentUser});
+                                res.render("publicContent",{newPublicContent:newPublicContent, pageEntry: pageEntry, currentUser: currentUser});
 
                                 })    
                                 
