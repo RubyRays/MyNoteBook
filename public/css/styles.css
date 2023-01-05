@@ -154,6 +154,11 @@ footer {
   font-size: 0.1rem;
   color: blue;
 }
+.message {
+  background-image: url("https://www.transparenttextures.com/patterns/circles.png");
+  margin-top: 2rem;
+  margin-bottom: 0;
+}
 .note {
   margin-left: -1rem;
 }

@@ -36,6 +36,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(flash());
 app.set('view engine', 'ejs');
 
+
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
@@ -183,6 +184,8 @@ passport.use(new GoogleStrategy({
 ))
 
 
+
+
 app.get("/", function(req, res){
     res.render("home");
 }); 
@@ -209,25 +212,9 @@ app.get("/login", function(req, res){
 app.get("/404",function(req,res){
     res.render("404");
 });
-// app.get('/nav', function(req, res){
-//     if(req.isAuthenticated){
-//     const user = req.user.id;
-//      NoteUser.findOne({_id:user}, function(err, foundUser){
-//         if(err){
-//             console.log(err);
-//         }else{
-//             if(foundUser){
-//                 const profilePicture= foundUser.profileImage.url;
-//                 console.log("-----------------------------------------ghjghjh:   "+profilePicture);
-//                 res.render('nav', {profilePicture:profilePicture });  
-//             }
-  
-//         }
-//      })
-   
-//     }
 
-// })
+
+
 
 
 //-------------------User page--------------------
@@ -239,6 +226,13 @@ app.get("/page", function(req,res){
        
         
         const theUser = req.user.username;
+
+       NoteUser.findById(req.user.id, function(err, findpic){
+            if(err){
+                console.log(err);
+            }else{
+                
+
           //finds the current user using the user.id provided by the passport package
         NoteUser.findById(req.user.id,function(err, foundUser) {
             if(err){
@@ -251,21 +245,22 @@ app.get("/page", function(req,res){
                     //looking for the data in the notes collection where the owner name
                     //is the same as the username of the currently logged in user
                     Note.find({"owner": req.user.username, "deleted":{$ne:"true"}}, function(err, user2) {
-                    
-                
+                    const pic= findpic.profileImage.url;
+                    // console.log(req.profilePic.username);                   
                     //saves the posted contents into the noteBookContents
                     foundUser.noteBookContents=user2;
                     //saves the userinfo into noteUser collection and redirects to the page
                     foundUser.save(function(){
-                        //for nav bar profile image
-                        // res.render("page", {profileImg, userContent: foundUser, userthing: theUser});
-                        res.render("page", { userContent: foundUser, userthing: theUser});
+
+                        res.render("page", {pic, messages: req.flash('success'), userContent: foundUser, userthing: theUser});
                         
                     })
             })
             }
         }
     });
+                }
+        });
 
     }else{
         res.redirect("/login");
@@ -274,14 +269,22 @@ app.get("/page", function(req,res){
 });
 app.get("/trashBin", function(req,res) {
     if(req.isAuthenticated()) {
+        NoteUser.findById(req.user.id, function(err, findpic){
+            if(err){
+                console.log(err);
+            }else{
+                
+
         Note.find({"owner": req.user.username, "deleted": "true"}, function(err, foundNoteEntry) {
             if(err){
                 console.log(err);
             }else{
                 // console.log(foundNoteEntry);
-                res.render("trashBin", {foundNoteEntry:foundNoteEntry})
+                const pic = findpic.profileImage.url;
+                res.render("trashBin", {pic,foundNoteEntry:foundNoteEntry})
             }
         })
+    }});
     }else{
         res.redirect("/login");
     }
@@ -301,20 +304,23 @@ app.get("/userContent/:pageId", function(req,res){
      if(req.isAuthenticated()){
         const theUser = req.user.username;
 
+        NoteUser.findById(req.user.id, function(err, findpic){
+            if(err){
+                console.log(err);
+            }else{
+                
         //search for the record with the same username as the currently logged in user
         NoteUser.findOne({"username": theUser},function(err, post){
         const newPage = post.noteBookContents;
-    
+        const pic= findpic.profileImage.url;
         //renders the userContent page
         //the data passed into it is the title of the page that the user is looking for
         //also the contents of the relavant noteBookContents of the found post     
-        res.render("userContent",{newPage:newPage, userthing: pageEntry});
-
-
-            
+        res.render("userContent",{pic,newPage:newPage, userthing: pageEntry});    
 
 
     })
+}});
     }else{
         res.redirect("/login");
     }
@@ -325,20 +331,27 @@ app.get("/userContent/:pageId", function(req,res){
 app.get("/publicPage",function(req,res){
      if(req.isAuthenticated()){
         
-        
-        //finding the user related entries by the id of currently logged in user
-        Note.find({"shared": {$eq: "true"}, "deleted":{$ne: "true"}}, function(err, publicPosts){
-
+        NoteUser.findById(req.user.id, function(err, findpic){
             if(err){
                 console.log(err);
-                
-                        
             }else{
-                    res.render("publicPage", {publicPosts: publicPosts});
-                 
-              }
-           });
-        
+                
+
+                //finding the user related entries by the id of currently logged in user
+                Note.find({"shared": {$eq: "true"}, "deleted":{$ne: "true"}}, function(err, publicPosts){
+
+                    if(err){
+                        console.log(err);
+                        
+                                
+                    }else{
+
+                            const pic= findpic.profileImage.url;                
+                            res.render("publicPage", {pic, publicPosts: publicPosts});
+                        
+                    }
+                });
+            }});
     }else{
         res.redirect("/login");
     }    
@@ -362,37 +375,44 @@ app.get("/publicContent/:pageTitle", function(req,res){
 
 
 
-                Note.findById(pageEntry, function(err, foundEntry){
-                    if(err){
-                        console.log(err);
-                    }else{
-                        if(foundEntry){
-                        Review.find({"target":pageEntry}, function(err, foundReview){
-                            if(!err){
-                                
-                                foundEntry.reviews= foundReview;
-                                
-                                foundEntry.save(function(){
-                                //search for all records 
-                                Note.find({},function(err, post){
-                                const newPublicContent = post;
 
-                                //renders the publicContent page
-                                //the data passed into it is the title of the page that the user is looking for
-                                //also the contents of the relavant noteBookContents of the found post     
-                                res.render("publicContent",{newPublicContent:newPublicContent, pageEntry: pageEntry, currentUser: currentUser});
-
-                                })    
-                                
-                                });                        
+            Note.findById(pageEntry, function(err, foundEntry){
+                if(err){
+                    console.log(err);
+                }else{
+                    if(foundEntry){
+                        NoteUser.findById(req.user.id, function(err, findpic){
+                            if(err){
+                                console.log(err);
                             }
+                            else{
+                                Review.find({"target":pageEntry}, function(err, foundReview){
+                                    if(!err){
+                                        
+                                        foundEntry.reviews= foundReview;
+                                        
+                                        foundEntry.save(function(){
+                                        //search for all records 
+                                        Note.find({},function(err, post){
+                                        const newPublicContent = post;
+                                        const pic = findpic.profileImage.url;
+                                        //renders the publicContent page
+                                        //the data passed into it is the title of the page that the user is looking for
+                                        //also the contents of the relavant noteBookContents of the found post     
+                                        res.render("publicContent",{pic,newPublicContent:newPublicContent, pageEntry: pageEntry, currentUser: currentUser});
 
-                        })
+                                        })    
+                                        
+                                        });                        
+                                    }
+
+                            })
+                             }});
                         }
                     }
                 })
             
-        
+           
 
     }else{
         res.redirect("/login");
@@ -446,21 +466,27 @@ app.post("/deleteReview", function(req, res){
 
 app.get("/settings", function(req, res){
     if(req.isAuthenticated()){
-
-        //finding the user related entries by the id of currently logged in user
-        NoteUser.findById(req.user.id, function(err, currentUser){
-
+      
+        NoteUser.findById(req.user.id, function(err, findpic){
             if(err){
                 console.log(err);
-                
-                        
             }else{
-                if(currentUser){
-                    //rendering the settings page
-                    res.render("settings", {currentUser:currentUser} );
-                 }
-              }
-           });
+                //finding the user related entries by the id of currently logged in user
+                NoteUser.findById(req.user.id, function(err, currentUser){
+
+                    if(err){
+                        console.log(err);
+                        
+                                
+                    }else{
+                        if(currentUser){
+                            const pic = findpic.profileImage.url;
+                            //rendering the settings page
+                            res.render("settings", {pic, currentUser:currentUser} );
+                        }
+                    }
+                });
+            }});
         
     }else{
         res.redirect("/login");
@@ -479,7 +505,9 @@ app.get("/verificationPage", function(req, res){
             }else{
                 if(currentUser){
                     
-                    //rendering the settings page
+                    req.flash('success', 'Account has been verified!');
+
+                    //rendering the verification page
                     res.render("verificationPage", {currentUser:currentUser} );
                  }
               }
@@ -1108,6 +1136,10 @@ app.post("/profileImg", parser.single("profileImage"), function(req,res) {
 
 })
 
+// app.use((req, res, next)=>{
+//    req.profilePic = 'https://res.cloudinary.com/dbvhtpmx4/image/upload/v1671056080/samples/sheep.jpg';
+//    next();
+// });
 
 
 //customising the port to be used for local and heroku....
