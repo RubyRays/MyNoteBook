@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
-const reviews= require('./Review');
+const Review= require('./Review');
 
 
 const notesSchema = new mongoose.Schema({
@@ -13,7 +13,7 @@ const notesSchema = new mongoose.Schema({
     imageURL: String,
     shared: String,
     deleted: String,
-    reviews: [{type: Schema.Types.Mixed, ref:'reviews'}]
+    reviews: [{type: Schema.Types.Mixed, ref:'Review'}]
 
 });
 

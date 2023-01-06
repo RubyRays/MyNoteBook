@@ -23,17 +23,18 @@ const {google, dlp_v2} = require ("googleapis");
 const { OAuth2Client } = require('google-auth-library');
 const OAuth2 = google.auth.OAuth2
 const stripe= require('stripe')(process.env.STRIPE_PRIVATE_KEY);
-//modules---------------
+//modules and middleware---------------
 const Note = require('./models/Note');
 const Review = require("./models/Review");
 const NoteUser= require('./models/NoteUser');
+const {isLoggedIn} = require('./login_middlewaare');
 //-----------------
 const oAuth2Client= new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI)
 oAuth2Client.setCredentials({refresh_token: process.env.REFRESH_TOKEN})
 
 const app = express();
 
-//---------cloudinary configuration----------------------
+//---------cloudinary configuration-------------------------
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
@@ -53,11 +54,8 @@ const parser = multer({storage:storage});
 //--------------------------------------------------------
 
 
-const subscriptions = new Map([
-    [1, {priceInCents: 100, name: "Basic mode"}],
-    [2, {priceInCents: 200, name: "Full version"}],
-])
 
+app.use(express.json());
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('views', path.join(__dirname, 'views'));
@@ -136,30 +134,45 @@ passport.deserializeUser(function(user, cb){
 });
 
 //-----------------Google OAUTH USING PASSPORT--------------------------
-passport.use(new GoogleStrategy({
+passport.use(new GoogleStrategy ({
+
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET, 
     callbackURL: "http://localhost:3000/auth/google/page",
     userProfileURL:"https://www.googleapis.com/oauth2/v3/userinfo"
     },
         function(accessToken, refreshToken, profile, cb){
-            NoteUser.findOrCreate({googleId: profile.id, username: profile.displayName, profileImage:{
-            url: "https://res.cloudinary.com/dbvhtpmx4/image/upload/v1671056080/samples/sheep.jpg",
-            filename:'samples/sheep' ,
-        }   }, function(err, user){
+            NoteUser.findOrCreate({
+                googleId: profile.id,
+                username: profile.displayName,
+                profileImage:{
+                    url: "https://res.cloudinary.com/dbvhtpmx4/image/upload/v1671056080/samples/sheep.jpg",
+                    filename:'samples/sheep',
+        }   }, 
+            function(err, user){
                 return cb(err, user);
             })
         }
     ))
 //-----------END OF PASSPORT SETUP--------------------------------------------------------------
 
+app.use(function(req, res){
+    res.status(404).send('PAGE NOT FOUND!')
+})
+
+app.use(function(err, req, res, next) {
+    console.log("*************ERROR***************")
+    next(err)
+})
 
 
+
+//--HOME ROUTE----
 app.get("/", function(req, res){
     res.render("home");
 }); 
 
-//route for the google button
+//route for the google button---
 app.get("/auth/google",
     passport.authenticate('google', {scope: ["profile"]})
     );
@@ -236,47 +249,12 @@ async function sendMail(){
 
 
 //--------------------------------------------------------------------
-    //this is the place where the user is authenitcated
-
-           const {password, username,email}= req.body; 
-           let errorMessage =[];
-           
-            //return next();
-
-
-
-    // NoteUser.findOne({email:email}, function(err){
-    //     if(!err){
-    //         errorMessage.push({msg:"Email already used"});
-    //          }
-    //     })
-    // if(errorMessage.length > 0){
-    //     res.render('register', (errorMessage, username, email));
-        
-    // }else{
-    //     NoteUser.findOne({username: username}, function(err){
-    //         if(err == 'UserExistsError'){
-    //             console.log("error is here");
-    //         }else{
-    //                 errorMessage.push({msg: "User exsists"});
-    //                 res.render("register", {errorMessage, username,email,password })
-    //         }
-    //     })
-    // }
-
-    // if(password.length <8){
-    //     errorMessage.push({msg:"Password needs to be atleast 8 characters"});
-    // //         }
-    // NoteUser.findOne({username:username}
-    //     .then(user=> {
-    //          if(user){
-    //             // errorMessage.push({msg:"error here"});
-    //             res.render("register", {errorMessage, username,email,password });
-    //         }
-    //     })
-    //     .catch((err)=>console.log(err)));
-    // })
     
+    //trying to set up error messages.
+    const {password, username,email}= req.body; 
+    let errorMessage =[];
+
+  
     
     const user= NoteUser.findOne(username, function(err){
         try{
@@ -298,6 +276,7 @@ async function sendMail(){
         console.log(errorMessage);
         res.render('register', {errorMessage, email, password});
     }else{
+
         NoteUser.register({
             username:req.body.username,
             email:req.body.email,
@@ -310,8 +289,9 @@ async function sendMail(){
             req.body.password, function(err,user){
              if(err){
                 try{
-                    next(err) 
-                }catch{(err)
+                    next(err);
+                }
+                catch{(err)
                     client.query("ROLLBACK")
                     return next(new CustomHandleError(400, 'something '))
                 }
@@ -398,8 +378,8 @@ app.get("/404",function(req,res){
 });
 
 //-----VERIFICATION OF EMAIL ADDRESS PAGE-----------------
-app.get("/verificationPage", function(req, res){
-    if(req.isAuthenticated()){
+app.get("/verificationPage", isLoggedIn, function(req, res){
+   
 
         //finding the user related entries by the id of currently logged in user
         NoteUser.findById(req.user.id, function(err, currentUser){
@@ -416,16 +396,16 @@ app.get("/verificationPage", function(req, res){
                  }
               }
            });
-        
-    }else{
-        res.redirect("/login");
-    }        
+     
 })
 
-app.post("/verifyEmail", function(req, res){
+app.post("/verifyEmail", isLoggedIn, function(req, res) {
+    
+    
     const status = req.body.verificationCode
     const userId =req.user.id
     let verificationMessage=[]
+
     NoteUser.findById(userId, function(err, currentUser){
         if(err){
             console.log(err);
@@ -448,6 +428,7 @@ app.post("/verifyEmail", function(req, res){
 
 
             }else{
+
                 verificationMessage.push({msg: "Verification code not correct"});
                 res.render("verificationPage",{verificationMessage, currentUser:currentUser});
             }
@@ -460,10 +441,9 @@ app.post("/verifyEmail", function(req, res){
 
 
 //-------------------MAIN PAGE FOR USER NOTES--------------------
-app.get("/page", function(req,res){
+app.get("/page", isLoggedIn, function(req,res){
 
 
-    if(req.isAuthenticated()){
         const theUser = req.user.username;
 
 
@@ -494,83 +474,84 @@ app.get("/page", function(req,res){
                 }
             }
         });
-
-
-    }else{
-        res.redirect("/login");
-    }    
+  
 
 });
 
 //renders the notebook user page
-app.post("/page", function(req,res){
+app.post("/page",isLoggedIn, function(req,res){
     
+//API SECTION WHERE DATA IS PASSED FROM ONE API TO BE USED IN THE OTHER BY MEANS OF 
+//CALLBACK FUNCTIONS  
+    //USING AN IP ADDRESS FINDER TO GET THE CITY NAME OF THE USER
     token=process.env.IPINFO_TOKEN;
     const ipinfoApi ="https://ipinfo.io?token="+token;
+
     function makeCall (ipinfoApi, callback){
+
         https.get(ipinfoApi, function(response){
+
             // console.log(response.statusCode);
             response.on("data", function(data){
 
                 const ipData= JSON.parse(data);
                 const city = ipData.city;
-            
-                
                 callback(city);
                 
             })
         })
 }
-        function handleResults(results){
-            const query= results;
-            const apiKey = process.env.WEATHER_API_KEY;
-            const unit= "metric"
-            //api url for the weather api
-            const weatherUrl = "https://api.openweathermap.org/data/2.5/weather?q="+query+"&appid="+apiKey+"&units="+unit;
-            function makeCall2(weatherUrl, callback){
+    function handleResults(results){
+        const query= results;
+        const apiKey = process.env.WEATHER_API_KEY;
+        const unit= "metric"
+        //api url for the weather api
+        const weatherUrl = "https://api.openweathermap.org/data/2.5/weather?q="+query+"&appid="+apiKey+"&units="+unit;
 
-            
+        function makeCall2(weatherUrl, callback){
+
             https.get(weatherUrl, function(response){
-            response.on("data", function(data){
-            //converts data to json
-            const weatherData = JSON.parse(data);
-            const icon = weatherData.weather[0].icon;
-            const imageURL = "http://openweathermap.org/img/wn/"+icon+"@2x.png";
-             //designating the path
-            const temp = weatherData.main.temp;
-              callback(imageURL);
+                response.on("data", function(data){
+                    //converts data to json
+                    const weatherData = JSON.parse(data);
+                    const icon = weatherData.weather[0].icon;
+                    const imageURL = "http://openweathermap.org/img/wn/"+icon+"@2x.png";
+                    callback(imageURL);
+                })
             })
+        }
+
+        //THE RESULTS OF "makeCall2"
+        //SENDS THE WEATHER INFO USING "results2"
+        function handleResults2(results2){
+            let date=data.getDay();
+            let time= data.getTime();
+            if(req.body != null){
+                //creates a new post
+                const post=new Note({
+                    title: req.body.title,
+                    content: req.body.content,
+                    owner: req.user.username,
+                    state: "normal-mode",
+                    date: date,
+                    time: time,
+                    imageURL: results2,
+                    shared: "false",
+
+
+                });
+            
+                //saving the information entered into the note document 
+                post.save();
+            }
+
+            res.redirect("/page");
+
+        }
+        makeCall2(weatherUrl, function(results2) {
+            handleResults2(results2);
         })
-    }
-    function handleResults2(results2){
-        let date=data.getDay();
-        let time= data.getTime();
-        if(req.body != null){
-        //creates a new post
-        const post=new Note({
-            title: req.body.title,
-            content: req.body.content,
-            owner: req.user.username,
-            state: "normal-mode",
-            date: date,
-            time: time,
-            imageURL: results2,
-            shared: "false",
-
-
-        });
-    
-        //saving the information entered into the note document 
-        post.save();
-    }
-
-        res.redirect("/page");
-
-     }
-    makeCall2(weatherUrl, function(results2) {
-        handleResults2(results2);
-    })
-    }
+        }
     makeCall(ipinfoApi, function(results) {
         
         handleResults(results);
@@ -588,11 +569,9 @@ app.post("/page", function(req,res){
 
 //--eraser icon request--deletes the entry from the noteuser collection
 //and marks it as deleted inside of the notes collection
-app.post("/delete", function(req, res){
+app.post("/delete",isLoggedIn, function(req, res){
     //distinguishing things to delete
     const clickedEntry = req.body.deleteEntry;
-
-    if(req.isAuthenticated()){
 
         Note.updateOne(
             {_id: clickedEntry},
@@ -620,17 +599,11 @@ app.post("/delete", function(req, res){
                 }
             }
             );
-            
-        }else{
-            res.redirect("/login");
-        }
-    
 
-    
 })
 
 //--pen icon request-used to hide and unhide the edit form
-app.post("/preEdit", function(req, res){
+app.post("/preEdit",isLoggedIn, function(req, res){
 
     //gets information sent by the editEntry/pen button
     const editState = req.body.editEntry;
@@ -674,15 +647,11 @@ app.post("/preEdit", function(req, res){
 
  
 //--edit button request- used to edit user entries
-app.post("/edit", function(req,res) {
+app.post("/edit",isLoggedIn, function(req,res) {
     const toEdit = req.body.Edit;
     const title= req.body.title2;
     const content=req.body.content2;
 
-    //distinguishing things to delete
-    // const editedEntry = req.body.Edit;
-    // console.log("passed here");
-    if(req.isAuthenticated()) {
         //updates the title and content of the note
         Note.updateOne(
             {_id: toEdit},
@@ -722,18 +691,12 @@ app.post("/edit", function(req,res) {
                 }
             }        
         )
-
-        
-    }else{
-        res.redirect("/login");
-    }
-    
    
 
 })
 
 //--last icon (arrow in a box) request to share and unshare user entries
-app.post("/share&unshare", function(req, res) {
+app.post("/share&unshare",isLoggedIn, function(req, res) {
     const toShare= req.body.share;
     //finding the entry by its id
     Note.findById(toShare, function(err, foundNoteEntry) {
@@ -794,16 +757,13 @@ app.post("/share&unshare", function(req, res) {
 //Go to page buttonn request
 //---this creates multiple new pages for the users page
 //creating a page to show the entries of users
-app.get("/userContent/:pageId", function(req,res){
+app.get("/userContent/:pageId",isLoggedIn, function(req,res){
     
 
-    //gets the title of the page that is going to be
-    //created after the click --create page
-    const pageEntry = req.params.pageId;
+        //gets the title of the page that is going to be
+        //created after the click --create page
+        const pageEntry = req.params.pageId;
 
-    
-    //redirects to the login if the user is not authenticated
-     if(req.isAuthenticated()){
         const theUser = req.user.username;
 
         NoteUser.findById(req.user.id, function(err, findpic){
@@ -823,10 +783,7 @@ app.get("/userContent/:pageId", function(req,res){
 
         })
     }});
-    
-    }else{
-        res.redirect("/login");
-    }
+
 
 })
 
@@ -839,10 +796,8 @@ app.get("/userContent/:pageId", function(req,res){
 
 
 //--------------------Public page------------------------------------
-app.get("/publicPage",function(req,res){
+app.get("/publicPage",isLoggedIn, function(req,res){
 
-
-     if(req.isAuthenticated()){
         
         // finding the document of the current user for the purpos of getting the url
         NoteUser.findById(req.user.id, function(err, findpic){
@@ -866,15 +821,13 @@ app.get("/publicPage",function(req,res){
                     }
                 });
             }});
-    }else{
-        res.redirect("/login");
-    }    
+ 
 });
 
 
 //----------------Creating multiple new pages for the public page
 //creating a page to show the entries of users
-app.get("/publicContent/:pageTitle", function(req,res){
+app.get("/publicContent/:pageTitle", isLoggedIn, function(req,res){
     
 
     //gets the title of the page that is going to be
@@ -883,11 +836,6 @@ app.get("/publicContent/:pageTitle", function(req,res){
     const currentUser = req.user.username;
 
     console.log(currentUser)
-
-    //redirects to the login if the user is not authenticated
-     if(req.isAuthenticated()){
-
-
 
 
             Note.findById(pageEntry, function(err, foundEntry){
@@ -927,21 +875,15 @@ app.get("/publicContent/:pageTitle", function(req,res){
                     }
                 })
             
-           
-
-    }else{
-        res.redirect("/login");
-    }
 
 })
 
 //--reviews section of public page
-app.post("/review", function(req, res){
+app.post("/review",isLoggedIn, function(req, res){
     const pageEntry = req.body.reviewContent;
     const content=req.body.content;
      console.log("afadfa");
-    //redirects to the login if the user is not authenticated
-    if(req.isAuthenticated()){
+
              
     if(req.body != null){
 
@@ -954,15 +896,13 @@ app.post("/review", function(req, res){
 }
 
         res.redirect("/publicContent/"+pageEntry);
-    }else{
-        res.redirect("/login");
-    }
+
 
 })
 
-app.post("/deleteReview", function(req, res){
+app.post("/deleteReview",isLoggedIn, function(req, res){
         const clickedEntry = req.body.deleteReviews;
-        if(req.isAuthenticated()){
+       
         Review.findByIdAndRemove({_id:clickedEntry, author:{$eq:req.user.username}}, function(err, found){
             if(err){
                 console.log(err);
@@ -973,17 +913,15 @@ app.post("/deleteReview", function(req, res){
 
             }
         });
-    }else{
-        res.redirect("/login");
-    }
+   
 
 })
 
 
 //-----SETTINGS PAGE--------------------------------------------------------------------
 
-app.get("/settings", function(req, res){
-    if(req.isAuthenticated()){
+app.get("/settings",isLoggedIn, function(req, res){
+    
         
         // finding the document of the current user for the purpos of getting the url
         NoteUser.findById(req.user.id, function(err, findpic){
@@ -1007,15 +945,12 @@ app.get("/settings", function(req, res){
                     }
                 });
             }});
-        
-    }else{
-        res.redirect("/login");
-    }    
+  
 })
 //----PROFILE IMAGE reuest 
 //---deals with the profile image upload and only allows one image associated to the user
 //to be stored in the cloudinary notebook folder
-app.post("/profileImg", parser.single("profileImage"), function(req,res) {
+app.post("/profileImg", isLoggedIn, parser.single("profileImage"), function(req,res) {
 
     const path = req.file.path;
     const filename= req.file.filename;
@@ -1050,17 +985,8 @@ app.post("/profileImg", parser.single("profileImage"), function(req,res) {
 
 
 
-
-
-app.get("/check-out", (req,res)=>{
-    res.render("check-out");
-})
-
-
 //---- TRASH BIN-----------------------------------
-app.get("/trashBin", function(req,res) {
-
-    if(req.isAuthenticated()) {
+app.get("/trashBin", isLoggedIn, function(req,res) {
 
         NoteUser.findById(req.user.id, function(err, findpic) {
 
@@ -1085,23 +1011,21 @@ app.get("/trashBin", function(req,res) {
                 })
             }
         });
-    }else{
-        res.redirect("/login");
-    }
+
 });
 
 //-----TRASHBIN BUTTONS
 
 //--eraser icon- deletes the entry inside of the notes collection
 // and also deletes the associated reviews
-app.post("/deletePermanent", function(req, res) {
+app.post("/deletePermanent", isLoggedIn, function(req, res) {
     const toDelete = req.body.deleteEntry;
     Review.deleteMany({"target":{$eq: toDelete}},function(err){
         if(err){
             console.log(err);
         }
     })
-    if(req.isAuthenticated()) {
+
         Note.findByIdAndRemove(toDelete, function(err) {
             if(!err){
                 console.log("Entry Deleted Permanently");
@@ -1109,15 +1033,12 @@ app.post("/deletePermanent", function(req, res) {
             }
         })
 
-    }else{
-        res.redirect("/login");
-    }
 })
 
 //--Rench button--the purpose is to undo the deletion on the main user page
-app.post("/salvage-data", function(req, res) {
+app.post("/salvage-data",isLoggedIn, function(req, res) {
     const fix = req.body.salvage;
-    if(req.isAuthenticated()){
+   
          //updating the status of the deleted note to false
         Note.updateOne(
             {_id: fix},
@@ -1131,17 +1052,51 @@ app.post("/salvage-data", function(req, res) {
         res.redirect("/trashBin");
 
 
-    
-    }else{
-        res.redirect("/login");
-    }
 })
 
 //----------------------------------------------------------------------
 
 
+const storeItems = new Map([
+    [1, {priceInCents: 1000, name: "Basic mode"}],
+    [2, {priceInCents: 2000, name: "Full version"}],
+])
+app.get("/check-out",isLoggedIn, (req,res)=>{
+    res.render("check-out");
+})
 
-
+app.post("/check-out", isLoggedIn,async (req,res)=>{
+        try{
+            const session = await stripe.checkout.sessions.create({
+                payment_method_types: ['card'],
+                mode: 'payment',
+                //array of items that the user wants to purchase
+                line_items: req.body.itemed.map(item =>{
+                    const storeItem = storeItems.get(item.id)
+                    return {
+                        price_data: {
+                            currency: 'usd',
+                            product_data:{
+                                name: storeItem.name
+                            },
+                            unit_amount: storeItem.priceInCents,
+                        },
+                        quantity: item.quantity,
+                    }
+                }), 
+                success_url: `${process.env.SERVER_URL}/success.ejs`,
+                cancel_url:  `${process.env.SERVER_URL}/cancel.ejs`,
+            })
+            res.json({url: session.url})
+        } catch(e) {
+            res.status(500).json({ error: e.message })
+        }
+        
+        //if subscription is not already chosen and active then can buy 
+        //if not then cant buy
+       //redirect to the url
+    
+})
 
 
 
