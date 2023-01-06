@@ -51,6 +51,9 @@ footer {
 .code_form {
   padding-top: 4rem;
 }
+.check-out-btn {
+  margin-top: 3rem;
+}
 
 .delete-btn :hover {
   color: #bc2d1a;
@@ -171,6 +174,7 @@ footer {
 .page-btn :active {
   color: #ffffff;
 }
+
 .profile-image {
   border-radius: 3rem;
   position: relative;
@@ -187,8 +191,18 @@ footer {
 .public-style {
   margin-top: 2rem;
 }
+
+.review-text {
+  font-size: 1rem;
+}
+
 .review-style {
   background-color: white;
+  border-color: #000000;
+  border-top-style: solid;
+  border-bottom-style: solid;
+  font-size: 2rem;
+  margin-bottom: 1rem;
 }
 
 .social-btn-container {
