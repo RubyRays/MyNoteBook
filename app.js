@@ -8,9 +8,9 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const path = require('path');
 const passport = require("passport");
-const passportLocalMongoose = require("passport-local-mongoose");
+// const passportLocalMongoose = require("passport-local-mongoose");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const findOrCreate = require('mongoose-findorcreate');
+// const findOrCreate = require('mongoose-findorcreate');
 const _ = require("lodash");
 const data = require(__dirname+"/data.js");
 const https = require("https");
@@ -19,24 +19,21 @@ const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const e = require('express');
 const nodemailer = require("nodemailer");
-const {google} = require ("googleapis");
+const {google, dlp_v2} = require ("googleapis");
 const { OAuth2Client } = require('google-auth-library');
 const OAuth2 = google.auth.OAuth2
-// const OAuth2_client = new OA
+const stripe= require('stripe')(process.env.STRIPE_PRIVATE_KEY);
+//modules---------------
+const Note = require('./models/Note');
+const Review = require("./models/Review");
+const NoteUser= require('./models/NoteUser');
+//-----------------
 const oAuth2Client= new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI)
 oAuth2Client.setCredentials({refresh_token: process.env.REFRESH_TOKEN})
 
 const app = express();
 
-
-
-app.use(express.static('public'));
-app.use(bodyParser.urlencoded({extended: true}));
-app.set('views', path.join(__dirname, 'views'));
-app.use(flash());
-app.set('view engine', 'ejs');
-
-
+//---------cloudinary configuration----------------------
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
@@ -52,6 +49,20 @@ const storage = new CloudinaryStorage({
 });
 
 const parser = multer({storage:storage});
+
+//--------------------------------------------------------
+
+
+const subscriptions = new Map([
+    [1, {priceInCents: 100, name: "Basic mode"}],
+    [2, {priceInCents: 200, name: "Full version"}],
+])
+
+app.use(express.static('public'));
+app.use(bodyParser.urlencoded({extended: true}));
+app.set('views', path.join(__dirname, 'views'));
+app.use(flash());
+app.set('view engine', 'ejs');
 
 
 
@@ -72,23 +83,30 @@ app.use(passport.session());
 // })
 
 
-app.use((error, req, res, next)=>{
-    res.status(error.status);
-    res.json({
-        error:{
-            message: error.message
-        }
-    });
-});
+// app.use((error, req, res, next)=>{
+//     res.status(error.status);
+//     res.json({
+//         error:{
+//             message: error.message
+//         }
+//     });
+// });
 
-//---------------------------------------------
+//-----------MONGODB CONNECTIONS---------------------------------------------
+
+//--------------FOR MONGODB ATLAS-------------------------------
 // const dbUsername= process.env.DBUSERNAME;
 // const dbPassword= process.env.DBPASSWORD;
 // const cluster =  process.env.CLUSTER;
-//--------------------------------------------
+//--------------------------------------------------------------
 
 mongoose.connect("mongodb://localhost:27017/noteUserDB");
-//-----------------------------------------------------------------------
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "connection error:"));
+db.once("open", () => {
+    console.log("Database connected");
+});
+//--------------FOR MONGODB ATLAS---------------------------------------
 // const dbUrl= "mongodb+srv://"+dbUsername+":"+dbPassword+cluster+"/notesAppDB?retryWrites=true&w=majority"
 
 // mongoose.connect(dbUrl).then(()=>{
@@ -96,58 +114,9 @@ mongoose.connect("mongodb://localhost:27017/noteUserDB");
 // }).catch(err=> {console.log("Error",err);});
 
 //----------------------------------------------------------------------
-const reviewSchema = new mongoose.Schema({
-    content: String, 
-    likes: Number,
-    dislikes: Number,
-    author: String, 
-    target: {type: String, default: "here"}
-})
-
-const Review= new mongoose.model("Review", reviewSchema);
-
-const notesSchema = new mongoose.Schema({
-    title: String,
-    content:String,
-    owner: String,
-    state: String,
-    date: String,
-    time: String,
-    imageURL: String,
-    shared: String,
-    deleted: String,
-    reviews: [reviewSchema]
-
-});
-
-const Note = new mongoose.model("Note", notesSchema);
 
 
-const noteUserSchema =new mongoose.Schema({
-    username: String,
-    email: {type: String, unique: true},
-    isVerified: {type: Boolean, default: false},
-    verificationCode: String,
-    password: String,
-    noteBookContents: [notesSchema],
-    googleId: String,
-    profileImage:{
-        url: String,
-        filename: String
-    }
-
-});
-
-
-
-
-noteUserSchema.plugin(passportLocalMongoose);
-noteUserSchema.plugin(findOrCreate);
-
-
-const NoteUser = new mongoose.model("NoteUser", noteUserSchema);
-
-
+//-----PASSPORT SETUP----------------------------------------------------------------
 
 passport.use(NoteUser.createStrategy());
 
@@ -166,23 +135,23 @@ passport.deserializeUser(function(user, cb){
     });
 });
 
-//-----------------Google--------------------------
+//-----------------Google OAUTH USING PASSPORT--------------------------
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET, 
     callbackURL: "http://localhost:3000/auth/google/page",
     userProfileURL:"https://www.googleapis.com/oauth2/v3/userinfo"
-},
-    function(accessToken, refreshToken, profile, cb){
-        NoteUser.findOrCreate({googleId: profile.id, username: profile.displayName,     profileImage:{
-        url: "https://res.cloudinary.com/dbvhtpmx4/image/upload/v1671056080/samples/sheep.jpg",
-        filename:'samples/sheep' ,
-    }   }, function(err, user){
-            return cb(err, user);
-        })
-    }
-))
-
+    },
+        function(accessToken, refreshToken, profile, cb){
+            NoteUser.findOrCreate({googleId: profile.id, username: profile.displayName, profileImage:{
+            url: "https://res.cloudinary.com/dbvhtpmx4/image/upload/v1671056080/samples/sheep.jpg",
+            filename:'samples/sheep' ,
+        }   }, function(err, user){
+                return cb(err, user);
+            })
+        }
+    ))
+//-----------END OF PASSPORT SETUP--------------------------------------------------------------
 
 
 
@@ -201,368 +170,12 @@ app.get("/auth/google/page",
     }    
 );
 
+//-----------REGISTER----------------------------------------------
 app.get("/register", function(req, res){
     res.render("register");
-});  
-app.get("/login", function(req, res){
-    // const errors = req.flash().error || [];
-    // res.render("login", {errors});
-    res.render('login');
-}); 
-app.get("/404",function(req,res){
-    res.render("404");
 });
 
 
-
-
-
-//-------------------User page--------------------
-app.get("/page", function(req,res){
-    //find the value from that specific user
-    //res.render("page", {username: username});
-
-    if(req.isAuthenticated()){
-       
-        
-        const theUser = req.user.username;
-
-       NoteUser.findById(req.user.id, function(err, findpic){
-            if(err){
-                console.log(err);
-            }else{
-                
-
-          //finds the current user using the user.id provided by the passport package
-        NoteUser.findById(req.user.id,function(err, foundUser) {
-            if(err){
-                console.log(err);
-            }else{
-                if(foundUser){
-                    //for nav bar profile image
-                    // const profileImg = foundUser.profileImage.url;
-
-                    //looking for the data in the notes collection where the owner name
-                    //is the same as the username of the currently logged in user
-                    Note.find({"owner": req.user.username, "deleted":{$ne:"true"}}, function(err, user2) {
-                    const pic= findpic.profileImage.url;
-                    // console.log(req.profilePic.username);                   
-                    //saves the posted contents into the noteBookContents
-                    foundUser.noteBookContents=user2;
-                    //saves the userinfo into noteUser collection and redirects to the page
-                    foundUser.save(function(){
-
-                        res.render("page", {pic, messages: req.flash('success'), userContent: foundUser, userthing: theUser});
-                        
-                    })
-            })
-            }
-        }
-    });
-                }
-        });
-
-    }else{
-        res.redirect("/login");
-    }    
-
-});
-app.get("/trashBin", function(req,res) {
-    if(req.isAuthenticated()) {
-        NoteUser.findById(req.user.id, function(err, findpic){
-            if(err){
-                console.log(err);
-            }else{
-                
-
-        Note.find({"owner": req.user.username, "deleted": "true"}, function(err, foundNoteEntry) {
-            if(err){
-                console.log(err);
-            }else{
-                // console.log(foundNoteEntry);
-                const pic = findpic.profileImage.url;
-                res.render("trashBin", {pic,foundNoteEntry:foundNoteEntry})
-            }
-        })
-    }});
-    }else{
-        res.redirect("/login");
-    }
-})
-
-//---------------creating multiple new pages for the users page---------------------------
-//creating a page to show the entries of users
-app.get("/userContent/:pageId", function(req,res){
-    
-
-    //gets the title of the page that is going to be
-    //created after the click --create page
-    const pageEntry = req.params.pageId;
-
-    
-    //redirects to the login if the user is not authenticated
-     if(req.isAuthenticated()){
-        const theUser = req.user.username;
-
-        NoteUser.findById(req.user.id, function(err, findpic){
-            if(err){
-                console.log(err);
-            }else{
-                
-        //search for the record with the same username as the currently logged in user
-        NoteUser.findOne({"username": theUser},function(err, post){
-        const newPage = post.noteBookContents;
-        const pic= findpic.profileImage.url;
-        //renders the userContent page
-        //the data passed into it is the title of the page that the user is looking for
-        //also the contents of the relavant noteBookContents of the found post     
-        res.render("userContent",{pic,newPage:newPage, userthing: pageEntry});    
-
-
-    })
-}});
-    }else{
-        res.redirect("/login");
-    }
-
-})
-
-//--------------------Public page------------------------------------
-app.get("/publicPage",function(req,res){
-     if(req.isAuthenticated()){
-        
-        NoteUser.findById(req.user.id, function(err, findpic){
-            if(err){
-                console.log(err);
-            }else{
-                
-
-                //finding the user related entries by the id of currently logged in user
-                Note.find({"shared": {$eq: "true"}, "deleted":{$ne: "true"}}, function(err, publicPosts){
-
-                    if(err){
-                        console.log(err);
-                        
-                                
-                    }else{
-
-                            const pic= findpic.profileImage.url;                
-                            res.render("publicPage", {pic, publicPosts: publicPosts});
-                        
-                    }
-                });
-            }});
-    }else{
-        res.redirect("/login");
-    }    
-});
-
-
-//----------------Creating multiple new pages for the public page----------------------------------
-//creating a page to show the entries of users
-app.get("/publicContent/:pageTitle", function(req,res){
-    
-
-    //gets the title of the page that is going to be
-    //created after the click --create page
-    const pageEntry = req.params.pageTitle;
-    const currentUser = req.user.username;
-
-    console.log(currentUser)
-
-    //redirects to the login if the user is not authenticated
-     if(req.isAuthenticated()){
-
-
-
-
-            Note.findById(pageEntry, function(err, foundEntry){
-                if(err){
-                    console.log(err);
-                }else{
-                    if(foundEntry){
-                        NoteUser.findById(req.user.id, function(err, findpic){
-                            if(err){
-                                console.log(err);
-                            }
-                            else{
-                                Review.find({"target":pageEntry}, function(err, foundReview){
-                                    if(!err){
-                                        
-                                        foundEntry.reviews= foundReview;
-                                        
-                                        foundEntry.save(function(){
-                                        //search for all records 
-                                        Note.find({},function(err, post){
-                                        const newPublicContent = post;
-                                        const pic = findpic.profileImage.url;
-                                        //renders the publicContent page
-                                        //the data passed into it is the title of the page that the user is looking for
-                                        //also the contents of the relavant noteBookContents of the found post     
-                                        res.render("publicContent",{pic,newPublicContent:newPublicContent, pageEntry: pageEntry, currentUser: currentUser});
-
-                                        })    
-                                        
-                                        });                        
-                                    }
-
-                            })
-                             }});
-                        }
-                    }
-                })
-            
-           
-
-    }else{
-        res.redirect("/login");
-    }
-
-})
-app.post("/review", function(req, res){
-    const pageEntry = req.body.reviewContent;
-    const content=req.body.content;
-     console.log("afadfa");
-    //redirects to the login if the user is not authenticated
-    if(req.isAuthenticated()){
-             
-    if(req.body != null){
-
-    const review = new Review({
-        content: content,
-        target:pageEntry,
-        author: req.user.username 
-    });
-    review.save();
-}
-
-        res.redirect("/publicContent/"+pageEntry);
-    }else{
-        res.redirect("/login");
-    }
-
-})
-
-app.post("/deleteReview", function(req, res){
-        const clickedEntry = req.body.deleteReviews;
-        if(req.isAuthenticated()){
-        Review.findByIdAndRemove({_id:clickedEntry, author:{$eq:req.user.username}}, function(err, found){
-            if(err){
-                console.log(err);
-            }else{
-                if(found)
-                //redirects to the page where the target of the review is
-                 res.redirect("/publicContent/"+found.target);
-
-            }
-        });
-    }else{
-        res.redirect("/login");
-    }
-
-})
-
-
-
-app.get("/settings", function(req, res){
-    if(req.isAuthenticated()){
-      
-        NoteUser.findById(req.user.id, function(err, findpic){
-            if(err){
-                console.log(err);
-            }else{
-                //finding the user related entries by the id of currently logged in user
-                NoteUser.findById(req.user.id, function(err, currentUser){
-
-                    if(err){
-                        console.log(err);
-                        
-                                
-                    }else{
-                        if(currentUser){
-                            const pic = findpic.profileImage.url;
-                            //rendering the settings page
-                            res.render("settings", {pic, currentUser:currentUser} );
-                        }
-                    }
-                });
-            }});
-        
-    }else{
-        res.redirect("/login");
-    }    
-})
-app.get("/verificationPage", function(req, res){
-    if(req.isAuthenticated()){
-
-        //finding the user related entries by the id of currently logged in user
-        NoteUser.findById(req.user.id, function(err, currentUser){
-
-            if(err){
-                console.log(err);
-                
-                        
-            }else{
-                if(currentUser){
-                    
-                    req.flash('success', 'Account has been verified!');
-
-                    //rendering the verification page
-                    res.render("verificationPage", {currentUser:currentUser} );
-                 }
-              }
-           });
-        
-    }else{
-        res.redirect("/login");
-    }        
-})
-
-app.post("/verifyEmail", function(req, res){
-    const status = req.body.verificationCode
-    const userId =req.user.id
-    let verificationMessage=[]
-    NoteUser.findById(userId, function(err, currentUser){
-        if(err){
-            console.log(err);
-        }else{
-            if(status == currentUser.verificationCode){
-                NoteUser.updateOne(
-                    {_id:userId},
-                    {$set:{"isVerified": true}},
-                    function(err){
-                        if(err){
-                            console.log(err);
-                        }else{
-                            verificationMessage.push({msg: "Email has been verified!"});
-
-                            res.redirect("/page");
-                        }
-                    }
-                )
-
-
-            }else{
-                verificationMessage.push({msg: "Verification code not correct"});
-                res.render("verificationPage",{verificationMessage, currentUser:currentUser});
-            }
-        }
-    })
-})
-
-
-//-----------------Logout------------------------------------------
-//log out page using the logout function
-app.get("/logout", function(req,res, next){
-    req.logout(function(err){
-        if(err){
-            return next(err)
-        }
-    });
-    res.redirect("/");
-})
-
-//-----------REGISTER----------------------------------------------
 app.post("/register", function(req, res, next){
     let date=data.getDay();
     let time= data.getTime();
@@ -731,6 +344,17 @@ async function sendMail(){
     }
 });  
 
+
+
+
+
+
+app.get("/login", function(req, res){
+    // const errors = req.flash().error || [];
+    // res.render("login", {errors});
+    res.render('login');
+}); 
+
 //login page that takes in the information input by the user and 
 //authenticates it before rendering the page
 app.post("/login", function(req,res){
@@ -765,6 +389,116 @@ app.post("/login", function(req,res){
                 })
     }
    });
+
+});
+
+
+app.get("/404",function(req,res){
+    res.render("404");
+});
+
+//-----VERIFICATION OF EMAIL ADDRESS PAGE-----------------
+app.get("/verificationPage", function(req, res){
+    if(req.isAuthenticated()){
+
+        //finding the user related entries by the id of currently logged in user
+        NoteUser.findById(req.user.id, function(err, currentUser){
+
+            if(err){
+                console.log(err);
+                
+                        
+            }else{
+                if(currentUser){
+
+                    //rendering the verification page
+                    res.render("verificationPage", {currentUser:currentUser} );
+                 }
+              }
+           });
+        
+    }else{
+        res.redirect("/login");
+    }        
+})
+
+app.post("/verifyEmail", function(req, res){
+    const status = req.body.verificationCode
+    const userId =req.user.id
+    let verificationMessage=[]
+    NoteUser.findById(userId, function(err, currentUser){
+        if(err){
+            console.log(err);
+        }else{
+            if(status == currentUser.verificationCode){
+                NoteUser.updateOne(
+                    {_id:userId},
+                    {$set:{"isVerified": true}},
+                    function(err){
+                        if(err){
+                            console.log(err);
+                        }else{
+                            //flash message that shows up at the page redirected to 
+                            req.flash('success', 'Account has been verified!');
+
+                            res.redirect("/page");
+                        }
+                    }
+                )
+
+
+            }else{
+                verificationMessage.push({msg: "Verification code not correct"});
+                res.render("verificationPage",{verificationMessage, currentUser:currentUser});
+            }
+        }
+    })
+})
+//--------------------------------------------------------
+
+
+
+
+//-------------------MAIN PAGE FOR USER NOTES--------------------
+app.get("/page", function(req,res){
+
+
+    if(req.isAuthenticated()){
+        const theUser = req.user.username;
+
+
+        //finds the current user using the user.id provided by the passport package
+        NoteUser.findById(req.user.id,function(err, foundUser) {
+            if(err){
+                console.log(err);
+            }else{
+
+                if(foundUser){
+
+                    //looking for the data in the notes collection where the owner name
+                    //is the same as the username of the currently logged in user
+                    Note.find({"owner": req.user.username, "deleted":{$ne:"true"}}, function(err, user2) {
+
+                        const pic= foundUser.profileImage.url;
+                                            
+                        //saves the notes associated with the user into the notebooks array
+                        foundUser.noteBookContents=user2;
+
+                        //saves the userinfo into noteUser collection and renders the page
+                        foundUser.save(function(){
+
+                            res.render("page", {pic, messages: req.flash('success'), userContent: foundUser, theUser: theUser});
+                                
+                        })
+                    })
+                }
+            }
+        });
+
+
+    }else{
+        res.redirect("/login");
+    }    
 
 });
 
@@ -850,102 +584,55 @@ app.post("/page", function(req,res){
 );
 
 
+//--------User page Buttons
+
+//--eraser icon request--deletes the entry from the noteuser collection
+//and marks it as deleted inside of the notes collection
 app.post("/delete", function(req, res){
     //distinguishing things to delete
     const clickedEntry = req.body.deleteEntry;
 
     if(req.isAuthenticated()){
-    //     //finds the entry that has the same id as the clicked entry and 
-    //     //removes it
-    //     Note.findByIdAndRemove(clickedEntry, function(err) {
-    //         if(!err){
-            
-    //             console.log("Entry Deleted");
-            
-    //     }
-    // });
-    Note.updateOne(
-        {_id: clickedEntry},
-        {$set: {"deleted": "true"}},
-        function(err) {
-            if(err) {
-                console.log(err);
-            }
-        }
-        )
-    //Finds the entry with the id of the currently logged in user
-    //looks at the notebookContents array and finds the id inside that 
-    //corresponds to the clickedEntry (the delete button that corresponds to the entry)
-    //then it excludes it from the list after the update
-    //this causes the items to be erased from the NoteUser collection.
-    NoteUser.findOneAndUpdate({_id:req.user.id},
-         {$pull:{noteBookContents:{_id: clickedEntry}}},
-         {new:true, useFindAndModify: false},
-         function(err){
-            if(err){
-                console.log(err);
-            }else{
-                res.redirect("/page");
-                
-            }
-         }
-        );
-        
-    }else{
-        res.redirect("/login");
-    }
-    
 
-    
-})
-
-app.post("/deletePermanent", function(req, res) {
-    const toDelete = req.body.deleteEntry;
-    Review.deleteMany({"target":{$eq: toDelete}},function(err){
-        if(err){
-            console.log(err);
-        }
-    })
-    if(req.isAuthenticated()) {
-        Note.findByIdAndRemove(toDelete, function(err) {
-            if(!err){
-                console.log("Entry Deleted Permanently");
-                res.redirect("/trashBin");
-            }
-        })
-
-    }else{
-        res.redirect("/login");
-    }
-})
-
-app.post("/salvage-data", function(req, res) {
-    const fix = req.body.salvage;
-    if(req.isAuthenticated()){
-            Note.updateOne(
-                {_id: fix},
-                {$set: {"deleted": "false"}},
-                function(err) {
-                    if(err) {
-                        console.log(err);
-                    }
+        Note.updateOne(
+            {_id: clickedEntry},
+            {$set: {"deleted": "true"}},
+            function(err) {
+                if(err) {
+                    console.log(err);
                 }
-            )        
-                res.redirect("/trashBin");
+            }
+            )
+        //Finds the entry with the id of the currently logged in user
+        //looks at the notebookContents array and finds the id inside that 
+        //corresponds to the clickedEntry (the delete button that corresponds to the entry)
+        //then it excludes it from the list after the update
+        //this causes the items to be erased from the NoteUser collection.
+        NoteUser.findOneAndUpdate({_id:req.user.id},
+            {$pull:{noteBookContents:{_id: clickedEntry}}},
+            {new:true, useFindAndModify: false},
+            function(err){
+                if(err){
+                    console.log(err);
+                }else{
+                    res.redirect("/page");
+                    
+                }
+            }
+            );
+            
+        }else{
+            res.redirect("/login");
+        }
+    
 
-
-        
-    }else{
-        res.redirect("/login");
-    }
+    
 })
 
-
-
-
-
-
+//--pen icon request-used to hide and unhide the edit form
 app.post("/preEdit", function(req, res){
+
+    //gets information sent by the editEntry/pen button
     const editState = req.body.editEntry;
     console.log(editState);
     //find the state of the entry being clicked and toggle it between edit-mode and normal-mode
@@ -986,7 +673,7 @@ app.post("/preEdit", function(req, res){
 })
 
  
-
+//--edit button request- used to edit user entries
 app.post("/edit", function(req,res) {
     const toEdit = req.body.Edit;
     const title= req.body.title2;
@@ -1045,6 +732,7 @@ app.post("/edit", function(req,res) {
 
 })
 
+//--last icon (arrow in a box) request to share and unshare user entries
 app.post("/share&unshare", function(req, res) {
     const toShare= req.body.share;
     //finding the entry by its id
@@ -1103,9 +791,228 @@ app.post("/share&unshare", function(req, res) {
 
 })
 
+//Go to page buttonn request
+//---this creates multiple new pages for the users page
+//creating a page to show the entries of users
+app.get("/userContent/:pageId", function(req,res){
+    
+
+    //gets the title of the page that is going to be
+    //created after the click --create page
+    const pageEntry = req.params.pageId;
+
+    
+    //redirects to the login if the user is not authenticated
+     if(req.isAuthenticated()){
+        const theUser = req.user.username;
+
+        NoteUser.findById(req.user.id, function(err, findpic){
+            if(err){
+                console.log(err);
+            }else{
+                
+        //search for the record with the same username as the currently logged in user
+        NoteUser.findOne({"username": theUser},function(err, post){
+        const newPage = post.noteBookContents;
+        const pic= findpic.profileImage.url;
+        //renders the userContent page
+        //the data passed into it is the title of the page that the user is looking for
+        //also the contents of the relavant noteBookContents of the found post     
+        res.render("userContent",{pic,newPage:newPage, userthing: pageEntry});    
+
+
+        })
+    }});
+    
+    }else{
+        res.redirect("/login");
+    }
+
+})
 
 
 
+//--------------------------------------------------------
+
+
+
+
+
+//--------------------Public page------------------------------------
+app.get("/publicPage",function(req,res){
+
+
+     if(req.isAuthenticated()){
+        
+        // finding the document of the current user for the purpos of getting the url
+        NoteUser.findById(req.user.id, function(err, findpic){
+            if(err){
+                console.log(err);
+            }else{
+                
+
+                //finding the user related entries by the id of currently logged in user
+                Note.find({"shared": {$eq: "true"}, "deleted":{$ne: "true"}}, function(err, publicPosts){
+
+                    if(err){
+                        console.log(err);
+                        
+                                
+                    }else{
+
+                            const pic= findpic.profileImage.url;                
+                            res.render("publicPage", {pic, publicPosts: publicPosts});
+                        
+                    }
+                });
+            }});
+    }else{
+        res.redirect("/login");
+    }    
+});
+
+
+//----------------Creating multiple new pages for the public page
+//creating a page to show the entries of users
+app.get("/publicContent/:pageTitle", function(req,res){
+    
+
+    //gets the title of the page that is going to be
+    //created after the click --create page
+    const pageEntry = req.params.pageTitle;
+    const currentUser = req.user.username;
+
+    console.log(currentUser)
+
+    //redirects to the login if the user is not authenticated
+     if(req.isAuthenticated()){
+
+
+
+
+            Note.findById(pageEntry, function(err, foundEntry){
+                if(err){
+                    console.log(err);
+                }else{
+                    if(foundEntry){
+                        // finding the document of the current user for the purpos of getting the url
+                        NoteUser.findById(req.user.id, function(err, findpic){
+                            if(err){
+                                console.log(err);
+                            }
+                            else{
+                                Review.find({"target":pageEntry}, function(err, foundReview){
+                                    if(!err){
+                                        
+                                        foundEntry.reviews= foundReview;
+                                        
+                                        foundEntry.save(function(){
+                                        //search for all records 
+                                        Note.find({},function(err, post){
+                                        const newPublicContent = post;
+                                        const pic = findpic.profileImage.url;
+                                        //renders the publicContent page
+                                        //the data passed into it is the title of the page that the user is looking for
+                                        //also the contents of the relavant noteBookContents of the found post     
+                                        res.render("publicContent",{pic,newPublicContent:newPublicContent, pageEntry: pageEntry, currentUser: currentUser});
+
+                                        })    
+                                        
+                                        });                        
+                                    }
+
+                            })
+                             }});
+                        }
+                    }
+                })
+            
+           
+
+    }else{
+        res.redirect("/login");
+    }
+
+})
+
+//--reviews section of public page
+app.post("/review", function(req, res){
+    const pageEntry = req.body.reviewContent;
+    const content=req.body.content;
+     console.log("afadfa");
+    //redirects to the login if the user is not authenticated
+    if(req.isAuthenticated()){
+             
+    if(req.body != null){
+
+    const review = new Review({
+        content: content,
+        target:pageEntry,
+        author: req.user.username 
+    });
+    review.save();
+}
+
+        res.redirect("/publicContent/"+pageEntry);
+    }else{
+        res.redirect("/login");
+    }
+
+})
+
+app.post("/deleteReview", function(req, res){
+        const clickedEntry = req.body.deleteReviews;
+        if(req.isAuthenticated()){
+        Review.findByIdAndRemove({_id:clickedEntry, author:{$eq:req.user.username}}, function(err, found){
+            if(err){
+                console.log(err);
+            }else{
+                if(found)
+                //redirects to the page where the target of the review is
+                 res.redirect("/publicContent/"+found.target);
+
+            }
+        });
+    }else{
+        res.redirect("/login");
+    }
+
+})
+
+
+//-----SETTINGS PAGE--------------------------------------------------------------------
+
+app.get("/settings", function(req, res){
+    if(req.isAuthenticated()){
+        
+        // finding the document of the current user for the purpos of getting the url
+        NoteUser.findById(req.user.id, function(err, findpic){
+            if(err){
+                console.log(err);
+            }else{
+                //finding the user related entries by the id of currently logged in user
+                NoteUser.findById(req.user.id, function(err, currentUser){
+
+                    if(err){
+                        console.log(err);
+                        
+                                
+                    }else{
+                        if(currentUser){
+                            //finding the url
+                            const pic = findpic.profileImage.url;
+                            //rendering the settings page
+                            res.render("settings", {pic, currentUser:currentUser} );
+                        }
+                    }
+                });
+            }});
+        
+    }else{
+        res.redirect("/login");
+    }    
+})
+//----PROFILE IMAGE reuest 
 //---deals with the profile image upload and only allows one image associated to the user
 //to be stored in the cloudinary notebook folder
 app.post("/profileImg", parser.single("profileImage"), function(req,res) {
@@ -1129,17 +1036,129 @@ app.post("/profileImg", parser.single("profileImage"), function(req,res) {
                         if(err){
                             console.log(err);
                         }else{
-                            res.redirect("/page")
+                            res.redirect("/settings");
                         }
                     }
     )
 
 })
 
-// app.use((req, res, next)=>{
-//    req.profilePic = 'https://res.cloudinary.com/dbvhtpmx4/image/upload/v1671056080/samples/sheep.jpg';
-//    next();
-// });
+//----------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+app.get("/check-out", (req,res)=>{
+    res.render("check-out");
+})
+
+
+//---- TRASH BIN-----------------------------------
+app.get("/trashBin", function(req,res) {
+
+    if(req.isAuthenticated()) {
+
+        NoteUser.findById(req.user.id, function(err, findpic) {
+
+            if(err){
+
+                console.log(err);
+
+            }else{
+                
+                Note.find({"owner": req.user.username, "deleted": "true"}, function(err, foundNoteEntry) {
+
+                    if(err){
+
+                        console.log(err);
+                        
+                    }else{
+                        
+                        const pic = findpic.profileImage.url;
+
+                        res.render("trashBin", {pic,foundNoteEntry:foundNoteEntry})
+                    }
+                })
+            }
+        });
+    }else{
+        res.redirect("/login");
+    }
+});
+
+//-----TRASHBIN BUTTONS
+
+//--eraser icon- deletes the entry inside of the notes collection
+// and also deletes the associated reviews
+app.post("/deletePermanent", function(req, res) {
+    const toDelete = req.body.deleteEntry;
+    Review.deleteMany({"target":{$eq: toDelete}},function(err){
+        if(err){
+            console.log(err);
+        }
+    })
+    if(req.isAuthenticated()) {
+        Note.findByIdAndRemove(toDelete, function(err) {
+            if(!err){
+                console.log("Entry Deleted Permanently");
+                res.redirect("/trashBin");
+            }
+        })
+
+    }else{
+        res.redirect("/login");
+    }
+})
+
+//--Rench button--the purpose is to undo the deletion on the main user page
+app.post("/salvage-data", function(req, res) {
+    const fix = req.body.salvage;
+    if(req.isAuthenticated()){
+         //updating the status of the deleted note to false
+        Note.updateOne(
+            {_id: fix},
+            {$set: {"deleted": "false"}},
+                function(err) {
+                if(err) {
+                    console.log(err);
+                }
+            }
+        )        
+        res.redirect("/trashBin");
+
+
+    
+    }else{
+        res.redirect("/login");
+    }
+})
+
+//----------------------------------------------------------------------
+
+
+
+
+
+
+
+
+//-----------------Logout------------------------------------------
+//log out page using the logout function
+app.get("/logout", function(req,res, next){
+    req.logout(function(err){
+        if(err){
+            return next(err)
+        }
+    });
+    res.redirect("/");
+})
+
+//-------------------------------------------------------------------
+
 
 
 //customising the port to be used for local and heroku....
