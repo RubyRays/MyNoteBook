@@ -156,9 +156,7 @@ passport.use(new GoogleStrategy ({
     ))
 //-----------END OF PASSPORT SETUP--------------------------------------------------------------
 
-app.use(function(req, res){
-    res.status(404).send('PAGE NOT FOUND!')
-})
+
 
 app.use(function(err, req, res, next) {
     console.log("*************ERROR***************")
