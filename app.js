@@ -28,6 +28,8 @@ const Note = require('./models/Note');
 const Review = require("./models/Review");
 const NoteUser= require('./models/NoteUser');
 const {isLoggedIn} = require('./login_middlewaare');
+const Subscription = require('./models/Subscription');
+const ErrorHandle = ('./ErrorHandle.js');
 //-----------------
 const oAuth2Client= new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI)
 oAuth2Client.setCredentials({refresh_token: process.env.REFRESH_TOKEN})
@@ -1055,40 +1057,73 @@ app.post("/salvage-data",isLoggedIn, function(req, res) {
 //----------------------------------------------------------------------
 
 
-const storeItems = new Map([
-    [1, {priceInCents: 1000, name: "Basic mode"}],
-    [2, {priceInCents: 2000, name: "Full version"}],
-])
 app.get("/check-out",isLoggedIn, (req,res)=>{
-    res.render("check-out");
+    // finding the document of the current user for the purpos of getting the url
+    NoteUser.findById(req.user.id, function(err, findpic){
+        if(err){
+            console.log(err);
+        }else{    
+            Subscription.find({}, function(err, subscription){
+                if(err){
+                    console.log(err);
+                }else{
+                   
+                    const pic = findpic.profileImage.url;
+                    res.render("check-out", {pic, subscription: subscription});
+                }
+                    
+            })
+        }
+    });
+
 })
 
 app.post("/check-out", isLoggedIn,async (req,res)=>{
+    const name = req.body.subscription_type
         try{
             const session = await stripe.checkout.sessions.create({
                 payment_method_types: ['card'],
-                mode: 'payment',
                 //array of items that the user wants to purchase
-                line_items: req.body.itemed.map(item =>{
-                    const storeItem = storeItems.get(item.id)
-                    return {
-                        price_data: {
-                            currency: 'usd',
-                            product_data:{
-                                name: storeItem.name
-                            },
-                            unit_amount: storeItem.priceInCents,
-                        },
-                        quantity: item.quantity,
-                    }
-                }), 
-                success_url: `${process.env.SERVER_URL}/success.ejs`,
-                cancel_url:  `${process.env.SERVER_URL}/cancel.ejs`,
+                line_items: [
+                    {
+                        price:"price_1MOuTTGhWh7HAI9xuFqiQkeH",
+                        quantity: 1,
+                    },
+                ],
+                mode: 'payment', 
+                success_url: `${process.env.SERVER_URL}/success`,
+                cancel_url:  `${process.env.SERVER_URL}/cancel`,
             })
-            res.json({url: session.url})
+            res.redirect(303, session.url);
         } catch(e) {
             res.status(500).json({ error: e.message })
         }
+        // try{
+        //     const session = await stripe.checkout.sessions.create({
+        //         payment_method_types: ['card'],
+                
+        //         //array of items that the user wants to purchase
+        //         line_items: req.body.itemed.map(item =>{
+        //             const storeItem = storeItems.get(item.id)
+        //             return {
+        //                 price_data: {
+        //                     currency: 'usd',
+        //                     product_data:{
+        //                         name: storeItem.name
+        //                     },
+        //                     unit_amount: storeItem.priceInCents,
+        //                 },
+        //                 quantity: item.quantity,
+        //             }
+        //         }),
+        //         mode: 'payment', 
+        //         success_url: `${process.env.SERVER_URL}/success`,
+        //         cancel_url:  `${process.env.SERVER_URL}/cancel`,
+        //     })
+        //     res.redirect({url: session.url})
+        // } catch(e) {
+        //     res.status(500).json({ error: e.message })
+        // }
         
         //if subscription is not already chosen and active then can buy 
         //if not then cant buy
@@ -1096,12 +1131,17 @@ app.post("/check-out", isLoggedIn,async (req,res)=>{
     
 })
 
-
+app.get("/cancel", isLoggedIn, function(req,res){
+    res.render("cancel");
+})
+app.get("/success", function(req,res){
+    res.render("success");
+})
 
 
 //-----------------Logout------------------------------------------
 //log out page using the logout function
-app.get("/logout", function(req,res, next){
+app.get("/logout", isLoggedIn, function(req,res, next){
     req.logout(function(err){
         if(err){
             return next(err)
