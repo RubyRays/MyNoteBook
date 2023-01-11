@@ -1,18 +1,20 @@
 <%-include('partials/header.ejs')-%>
 <%-include('partials/nav.ejs')-%>
-    <div class="profile-form-style">
-        <form action="/profileImg" method="post" enctype="multipart/form-data">
+<!-- <h1>Settings</h1> -->
+     <div class="profile-entry">    
+        <div class="profile-form">
             <img src="<%=currentUser.profileImage.url%>" class="profile-image" alt="...">
-            <input type="file" name="profileImage" id="" required>
-            <button type="submit" class="btn btn-light btn-block update-btn">Update</button>
-        </form>
-    </div>
-    <!-- <form action="/verifyEmail" method="post">
-        <input type="text" class="form-control text-left" name="verificationCode" placeholder="Enter verification code" required>
-        <%-include('partials/verifyMessage.ejs')-%>
-        <button type="submit" class="btn btn-light btn-block">Submit</button>
-    </form> -->
+        </div> 
+<div class=" profile-form-body">       
+ <form action="/profileImg" method="post" enctype="multipart/form-data">
 
+             
+            <label for="formFile" class="form-label">Profile Image</label>
+            <input class="form-control" type="file" name="profileImage" id="" required>
+            <button type="submit" class="btn btn-success btn-block">Update</button>
+        </div>
+ </form>
+</div>  
 <div class="back-btn">
     <a class="btn btn-light" href="/page" role="button"><i class="fas fa-home"></i></a>
 </div>

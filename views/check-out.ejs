@@ -1,9 +1,23 @@
 <%-include('partials/header.ejs')-%>
+<%-include('partials/nav.ejs')-%>
 
-<form action="/check-out" method="POST">
-    <div class="form-group">
-        <button type="submit" name="basic" class="btn btn-light check-out-btn">Check out</button>
+<form action="/check-out" class="subscription-cards" method="POST">
+<% subscription.reverse().forEach(function(item){%> 
+    <div class="card subscription-basic" style="width: 18rem;">
+        <h1><%=item.type%></h1>
+        <img class="card-img-top" src="<%=item.imageUrl%>" alt="Card image cap">
+        <div class="card-body">
+            <h5 class="card-title">Price: <%=item.price%></h5>
+            <p class="card-text">
+                <h4>Main User page</h4>
+                <h4>Trash bin</h4>
+                <h4>Settings</h4>
+            </p>
+            <button type="submit" name="subscription_type" value="<%=item.priceId%>" class="btn btn-light check-out-btn">Check out</button>
+        </div>
     </div>
+    <%})%>
+
 </form>
 
 
