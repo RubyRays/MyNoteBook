@@ -1079,14 +1079,14 @@ app.get("/check-out",isLoggedIn, (req,res)=>{
 })
 
 app.post("/check-out", isLoggedIn,async (req,res)=>{
-    const name = req.body.subscription_type
+    const priceId = req.body.subscription_type
         try{
             const session = await stripe.checkout.sessions.create({
                 payment_method_types: ['card'],
                 //array of items that the user wants to purchase
                 line_items: [
                     {
-                        price:"price_1MOuTTGhWh7HAI9xuFqiQkeH",
+                        price:priceId,
                         quantity: 1,
                     },
                 ],
@@ -1137,6 +1137,10 @@ app.get("/cancel", isLoggedIn, function(req,res){
 app.get("/success", function(req,res){
     res.render("success");
 })
+
+//Admin product page
+
+
 
 
 //-----------------Logout------------------------------------------
