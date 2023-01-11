@@ -1057,7 +1057,7 @@ app.post("/salvage-data",isLoggedIn, function(req, res) {
 //----------------------------------------------------------------------
 
 
-app.get("/check-out",isLoggedIn, (req,res)=>{
+app.get("/checkout",isLoggedIn, (req,res)=>{
     // finding the document of the current user for the purpos of getting the url
     NoteUser.findById(req.user.id, function(err, findpic){
         if(err){
@@ -1069,7 +1069,7 @@ app.get("/check-out",isLoggedIn, (req,res)=>{
                 }else{
                    
                     const pic = findpic.profileImage.url;
-                    res.render("check-out", {pic, subscription: subscription});
+                    res.render("checkout", {pic, subscription: subscription});
                 }
                     
             })
@@ -1078,7 +1078,7 @@ app.get("/check-out",isLoggedIn, (req,res)=>{
 
 })
 
-app.post("/check-out", isLoggedIn,async (req,res)=>{
+app.post("/checkout", isLoggedIn,async (req,res)=>{
     const priceId = req.body.subscription_type
         try{
             const session = await stripe.checkout.sessions.create({

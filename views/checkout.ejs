@@ -1,7 +1,7 @@
 <%-include('partials/header.ejs')-%>
 <%-include('partials/nav.ejs')-%>
 
-<form action="/check-out" class="subscription-cards" method="POST">
+<form action="/checkout" class="subscription-cards" method="POST">
 <% subscription.reverse().forEach(function(item){%> 
     <div class="card subscription-basic" style="width: 18rem;">
         <h1><%=item.type%></h1>
