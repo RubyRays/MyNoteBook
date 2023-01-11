@@ -27,6 +27,13 @@ p {
 }
 footer {
   color: #ffffff;
+
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  position: absolute;
   text-align: center;
 }
 
@@ -52,7 +59,10 @@ footer {
   padding-top: 4rem;
 }
 .check-out-btn {
-  margin-top: 3rem;
+  margin-top: 0.5rem;
+}
+.check-out-style {
+  padding-top: 2rem;
 }
 
 .delete-btn :hover {
@@ -92,6 +102,12 @@ footer {
   border-bottom-right-radius: 1rem;
   padding-bottom: 1rem;
   white-space: pre-line;
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: right space-between;
 }
 
 .edit-mode {
@@ -176,17 +192,32 @@ footer {
 }
 
 .profile-image {
-  border-radius: 3rem;
+  border-top-left-radius: 2rem;
+  border-bottom-left-radius: 2rem;
+  height: 10rem;
+}
+.profile-entry {
+  display: flex;
+  width: 100%;
   position: relative;
-  width: 10rem;
-  height: 5%;
+  padding-top: 1rem;
+  overflow: hidden;
 }
 .profile-form-style {
-  padding-top: 2%;
-  width: 20rem;
   height: 10rem;
-  background-color: none;
-  font-size: small;
+  flex-grow: 0.5;
+  position: relative;
+  width: 20rem;
+}
+.profile-form-body {
+  align-items: center;
+  background-color: #ffffff;
+  display: flex;
+  flex-grow: 0.5;
+  height: 10rem;
+  margin-bottom: -2rem;
+  padding-right: 2rem;
+  padding-left: 1rem;
 }
 .public-style {
   margin-top: 2rem;
@@ -216,6 +247,12 @@ footer {
 }
 .share-false {
   color: grey;
+}
+.subscription-cards {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  padding-top: 2rem;
 }
 
 .top-buttons {
