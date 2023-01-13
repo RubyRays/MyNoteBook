@@ -378,7 +378,7 @@ app.get("/404",function(req,res){
 });
 
 //-----VERIFICATION OF EMAIL ADDRESS PAGE-----------------
-app.get("/verificationPage", isLoggedIn, function(req, res){
+app.get("/verification-page", isLoggedIn, function(req, res){
    
 
         //finding the user related entries by the id of currently logged in user
@@ -399,7 +399,7 @@ app.get("/verificationPage", isLoggedIn, function(req, res){
      
 })
 
-app.post("/verifyEmail", isLoggedIn, function(req, res) {
+app.post("/verify-email", isLoggedIn, function(req, res) {
     
     
     const status = req.body.verificationCode
@@ -603,7 +603,7 @@ app.post("/delete",isLoggedIn, function(req, res){
 })
 
 //--pen icon request-used to hide and unhide the edit form
-app.post("/preEdit",isLoggedIn, function(req, res){
+app.post("/pre-edit",isLoggedIn, function(req, res){
 
     //gets information sent by the editEntry/pen button
     const editState = req.body.editEntry;
@@ -696,7 +696,7 @@ app.post("/edit",isLoggedIn, function(req,res) {
 })
 
 //--last icon (arrow in a box) request to share and unshare user entries
-app.post("/share&unshare",isLoggedIn, function(req, res) {
+app.post("/share-unshare",isLoggedIn, function(req, res) {
     const toShare= req.body.share;
     //finding the entry by its id
     Note.findById(toShare, function(err, foundNoteEntry) {
@@ -757,7 +757,7 @@ app.post("/share&unshare",isLoggedIn, function(req, res) {
 //Go to page buttonn request
 //---this creates multiple new pages for the users page
 //creating a page to show the entries of users
-app.get("/userContent/:pageId",isLoggedIn, function(req,res){
+app.get("/user-content/:pageId",isLoggedIn, function(req,res){
     
 
         //gets the title of the page that is going to be
@@ -772,14 +772,19 @@ app.get("/userContent/:pageId",isLoggedIn, function(req,res){
             }else{
                 
         //search for the record with the same username as the currently logged in user
-        NoteUser.findOne({"username": theUser},function(err, post){
-        const newPage = post.noteBookContents;
-        const pic= findpic.profileImage.url;
-        //renders the userContent page
-        //the data passed into it is the title of the page that the user is looking for
-        //also the contents of the relavant noteBookContents of the found post     
-        res.render("userContent",{pic,newPage:newPage, userthing: pageEntry});    
+        NoteUser.findOne({"username": theUser}).populate('noteBookContents').exec(function(err, post){
+            if(err){
+                console.log(err);
+            }else{
+                const newPage = post.noteBookContents;
+                const pic= findpic.profileImage.url;
+                //renders the userContent page
+                //the data passed into it is the title of the page that the user is looking for
+                //also the contents of the relavant noteBookContents of the found post     
+                res.render("userContent",{pic,newPage:newPage, pageEntry: pageEntry});    
 
+            }
+        
 
         })
     }});
@@ -796,7 +801,7 @@ app.get("/userContent/:pageId",isLoggedIn, function(req,res){
 
 
 //--------------------Public page------------------------------------
-app.get("/publicPage",isLoggedIn, function(req,res){
+app.get("/public-page",isLoggedIn, function(req,res){
 
         
         // finding the document of the current user for the purpos of getting the url
@@ -827,7 +832,7 @@ app.get("/publicPage",isLoggedIn, function(req,res){
 
 //----------------Creating multiple new pages for the public page
 //creating a page to show the entries of users
-app.get("/publicContent/:pageTitle", isLoggedIn, function(req,res){
+app.get("/public-content/:pageTitle", isLoggedIn, function(req,res){
     
 
     //gets the title of the page that is going to be
@@ -856,7 +861,7 @@ app.get("/publicContent/:pageTitle", isLoggedIn, function(req,res){
                                         
                                         foundEntry.save(function(){
                                         //search for all records 
-                                        Note.find({},function(err, post){
+                                        Note.find({}).populate('reviews').exec(function(err, post){
                                         const newPublicContent = post;
                                         const pic = findpic.profileImage.url;
                                         //renders the publicContent page
@@ -895,12 +900,12 @@ app.post("/review",isLoggedIn, function(req, res){
     review.save();
 }
 
-        res.redirect("/publicContent/"+pageEntry);
+        res.redirect("/public-content/"+pageEntry);
 
 
 })
 
-app.post("/deleteReview",isLoggedIn, function(req, res){
+app.post("/delete-review",isLoggedIn, function(req, res){
         const clickedEntry = req.body.deleteReviews;
        
         Review.findByIdAndRemove({_id:clickedEntry, author:{$eq:req.user.username}}, function(err, found){
@@ -909,7 +914,7 @@ app.post("/deleteReview",isLoggedIn, function(req, res){
             }else{
                 if(found)
                 //redirects to the page where the target of the review is
-                 res.redirect("/publicContent/"+found.target);
+                 res.redirect("/public-content/"+found.target);
 
             }
         });
@@ -950,7 +955,7 @@ app.get("/settings",isLoggedIn, function(req, res){
 //----PROFILE IMAGE reuest 
 //---deals with the profile image upload and only allows one image associated to the user
 //to be stored in the cloudinary notebook folder
-app.post("/profileImg", isLoggedIn, parser.single("profileImage"), function(req,res) {
+app.post("/profile-image", isLoggedIn, parser.single("profileImage"), function(req,res) {
 
     const path = req.file.path;
     const filename= req.file.filename;
@@ -986,7 +991,7 @@ app.post("/profileImg", isLoggedIn, parser.single("profileImage"), function(req,
 
 
 //---- TRASH BIN-----------------------------------
-app.get("/trashBin", isLoggedIn, function(req,res) {
+app.get("/trash-bin", isLoggedIn, function(req,res) {
 
         NoteUser.findById(req.user.id, function(err, findpic) {
 
@@ -1018,7 +1023,7 @@ app.get("/trashBin", isLoggedIn, function(req,res) {
 
 //--eraser icon- deletes the entry inside of the notes collection
 // and also deletes the associated reviews
-app.post("/deletePermanent", isLoggedIn, function(req, res) {
+app.post("/delete-permanently", isLoggedIn, function(req, res) {
     const toDelete = req.body.deleteEntry;
     Review.deleteMany({"target":{$eq: toDelete}},function(err){
         if(err){
@@ -1098,36 +1103,7 @@ app.post("/checkout", isLoggedIn,async (req,res)=>{
         } catch(e) {
             res.status(500).json({ error: e.message })
         }
-        // try{
-        //     const session = await stripe.checkout.sessions.create({
-        //         payment_method_types: ['card'],
-                
-        //         //array of items that the user wants to purchase
-        //         line_items: req.body.itemed.map(item =>{
-        //             const storeItem = storeItems.get(item.id)
-        //             return {
-        //                 price_data: {
-        //                     currency: 'usd',
-        //                     product_data:{
-        //                         name: storeItem.name
-        //                     },
-        //                     unit_amount: storeItem.priceInCents,
-        //                 },
-        //                 quantity: item.quantity,
-        //             }
-        //         }),
-        //         mode: 'payment', 
-        //         success_url: `${process.env.SERVER_URL}/success`,
-        //         cancel_url:  `${process.env.SERVER_URL}/cancel`,
-        //     })
-        //     res.redirect({url: session.url})
-        // } catch(e) {
-        //     res.status(500).json({ error: e.message })
-        // }
-        
-        //if subscription is not already chosen and active then can buy 
-        //if not then cant buy
-       //redirect to the url
+
     
 })
 
@@ -1135,6 +1111,7 @@ app.get("/cancel", isLoggedIn, function(req,res){
     res.render("cancel");
 })
 app.get("/success", function(req,res){
+
     res.render("success");
 })
 
