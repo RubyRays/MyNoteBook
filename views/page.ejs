@@ -36,11 +36,11 @@
             </form>
 
             <!-- edit button for activating state and making the edit form show up -->
-            <form action="/preEdit" method="Post" class="icon-style-form">
+            <form action="/pre-edit" method="Post" class="icon-style-form">
                 <button type="submit" class="edit-btn action-btn" name="editEntry" value="<%= newContent._id %>" alt="edit"><i class="fa-solid fa-pencil fa-xl"></i></button>     
             </form>
             <!-- share button to toggle the shared post -->
-            <form action="/share&unshare" method="POST" class="icon-style-form">
+            <form action="/share-unshare" method="POST" class="icon-style-form">
                 <button type="submit" class="edit-btn action-btn share-<%=newContent.shared%>" name="share" value="<%=newContent._id %>" alt="share"><i class="fa-regular fa-share-from-square"></i></button>
             </form>
             </div>
@@ -58,7 +58,7 @@
                 </div>
             </div>
             <!-- button that takes the user to the page with the rest of the entry -->
-            <button class="page-btn"><a href="/userContent/<%=newContent._id%>">Go to page</a></button>
+            <button class="page-btn"><a href="/user-content/<%=newContent._id%>">Go to page</a></button>
          
             <h2>---</h2>
                 <!-- edit form that changes state to not editing and disappears after the edit is made -->
