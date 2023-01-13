@@ -10,7 +10,7 @@ const noteUserSchema =new mongoose.Schema({
     isVerified: {type: Boolean, default: false},
     verificationCode: String,
     password: String,
-    noteBookContents: [{type: Schema.Types.Mixed, ref:"Note"}],
+    noteBookContents: [{type: Schema.Types.ObjectId, ref:"Note"}],
     googleId: String,
     profileImage:{
         url: String,
