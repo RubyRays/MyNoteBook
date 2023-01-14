@@ -2,6 +2,7 @@ body {
   background-color: #c04fb5;
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
   padding: 0 16px;
+  height: 100%;
 }
 @media (min-width: 991.98px) {
   main {
@@ -22,18 +23,9 @@ a :hover {
 h1 {
   font-size: 2rem;
 }
+
 p {
   font-size: 1.5rem;
-}
-footer {
-  color: #ffffff;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
-  position: absolute;
-  text-align: center;
 }
 
 .container {
@@ -50,9 +42,21 @@ footer {
   margin-top: 2rem;
 }
 .back-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin: auto;
   position: relative;
-  margin-top: 1rem;
   padding-top: 3rem;
+}
+.body-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-top: auto;
+  align-content: flex-end;
+  min-height: 100%;
+  justify-content: space-evenly;
 }
 .code_form {
   padding-top: 4rem;
@@ -74,20 +78,18 @@ footer {
   color: green;
 }
 .footer {
-  position: absolute;
-  text-align: center;
+  display: flex;
+  margin-top: auto;
+  height: 21rem;
+  align-items: flex-end;
+}
+.footer-text {
+  display: flex;
+  color: #ffffff;
   bottom: 0;
-  width: 100%;
-  height: 60px;
-}
-
-.footer p {
-  margin-top: 25px;
-  font-size: 12px;
-  color: #fff;
-}
-.footer-padding {
-  padding-bottom: 60px;
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .full-title {
@@ -116,6 +118,12 @@ footer {
   visibility: hidden;
   display: none;
 }
+.header {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  justify-content: flex-end;
+}
 .icon-style-form {
   display: inline-block;
 }
@@ -141,8 +149,12 @@ footer {
   margin-top: 2rem;
   margin-bottom: 0;
 }
+.nav-link {
+  margin-left: auto;
+  margin-right: auto;
+}
 .note {
-  margin-left: -1rem;
+  margin-left: -0.6rem;
 }
 
 .note-heading {
@@ -200,6 +212,7 @@ footer {
   width: 100%;
   position: relative;
   padding-top: 1rem;
+  padding-left: 0.2rem;
   overflow: hidden;
 }
 .profile-form-style {
@@ -263,7 +276,5 @@ footer {
   height: 100%;
 }
 .update-btn {
-  position: absolute;
-  margin-top: -5rem;
-  margin-left: -4rem;
+  margin-top: 1rem;
 }
