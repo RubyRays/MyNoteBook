@@ -14,7 +14,7 @@
                             </p>
                         </div>
                         <div class="col-md-5">
-                            <form action="/review" method="POST" class="public-style">
+                            <form action="/public-pages/review?_method=PUT" method="POST" class="public-style">
                                 <!-- the class waits for the value of the state to change and the corresponding style is added-->
                                 <label><h5>Reviews</h5></label>
                                 <div class="form-group ">
@@ -26,7 +26,7 @@
                             
                             <% newPageContent.reviews.reverse().forEach(function(reviewContent){%>
                                     <% if(reviewContent.author == currentUser){%>
-                                    <form action="/delete-review" method="post" class="icon-style-form">
+                                    <form action="/public-pages/review/delete?_method=DELETE" method="post" class="icon-style-form">
 
                                         <button type="submit"  name="deleteReviews" value="<%=reviewContent._id%>" alt="delete review"><i class="fa-solid fa-eraser "></i></button>
                                     </form>
@@ -46,7 +46,7 @@
                     <% }) %>
                         </div>
                         <div class="back-btn">
-                            <a class="btn btn-light" href="/page" role="button"><i class="fas fa-home"></i></a>
+                            <a class="btn btn-light" href="/pages" role="button"><i class="fas fa-home"></i></a>
                         </div>
     </div>
 

@@ -11,7 +11,7 @@
         </p>
     </div>    -->
 
-    <form action="/page" method="POST" >
+    <form action="/pages" method="POST" >
     
         <div class="form-group">
             <input type="text" class="form-control text-left" name="title" placeholder="Title of new page" required>
@@ -29,18 +29,18 @@
     <% userContent.noteBookContents.reverse().forEach(function(newContent){%>
            <div>
             <!-- delete form and button -->
-            <form action="/delete" method="POST" class="icon-style-form">
+            <form action="/pages/delete?_method=Put" method="POST" class="icon-style-form">
             
                 <button type="submit" class="delete-btn action-btn" name="deleteEntry" value="<%= newContent._id %>" alt="delete"><i class="fa-solid fa-eraser fa-xl"></i></button> 
                 
             </form>
 
             <!-- edit button for activating state and making the edit form show up -->
-            <form action="/pre-edit" method="Post" class="icon-style-form">
+            <form action="/pages/pre-edit?_method=PUT" method="Post" class="icon-style-form">
                 <button type="submit" class="edit-btn action-btn" name="editEntry" value="<%= newContent._id %>" alt="edit"><i class="fa-solid fa-pencil fa-xl"></i></button>     
             </form>
             <!-- share button to toggle the shared post -->
-            <form action="/share-unshare" method="POST" class="icon-style-form">
+            <form action="/pages/share-unshare?_method=PUT" method="POST" class="icon-style-form">
                 <button type="submit" class="edit-btn action-btn share-<%=newContent.shared%>" name="share" value="<%=newContent._id %>" alt="share"><i class="fa-regular fa-share-from-square"></i></button>
             </form>
             </div>
@@ -58,11 +58,11 @@
                 </div>
             </div>
             <!-- button that takes the user to the page with the rest of the entry -->
-            <button class="page-btn"><a href="/user-content/<%=newContent._id%>">Go to page</a></button>
+            <button class="page-btn"><a href="/pages/<%=newContent._id%>">Go to page</a></button>
          
             <h2>---</h2>
                 <!-- edit form that changes state to not editing and disappears after the edit is made -->
-            <form action="/edit" method="POST">
+            <form action="/pages/edit?_method=PUT" method="POST">
                 <!-- the class waits for the value of the state to change and the corresponding style is added-->
                 <div class="form-group <%=newContent.state%>">
                     <input type="text" class="form-control text-left" name="title2" value="<%=newContent.title%>" placeholder="Title" required>

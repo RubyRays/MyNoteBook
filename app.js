@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const session = require('express-session');
 const flash = require('connect-flash');
 const path = require('path');
+const methodOverride=require('method-override');
 const passport = require("passport");
 // const passportLocalMongoose = require("passport-local-mongoose");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -62,6 +63,7 @@ app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('views', path.join(__dirname, 'views'));
 app.use(flash());
+app.use(methodOverride('_method'));
 app.set('view engine', 'ejs');
 
 
@@ -140,7 +142,7 @@ passport.use(new GoogleStrategy ({
 
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET, 
-    callbackURL: "http://localhost:3000/auth/google/page",
+    callbackURL: "http://localhost:3000/auth/google/pages",
     userProfileURL:"https://www.googleapis.com/oauth2/v3/userinfo"
     },
         function(accessToken, refreshToken, profile, cb){
@@ -168,7 +170,7 @@ app.use(function(err, req, res, next) {
 
 
 //--HOME ROUTE----
-app.get("/", function(req, res){
+app.get("/", async(req, res)=>{
     res.render("home");
 }); 
 
@@ -176,20 +178,20 @@ app.get("/", function(req, res){
 app.get("/auth/google",
     passport.authenticate('google', {scope: ["profile"]})
     );
-app.get("/auth/google/page",
+app.get("/auth/google/pages",
     passport.authenticate('google',{failureRedirect: "/login"}),
     function(req, res){
-        res.redirect('/page');
+        res.redirect('/pages');
     }    
 );
 
 //-----------REGISTER----------------------------------------------
-app.get("/register", function(req, res){
-    res.render("register");
+app.get("/register", async(req, res)=>{
+    res.render("register", {messages: req.flash('fail')});
 });
 
 
-app.post("/register", function(req, res, next){
+app.post("/register", async(req, res, next)=>{
     let date=data.getDay();
     let time= data.getTime();
     const note0 = new Note({
@@ -288,14 +290,17 @@ async function sendMail(){
             },
             req.body.password, function(err,user){
              if(err){
-                try{
+                try{  
+                    req.flash('fail', 'there is something wrong-username or email already in use!');
                     next(err);
+                    // res.redirect('/');
                 }
                 catch{(err)
-                    client.query("ROLLBACK")
+                    client.query("ROLLBACK") 
+                    console.log("afdjalkfjldajfdkajfj");               
+                  
                     return next(new CustomHandleError(400, 'something '))
-                }
-                res.redirect("/register");//if there are errors redirect to home
+                }           
             
             }else{    
                 // sendMail()
@@ -304,15 +309,16 @@ async function sendMail(){
                 note0.save();
                 
                 passport.authenticate("local")(req, res, function(){
-                    NoteUser.findById(req.user.id, function(err, found){
+                    NoteUser.findById(req.user.id, async (err, found)=>{
                         if(err){
                             console.log(err)
+                            console.log("DJFKLDJAKFJAJFKAKFJKDJ")
                         }else{
                             if(found.isVerified == true){
-                                res.redirect("/page");
+                                res.redirect("/pages");
                             }else{
                                
-                                res.redirect("/verificationPage");
+                                res.redirect("/verification-page");
 
                             }
                         }
@@ -329,7 +335,7 @@ async function sendMail(){
 
 
 
-app.get("/login", function(req, res){
+app.get("/login", async(req, res)=>{
     // const errors = req.flash().error || [];
     // res.render("login", {errors});
     res.render('login');
@@ -337,7 +343,7 @@ app.get("/login", function(req, res){
 
 //login page that takes in the information input by the user and 
 //authenticates it before rendering the page
-app.post("/login", function(req,res){
+app.post("/login", async(req,res)=>{
    const user = new NoteUser({
     username: req.body.username,
     // email:req.body.email,
@@ -345,7 +351,7 @@ app.post("/login", function(req,res){
  
    });
 
-   req.login(user, function(err){
+   req.login(user, async(err)=>{
     if(err){
         console.log(err);
     }else{
@@ -360,9 +366,9 @@ app.post("/login", function(req,res){
                             console.log(err)
                         }else{
                             if(found.isVerified == true){
-                                res.redirect("/page");
+                                res.redirect("/pages");
                             }else{
-                                res.redirect("/verificationPage");
+                                res.redirect("/verification-page");
                             }
                         }
                     })
@@ -378,7 +384,7 @@ app.get("/404",function(req,res){
 });
 
 //-----VERIFICATION OF EMAIL ADDRESS PAGE-----------------
-app.get("/verification-page", isLoggedIn, function(req, res){
+app.get("/verification-page", isLoggedIn, async(req, res)=>{
    
 
         //finding the user related entries by the id of currently logged in user
@@ -399,7 +405,7 @@ app.get("/verification-page", isLoggedIn, function(req, res){
      
 })
 
-app.post("/verify-email", isLoggedIn, function(req, res) {
+app.post("/verify-email", isLoggedIn, async (req, res)=> {
     
     
     const status = req.body.verificationCode
@@ -421,7 +427,7 @@ app.post("/verify-email", isLoggedIn, function(req, res) {
                             //flash message that shows up at the page redirected to 
                             req.flash('success', 'Account has been verified!');
 
-                            res.redirect("/page");
+                            res.redirect("/pages");
                         }
                     }
                 )
@@ -441,7 +447,7 @@ app.post("/verify-email", isLoggedIn, function(req, res) {
 
 
 //-------------------MAIN PAGE FOR USER NOTES--------------------
-app.get("/page", isLoggedIn, function(req,res){
+app.get("/pages", isLoggedIn, async(req,res)=>{
 
 
         const theUser = req.user.username;
@@ -479,7 +485,7 @@ app.get("/page", isLoggedIn, function(req,res){
 });
 
 //renders the notebook user page
-app.post("/page",isLoggedIn, function(req,res){
+app.post("/pages",isLoggedIn, async(req,res)=>{
     
 //API SECTION WHERE DATA IS PASSED FROM ONE API TO BE USED IN THE OTHER BY MEANS OF 
 //CALLBACK FUNCTIONS  
@@ -545,7 +551,7 @@ app.post("/page",isLoggedIn, function(req,res){
                 post.save();
             }
 
-            res.redirect("/page");
+            res.redirect("/pages");
 
         }
         makeCall2(weatherUrl, function(results2) {
@@ -569,7 +575,7 @@ app.post("/page",isLoggedIn, function(req,res){
 
 //--eraser icon request--deletes the entry from the noteuser collection
 //and marks it as deleted inside of the notes collection
-app.post("/delete",isLoggedIn, function(req, res){
+app.put("/pages/delete",isLoggedIn, async(req, res)=>{
     //distinguishing things to delete
     const clickedEntry = req.body.deleteEntry;
 
@@ -594,7 +600,7 @@ app.post("/delete",isLoggedIn, function(req, res){
                 if(err){
                     console.log(err);
                 }else{
-                    res.redirect("/page");
+                    res.redirect("/pages");
                     
                 }
             }
@@ -603,7 +609,7 @@ app.post("/delete",isLoggedIn, function(req, res){
 })
 
 //--pen icon request-used to hide and unhide the edit form
-app.post("/pre-edit",isLoggedIn, function(req, res){
+app.put("/pages/pre-edit",isLoggedIn, async(req, res)=>{
 
     //gets information sent by the editEntry/pen button
     const editState = req.body.editEntry;
@@ -622,7 +628,7 @@ app.post("/pre-edit",isLoggedIn, function(req, res){
                             console.log(err);
                         }else{
                            
-                            res.redirect("/page");
+                            res.redirect("/pages");
                         }
                     }        
                 )                
@@ -635,7 +641,7 @@ app.post("/pre-edit",isLoggedIn, function(req, res){
                             console.log(err);
                         }else{
                             
-                            res.redirect("/page");
+                            res.redirect("/pages");
                         }
                     }        
                 )                
@@ -647,7 +653,7 @@ app.post("/pre-edit",isLoggedIn, function(req, res){
 
  
 //--edit button request- used to edit user entries
-app.post("/edit",isLoggedIn, function(req,res) {
+app.put("/pages/edit",isLoggedIn, async(req,res)=> {
     const toEdit = req.body.Edit;
     const title= req.body.title2;
     const content=req.body.content2;
@@ -687,7 +693,7 @@ app.post("/edit",isLoggedIn, function(req,res) {
                     console.log(err);
                 }else{
                     console.log("edit page button pressed");
-                    res.redirect("/page");
+                    res.redirect("/pages");
                 }
             }        
         )
@@ -696,7 +702,7 @@ app.post("/edit",isLoggedIn, function(req,res) {
 })
 
 //--last icon (arrow in a box) request to share and unshare user entries
-app.post("/share-unshare",isLoggedIn, function(req, res) {
+app.put("/pages/share-unshare",isLoggedIn, async(req, res)=> {
     const toShare= req.body.share;
     //finding the entry by its id
     Note.findById(toShare, function(err, foundNoteEntry) {
@@ -713,20 +719,11 @@ app.post("/share-unshare",isLoggedIn, function(req, res) {
                     function(err){
                         if(err){
                             console.log(err);
-                        }
-                    }
-            )
-                NoteUser.updateOne(
-                    {_id: req.user.id, "noteBookContents": {"$elemMatch":{"_id": toShare}}},
-                    {$set: {"noteBookContents.$.shared": "true"}},
-                    function(err){
-                        if(err){
-                            console.log(err);
                         }else{
-                            res.redirect("/page");
+                            res.redirect("/pages")
                         }
                     }
-                )
+            ) 
             }else{
                 Note.updateOne(
                     {_id:toShare},
@@ -734,20 +731,11 @@ app.post("/share-unshare",isLoggedIn, function(req, res) {
                     function(err){
                         if(err){
                             console.log(err);
-                        }
-                    }
-                )
-                NoteUser.updateOne(
-                    {_id: req.user.id, "noteBookContents": {"$elemMatch":{"_id": toShare}}},
-                    {$set: {"noteBookContents.$.shared": "false"}},
-                    function(err){
-                        if(err){
-                            console.log(err);
                         }else{
-                            res.redirect("/page");
+                            res.redirect("/pages")
                         }
                     }
-                )               
+                )    
             }
         }
     })
@@ -757,12 +745,12 @@ app.post("/share-unshare",isLoggedIn, function(req, res) {
 //Go to page buttonn request
 //---this creates multiple new pages for the users page
 //creating a page to show the entries of users
-app.get("/user-content/:pageId",isLoggedIn, function(req,res){
+app.get("/pages/:id",isLoggedIn, async(req,res)=>{
     
 
         //gets the title of the page that is going to be
         //created after the click --create page
-        const pageEntry = req.params.pageId;
+        const pageEntry = req.params.id;
 
         const theUser = req.user.username;
 
@@ -801,7 +789,7 @@ app.get("/user-content/:pageId",isLoggedIn, function(req,res){
 
 
 //--------------------Public page------------------------------------
-app.get("/public-page",isLoggedIn, function(req,res){
+app.get("/public-pages",isLoggedIn, async(req,res)=>{
 
         
         // finding the document of the current user for the purpos of getting the url
@@ -832,12 +820,12 @@ app.get("/public-page",isLoggedIn, function(req,res){
 
 //----------------Creating multiple new pages for the public page
 //creating a page to show the entries of users
-app.get("/public-content/:pageTitle", isLoggedIn, function(req,res){
+app.get("/public-pages/:id", isLoggedIn, async(req,res)=>{
     
 
     //gets the title of the page that is going to be
     //created after the click --create page
-    const pageEntry = req.params.pageTitle;
+    const pageEntry = req.params.id;
     const currentUser = req.user.username;
 
     console.log(currentUser)
@@ -884,7 +872,7 @@ app.get("/public-content/:pageTitle", isLoggedIn, function(req,res){
 })
 
 //--reviews section of public page
-app.post("/review",isLoggedIn, function(req, res){
+app.put("/public-pages/review",isLoggedIn, async(req, res)=>{
     const pageEntry = req.body.reviewContent;
     const content=req.body.content;
      console.log("afadfa");
@@ -900,12 +888,12 @@ app.post("/review",isLoggedIn, function(req, res){
     review.save();
 }
 
-        res.redirect("/public-content/"+pageEntry);
+        res.redirect("/public-pages/"+pageEntry);
 
 
 })
 
-app.post("/delete-review",isLoggedIn, function(req, res){
+app.delete("/public-pages/review/delete",isLoggedIn, function(req, res){
         const clickedEntry = req.body.deleteReviews;
        
         Review.findByIdAndRemove({_id:clickedEntry, author:{$eq:req.user.username}}, function(err, found){
@@ -914,7 +902,7 @@ app.post("/delete-review",isLoggedIn, function(req, res){
             }else{
                 if(found)
                 //redirects to the page where the target of the review is
-                 res.redirect("/public-content/"+found.target);
+                 res.redirect("/public-pages/"+found.target);
 
             }
         });
@@ -925,7 +913,7 @@ app.post("/delete-review",isLoggedIn, function(req, res){
 
 //-----SETTINGS PAGE--------------------------------------------------------------------
 
-app.get("/settings",isLoggedIn, function(req, res){
+app.get("/settings",isLoggedIn, async(req, res)=>{
     
         
         // finding the document of the current user for the purpos of getting the url
@@ -955,7 +943,7 @@ app.get("/settings",isLoggedIn, function(req, res){
 //----PROFILE IMAGE reuest 
 //---deals with the profile image upload and only allows one image associated to the user
 //to be stored in the cloudinary notebook folder
-app.post("/profile-image", isLoggedIn, parser.single("profileImage"), function(req,res) {
+app.put("/settings/profile-image", isLoggedIn, parser.single("profileImage"), async(req,res)=> {
 
     const path = req.file.path;
     const filename= req.file.filename;
@@ -991,7 +979,7 @@ app.post("/profile-image", isLoggedIn, parser.single("profileImage"), function(r
 
 
 //---- TRASH BIN-----------------------------------
-app.get("/trash-bin", isLoggedIn, function(req,res) {
+app.get("/trash", isLoggedIn, async(req,res)=> {
 
         NoteUser.findById(req.user.id, function(err, findpic) {
 
@@ -1023,7 +1011,7 @@ app.get("/trash-bin", isLoggedIn, function(req,res) {
 
 //--eraser icon- deletes the entry inside of the notes collection
 // and also deletes the associated reviews
-app.post("/delete-permanently", isLoggedIn, function(req, res) {
+app.delete("/trash/delete", isLoggedIn, async(req, res)=> {
     const toDelete = req.body.deleteEntry;
     Review.deleteMany({"target":{$eq: toDelete}},function(err){
         if(err){
@@ -1034,14 +1022,14 @@ app.post("/delete-permanently", isLoggedIn, function(req, res) {
         Note.findByIdAndRemove(toDelete, function(err) {
             if(!err){
                 console.log("Entry Deleted Permanently");
-                res.redirect("/trashBin");
+                res.redirect("/trash-bin");
             }
         })
 
 })
 
 //--Rench button--the purpose is to undo the deletion on the main user page
-app.post("/salvage-data",isLoggedIn, function(req, res) {
+app.put("/trash/salvage",isLoggedIn, async(req, res)=> {
     const fix = req.body.salvage;
    
          //updating the status of the deleted note to false
@@ -1054,7 +1042,7 @@ app.post("/salvage-data",isLoggedIn, function(req, res) {
                 }
             }
         )        
-        res.redirect("/trashBin");
+        res.redirect("/trash");
 
 
 })
@@ -1062,7 +1050,7 @@ app.post("/salvage-data",isLoggedIn, function(req, res) {
 //----------------------------------------------------------------------
 
 
-app.get("/checkout",isLoggedIn, (req,res)=>{
+app.get("/checkout",isLoggedIn, async(req,res)=>{
     // finding the document of the current user for the purpos of getting the url
     NoteUser.findById(req.user.id, function(err, findpic){
         if(err){
@@ -1086,6 +1074,7 @@ app.get("/checkout",isLoggedIn, (req,res)=>{
 app.post("/checkout", isLoggedIn,async (req,res)=>{
     const priceId = req.body.subscription_type
         try{
+            const customer= await stripe.customers.create({description: "new customer"});
             const session = await stripe.checkout.sessions.create({
                 payment_method_types: ['card'],
                 //array of items that the user wants to purchase
@@ -1096,9 +1085,11 @@ app.post("/checkout", isLoggedIn,async (req,res)=>{
                     },
                 ],
                 mode: 'payment', 
+
                 success_url: `${process.env.SERVER_URL}/success`,
                 cancel_url:  `${process.env.SERVER_URL}/cancel`,
             })
+            console.log(customer);
             res.redirect(303, session.url);
         } catch(e) {
             res.status(500).json({ error: e.message })
@@ -1107,12 +1098,18 @@ app.post("/checkout", isLoggedIn,async (req,res)=>{
     
 })
 
-app.get("/cancel", isLoggedIn, function(req,res){
+app.get("/cancel", isLoggedIn, async(req,res)=>{
     res.render("cancel");
 })
-app.get("/success", function(req,res){
+app.get("/success",isLoggedIn, async(req,res)=>{
+    theUser = req.user.username;
+    res.render("success", {theUser:theUser});
+})
 
-    res.render("success");
+app.get('/source', async(req, res)=>{
+    const source= await stripe.sources.retrive(
+
+    )
 })
 
 //Admin product page
@@ -1122,7 +1119,7 @@ app.get("/success", function(req,res){
 
 //-----------------Logout------------------------------------------
 //log out page using the logout function
-app.get("/logout", isLoggedIn, function(req,res, next){
+app.get("/logout", isLoggedIn, async(req,res, next)=>{
     req.logout(function(err){
         if(err){
             return next(err)

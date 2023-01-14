@@ -6,16 +6,16 @@
             <img src="<%=currentUser.profileImage.url%>" class="profile-image" alt="...">
         </div> 
 <div class=" profile-form-body">       
- <form action="/profile-image" method="post" enctype="multipart/form-data">
+ <form action="/settings/profile-image?_method=PUT" method="post" enctype="multipart/form-data">
 
              
             <label for="formFile" class="form-label">Profile Image</label>
             <input class="form-control" type="file" name="profileImage" id="" required>
-            <button type="submit" class="btn btn-success btn-block">Update</button>
+            <button type="submit" class="btn btn-success btn-block update-btn">Update</button>
         </div>
  </form>
 </div>  
 <div class="back-btn">
-    <a class="btn btn-light" href="/page" role="button"><i class="fas fa-home"></i></a>
+    <a class="btn btn-light" href="/pages" role="button"><i class="fas fa-home"></i></a>
 </div>
 <%- include("partials/footer.ejs")-%>
