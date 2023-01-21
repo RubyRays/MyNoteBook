@@ -30,8 +30,12 @@ const Review = require("./models/Review");
 const NoteUser= require('./models/NoteUser');
 const {isLoggedIn} = require('./login_middlewaare');
 const Subscription = require('./models/Subscription');
+const Session = require('./models/Session');
+const { query } = require('express');
 const ErrorHandle = ('./ErrorHandle.js');
 //-----------------
+//--helper functions for ejs
+const instaClick = require('./clickBtn.js');
 const oAuth2Client= new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI)
 oAuth2Client.setCredentials({refresh_token: process.env.REFRESH_TOKEN})
 
@@ -893,7 +897,7 @@ app.put("/public-pages/review",isLoggedIn, async(req, res)=>{
 
 })
 
-app.delete("/public-pages/review/delete",isLoggedIn, function(req, res){
+app.delete("/public-pages/review/delete",isLoggedIn, async(req, res)=>{
         const clickedEntry = req.body.deleteReviews;
        
         Review.findByIdAndRemove({_id:clickedEntry, author:{$eq:req.user.username}}, function(err, found){
@@ -1072,24 +1076,34 @@ app.get("/checkout",isLoggedIn, async(req,res)=>{
 })
 
 app.post("/checkout", isLoggedIn,async (req,res)=>{
-    const priceId = req.body.subscription_type
-        try{
-            const customer= await stripe.customers.create({description: "new customer"});
+
+
+        try{        
+            const id = req.body.subscription_type;
+            const data = await Subscription.findById(id);
+            // const customer= await stripe.customers.create({description: "new customer"});
             const session = await stripe.checkout.sessions.create({
                 payment_method_types: ['card'],
                 //array of items that the user wants to purchase
                 line_items: [
                     {
-                        price:priceId,
-                        quantity: 1,
+                        price_data: {
+                            
+                            currency:'usd',
+                            product_data:{
+                                name: data.type,
+                            },
+                               unit_amount_decimal:data.price *100, 
+                            },
+                            quantity: 1,
                     },
                 ],
                 mode: 'payment', 
 
-                success_url: `${process.env.SERVER_URL}/success`,
+                success_url: `${process.env.SERVER_URL}/success?id={CHECKOUT_SESSION_ID}`,
                 cancel_url:  `${process.env.SERVER_URL}/cancel`,
             })
-            console.log(customer);
+
             res.redirect(303, session.url);
         } catch(e) {
             res.status(500).json({ error: e.message })
@@ -1103,8 +1117,91 @@ app.get("/cancel", isLoggedIn, async(req,res)=>{
 })
 app.get("/success",isLoggedIn, async(req,res)=>{
     theUser = req.user.username;
-    res.render("success", {theUser:theUser});
+    const session_id = req.query.id
+    
+    const session= await stripe.checkout.sessions.listLineItems(req.query.id,{
+        expand:['data'],
+    });
+   
+    res.render("success", {theUser:theUser, session:session, session_id:session_id});
 })
+
+app.put("/success", isLoggedIn, async(req,res)=>{
+
+//     if (window.performance) {
+//   console.info("window.performance works fine on this browser");
+// }
+
+    //if session id == to something in the sessions list then only redirect the page
+    //else save the session id and the name of the access
+    //update status of access to equal the product name/description
+  const productname = req.body.Name;
+  const session_id= req.body.session_id; 
+  const username= req.user.username;
+  console.log("sessiong: "+ productname);
+  console.log("session: "+ session_id);
+
+
+//   const payment = await Session.find({"sessions":session_id})
+//   console.log(payment);
+//   //if it does not exsist
+//   if(!payment){
+//     const newpayment = await new Session({
+//         sessions: session_id,
+//         username: username,
+//         item: productname, 
+//     });
+//     newpayment.save();
+//     const newsubscription = await NoteUser.updateOne(
+//     {"username":username},
+//     {$set:{"accessType":productname}})
+
+//     setTimeout(()=>
+//     {res.redirect("/pages")},5000
+//     );
+//   }else{
+//     console.log("Page reload detected");
+//     res.redirect("/pages");
+//   } 
+Session.findOne({"sessions":session_id}, function(err, findSession){
+    if(!err){
+        const newSession = new Session({
+            sessions: session_id,
+            username: username,
+            item: productname, 
+        });
+        newSession.save();
+        NoteUser.updateOne(
+            {"username":username},
+            {$set:{"accessType":productname}},
+            function(err){
+                if(err){
+
+                }else{
+                    setTimeout(()=>
+                    {   
+                        console.log("session updated");
+                        res.redirect("/pages");
+                    },5000
+                    );
+                }
+            }
+
+
+                )
+            }else{
+                console.log("refresh detected");
+                res.redirect("/pages");
+
+            }
+})
+
+
+
+
+})
+
+
 
 app.get('/source', async(req, res)=>{
     const source= await stripe.sources.retrive(
@@ -1113,7 +1210,24 @@ app.get('/source', async(req, res)=>{
 })
 
 //Admin product page
+app.get("/practice-page", async(req, res)=>{
+    const a = 1;
+    const b = 2;
 
+    console.info(PerformanceNavigationTiming);
+    if (PerformanceNavigationTiming == PerformanceNavigationTiming.TYPE_RELOAD) {
+  console.info( "This page is reloaded" );
+} else {
+
+  console.info( "This page is not reloaded");
+}
+    // res.render('practicePage', {a:a, b:b, instaClick});
+})
+
+app.post("/practice-page", async(req,res)=>{
+    const g = req.body;
+    console.log(g);
+})
 
 
 
