@@ -15,7 +15,8 @@ const noteUserSchema =new mongoose.Schema({
     profileImage:{
         url: String,
         filename: String
-    }
+    },
+    accessType:{type:String, default:"default"},
 
 });
 noteUserSchema.plugin(passportLocalMongoose);
