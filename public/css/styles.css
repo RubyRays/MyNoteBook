@@ -267,6 +267,13 @@ p {
   padding-top: 2rem;
 }
 
+.success {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
 .top-buttons {
   position: relative;
 }
