@@ -1,0 +1,54 @@
+<%-include('partials/header')-%>
+
+    <div class="success">
+        <h1>Success!</h1>
+        <h1 id="result">Congratulations you have bought the plan</h1>
+        <!-- <script>
+            fetch("/practicePage",{
+                method:'PUT',
+                body: JSON.stringify({
+                    name: ,
+                }),
+                
+                    
+            })
+
+        </script> -->
+        <% var test="test1"; %>
+        <script type="text/javascript">
+            
+            function a(){
+            // document.getElementById('successBtn').click();
+           console.log("aaa");
+        }
+</script>
+       
+        <form action="/practice-page" method="Post">
+            
+            <button id="successBtn" onclick="javascript: a()" type="submit"  class="btn btn-light" name="practice">Submit</button>
+        </form>
+
+        <script type="text/javascript">
+            function submitform() {
+                document.forms["myform"].submit();
+                // document.getElementById('successBtn').click();
+                // alert("Value is sumitted");
+                
+            }
+            
+        </script>
+        
+        <form id="myform" action="/practice-page" method="post">
+            Search: <input type="text" name="query" value="<%=test%>" hidden="true">
+            <a href="javascript: submitform()">Submit</a>
+
+        </form>
+        <h1>
+            <div class="back-btn">
+                <a class="btn btn-light" href="/pages" role="button"><i class="fas fa-home"></i></a>
+            </div>
+        </h1>
+    </div> 
+    <script>submitform()</script>
+        
+<%-include('partials/footer')-%>
