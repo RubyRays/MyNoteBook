@@ -29,6 +29,7 @@ const Note = require('./models/Note');
 const Review = require("./models/Review");
 const NoteUser= require('./models/NoteUser');
 const {isLoggedIn} = require('./login_middlewaare');
+const {level1Access, level2Access}= require('./access_middleware');
 const Subscription = require('./models/Subscription');
 const Session = require('./models/Session');
 const { query } = require('express');
@@ -477,7 +478,7 @@ app.get("/pages", isLoggedIn, async(req,res)=>{
                         //saves the userinfo into noteUser collection and renders the page
                         foundUser.save(function(){
 
-                            res.render("page", {pic, messages: req.flash('success'), userContent: foundUser, theUser: theUser});
+                            res.render("page", {pic, messages: req.flash('success'), messages:req.flash('warning'), userContent: foundUser, theUser: theUser});
                                 
                         })
                     })
@@ -706,7 +707,7 @@ app.put("/pages/edit",isLoggedIn, async(req,res)=> {
 })
 
 //--last icon (arrow in a box) request to share and unshare user entries
-app.put("/pages/share-unshare",isLoggedIn, async(req, res)=> {
+app.put("/pages/share-unshare",isLoggedIn,level1Access, async(req, res)=> {
     const toShare= req.body.share;
     //finding the entry by its id
     Note.findById(toShare, function(err, foundNoteEntry) {
@@ -793,7 +794,7 @@ app.get("/pages/:id",isLoggedIn, async(req,res)=>{
 
 
 //--------------------Public page------------------------------------
-app.get("/public-pages",isLoggedIn, async(req,res)=>{
+app.get("/public-pages",isLoggedIn,level1Access, async(req,res)=>{
 
         
         // finding the document of the current user for the purpos of getting the url
@@ -826,7 +827,7 @@ app.get("/public-pages",isLoggedIn, async(req,res)=>{
 //creating a page to show the entries of users
 app.get("/public-pages/:id", isLoggedIn, async(req,res)=>{
     
-
+    
     //gets the title of the page that is going to be
     //created after the click --create page
     const pageEntry = req.params.id;
@@ -859,7 +860,7 @@ app.get("/public-pages/:id", isLoggedIn, async(req,res)=>{
                                         //renders the publicContent page
                                         //the data passed into it is the title of the page that the user is looking for
                                         //also the contents of the relavant noteBookContents of the found post     
-                                        res.render("publicContent",{pic,newPublicContent:newPublicContent, pageEntry: pageEntry, currentUser: currentUser});
+                                        res.render("publicContent",{pic,messages:req.flash('warning') ,newPublicContent:newPublicContent, pageEntry: pageEntry, currentUser: currentUser});
 
                                         })    
                                         
@@ -876,8 +877,10 @@ app.get("/public-pages/:id", isLoggedIn, async(req,res)=>{
 })
 
 //--reviews section of public page
-app.put("/public-pages/review",isLoggedIn, async(req, res)=>{
-    const pageEntry = req.body.reviewContent;
+app.put("/public-pages/:id/review",isLoggedIn,level2Access, async(req, res)=>{
+    const id= req.params.id;
+    console.log("EQWEQWE: "+ id);
+    const pageEntry = id;
     const content=req.body.content;
      console.log("afadfa");
 
@@ -897,8 +900,9 @@ app.put("/public-pages/review",isLoggedIn, async(req, res)=>{
 
 })
 
-app.delete("/public-pages/review/delete",isLoggedIn, async(req, res)=>{
-        const clickedEntry = req.body.deleteReviews;
+app.delete("/public-pages/:id/review/delete",isLoggedIn,level2Access, async(req, res)=>{
+    const id= req.params.id;    
+    const clickedEntry = id;
        
         Review.findByIdAndRemove({_id:clickedEntry, author:{$eq:req.user.username}}, function(err, found){
             if(err){
@@ -983,7 +987,7 @@ app.put("/settings/profile-image", isLoggedIn, parser.single("profileImage"), as
 
 
 //---- TRASH BIN-----------------------------------
-app.get("/trash", isLoggedIn, async(req,res)=> {
+app.get("/trash", isLoggedIn,level1Access, async(req,res)=> {
 
         NoteUser.findById(req.user.id, function(err, findpic) {
 
@@ -1015,7 +1019,7 @@ app.get("/trash", isLoggedIn, async(req,res)=> {
 
 //--eraser icon- deletes the entry inside of the notes collection
 // and also deletes the associated reviews
-app.delete("/trash/delete", isLoggedIn, async(req, res)=> {
+app.delete("/trash/delete", isLoggedIn,level1Access, async(req, res)=> {
     const toDelete = req.body.deleteEntry;
     Review.deleteMany({"target":{$eq: toDelete}},function(err){
         if(err){
@@ -1033,7 +1037,7 @@ app.delete("/trash/delete", isLoggedIn, async(req, res)=> {
 })
 
 //--Rench button--the purpose is to undo the deletion on the main user page
-app.put("/trash/salvage",isLoggedIn, async(req, res)=> {
+app.put("/trash/salvage",isLoggedIn,level1Access, async(req, res)=> {
     const fix = req.body.salvage;
    
          //updating the status of the deleted note to false
