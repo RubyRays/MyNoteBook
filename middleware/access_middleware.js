@@ -1,4 +1,4 @@
-const NoteUser = require("./models/NoteUser");
+const NoteUser = require("../models/NoteUser");
 
 module.exports.level1Access = async(req,res, next)=>{
     const userId = req.user.id;
