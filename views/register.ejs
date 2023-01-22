@@ -14,7 +14,7 @@
         <input type="password" name="password" class="form-control bottom" id="floatingPassword" placeholder="password" value="<% typeof password != 'undefined' ? password : ''%>" required>
         <!-- <input type="password" name="password2" class="form-control bottom" id="floatingPassword2" placeholder="Confirm password" value="<% typeof password2 != 'undefined' ? password2 : ''%>" required> -->
 
-         <%-include('partials/errorMessage.ejs')-%>
+         <%-include('partials/flash.ejs')-%>
 
         <button class="w-100 btn btn-primary" type="submit">Register</button>
         <a href="/login">Already have an account? Click here to login.</a>

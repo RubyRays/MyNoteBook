@@ -14,7 +14,7 @@
                             </p>
                         </div>
                         <div class="col-md-5">
-                            <%=messages%>
+                            <%-include('partials/flash.ejs')-%>
                             <form action="/public-pages/<%=pageEntry%>/review?_method=PUT" method="POST" class="public-style">
                                 <!-- the class waits for the value of the state to change and the corresponding style is added-->
                                 <label><h5>Reviews</h5></label>
