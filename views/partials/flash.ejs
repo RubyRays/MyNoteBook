@@ -1,0 +1,11 @@
+<% if(warning && warning.length > 0){%>
+<% warning.forEach(function(warn) {%>
+<div class="alert  alert-danger alert-dismissible fade show" role="alert">
+    <p><%= warn %>
+        <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </p>
+</div>
+<%})%>
+<%}%>
