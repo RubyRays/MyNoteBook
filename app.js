@@ -28,8 +28,8 @@ const stripe= require('stripe')(process.env.STRIPE_PRIVATE_KEY);
 const Note = require('./models/Note');
 const Review = require("./models/Review");
 const NoteUser= require('./models/NoteUser');
-const {isLoggedIn} = require('./login_middlewaare');
-const {level1Access, level2Access}= require('./access_middleware');
+const {isLoggedIn} = require('./middleware/login_middlewaare');
+const {level1Access, level2Access}= require('./middleware/access_middleware');
 const Subscription = require('./models/Subscription');
 const Session = require('./models/Session');
 const { query } = require('express');
@@ -82,6 +82,16 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use((req,res,next)=>{
+    res.locals.warning = req.flash('warning');
+    // res.locals.warning = req.flash();
+    next();
+})
+
+
+
+
 
 // app.use(async (req, res, next)=> {
 //     const error = new Error("Not found");
@@ -184,7 +194,7 @@ app.get("/auth/google",
     passport.authenticate('google', {scope: ["profile"]})
     );
 app.get("/auth/google/pages",
-    passport.authenticate('google',{failureRedirect: "/login"}),
+    passport.authenticate('google',{ failureFlash:true, failureRedirect: "/login",}),
     function(req, res){
         res.redirect('/pages');
     }    
@@ -192,7 +202,7 @@ app.get("/auth/google/pages",
 
 //-----------REGISTER----------------------------------------------
 app.get("/register", async(req, res)=>{
-    res.render("register", {messages: req.flash('fail')});
+    res.render("register");
 });
 
 
@@ -260,29 +270,12 @@ async function sendMail(){
     //trying to set up error messages.
     const {password, username,email}= req.body; 
     let errorMessage =[];
-
-  
-    
-    const user= NoteUser.findOne(username, function(err){
-        try{
-            if(!err){
-                
-                errorMessage.push({msg:"Email already used"});
-            }
-        }catch{
-            console.log("error caught")
-
-        }
-
-    })
+    // console.log(errorMessage);
     if(password.length < 8){
-        errorMessage.push({msg:"Password needs to be 8 or more characters long."});
-        
-    }
-    if(errorMessage > 0){
-        console.log(errorMessage);
-        res.render('register', {errorMessage, email, password});
+        req.flash('warning',"Password needs to be 8 or more characters long.");
+        res.redirect("/register");
     }else{
+
 
         NoteUser.register({
             username:req.body.username,
@@ -295,29 +288,19 @@ async function sendMail(){
             },
             req.body.password, function(err,user){
              if(err){
-                try{  
-                    req.flash('fail', 'there is something wrong-username or email already in use!');
-                    next(err);
-                    // res.redirect('/');
-                }
-                catch{(err)
-                    client.query("ROLLBACK") 
-                    console.log("afdjalkfjldajfdkajfj");               
-                  
-                    return next(new CustomHandleError(400, 'something '))
-                }           
+                    // req.flash('warning', err.message)
+                    req.flash('warning', 'There was something wrong-username or email');
+                    res.redirect('/register');      
             
             }else{    
                 // sendMail()
                 // .then((result)=> console.log(result))
                 // .catch((error)=> console.log(error));
                 note0.save();
-                
                 passport.authenticate("local")(req, res, function(){
                     NoteUser.findById(req.user.id, async (err, found)=>{
                         if(err){
                             console.log(err)
-                            console.log("DJFKLDJAKFJAJFKAKFJKDJ")
                         }else{
                             if(found.isVerified == true){
                                 res.redirect("/pages");
@@ -331,8 +314,8 @@ async function sendMail(){
                 })
             }
         })
+        }
     
-    }
 });  
 
 
@@ -351,24 +334,22 @@ app.get("/login", async(req, res)=>{
 app.post("/login", async(req,res)=>{
    const user = new NoteUser({
     username: req.body.username,
-    // email:req.body.email,
     password: req.body.password,
  
    });
 
-   req.login(user, async(err)=>{
+   req.login(user, function(err){
     if(err){
         console.log(err);
     }else{
         passport.authenticate("local", {
             failureFlash: true, 
-            //redirects to login page if value is bad
             failureRedirect: '/login',
                 })(req, res, function(){
 
                    NoteUser.findById(req.user.id, function(err, found){
                         if(err){
-                            console.log(err)
+                            console.log(err);
                         }else{
                             if(found.isVerified == true){
                                 res.redirect("/pages");
@@ -478,7 +459,7 @@ app.get("/pages", isLoggedIn, async(req,res)=>{
                         //saves the userinfo into noteUser collection and renders the page
                         foundUser.save(function(){
 
-                            res.render("page", {pic, messages: req.flash('success'), messages:req.flash('warning'), userContent: foundUser, theUser: theUser});
+                            res.render("page", {pic, messages: req.flash('success'), userContent: foundUser, theUser: theUser});
                                 
                         })
                     })
@@ -860,7 +841,7 @@ app.get("/public-pages/:id", isLoggedIn, async(req,res)=>{
                                         //renders the publicContent page
                                         //the data passed into it is the title of the page that the user is looking for
                                         //also the contents of the relavant noteBookContents of the found post     
-                                        res.render("publicContent",{pic,messages:req.flash('warning') ,newPublicContent:newPublicContent, pageEntry: pageEntry, currentUser: currentUser});
+                                        res.render("publicContent",{pic,newPublicContent:newPublicContent, pageEntry: pageEntry, currentUser: currentUser});
 
                                         })    
                                         
@@ -1132,72 +1113,46 @@ app.get("/success",isLoggedIn, async(req,res)=>{
 
 app.put("/success", isLoggedIn, async(req,res)=>{
 
-//     if (window.performance) {
-//   console.info("window.performance works fine on this browser");
-// }
-
     //if session id == to something in the sessions list then only redirect the page
     //else save the session id and the name of the access
     //update status of access to equal the product name/description
-  const productname = req.body.Name;
-  const session_id= req.body.session_id; 
-  const username= req.user.username;
-  console.log("sessiong: "+ productname);
-  console.log("session: "+ session_id);
+    const productname = req.body.Name;
+    const session_id= req.body.session_id; 
+    const username= req.user.username;
+    console.log("sessiong: "+ productname);
+    console.log("session: "+ session_id);
 
+    Session.findOne({"sessions":session_id}, function(err, findSession){
+        if(!err){
+            const newSession = new Session({
+                sessions: session_id,
+                username: username,
+                item: productname, 
+            });
+            newSession.save();
+            NoteUser.updateOne(
+                {"username":username},
+                {$set:{"accessType":productname}},
+                function(err){
+                    if(err){
 
-//   const payment = await Session.find({"sessions":session_id})
-//   console.log(payment);
-//   //if it does not exsist
-//   if(!payment){
-//     const newpayment = await new Session({
-//         sessions: session_id,
-//         username: username,
-//         item: productname, 
-//     });
-//     newpayment.save();
-//     const newsubscription = await NoteUser.updateOne(
-//     {"username":username},
-//     {$set:{"accessType":productname}})
-
-//     setTimeout(()=>
-//     {res.redirect("/pages")},5000
-//     );
-//   }else{
-//     console.log("Page reload detected");
-//     res.redirect("/pages");
-//   } 
-Session.findOne({"sessions":session_id}, function(err, findSession){
-    if(!err){
-        const newSession = new Session({
-            sessions: session_id,
-            username: username,
-            item: productname, 
-        });
-        newSession.save();
-        NoteUser.updateOne(
-            {"username":username},
-            {$set:{"accessType":productname}},
-            function(err){
-                if(err){
-
-                }else{
-                    setTimeout(()=>
-                    {   
-                        console.log("session updated");
-                        res.redirect("/pages");
-                    },5000
-                    );
+                    }else{
+                        setTimeout(()=>
+                        {   
+                            console.log("session updated");
+                            res.redirect("/pages");
+                        },5000
+                        );
+                    }
                 }
-            }
 
 
-                )
-            }else{
-                console.log("refresh detected");
-                res.redirect("/pages");
+                    )
+                }else{
+                    console.log("refresh detected");
+                    res.redirect("/pages");
 
-            }
+                }
 })
 
 
