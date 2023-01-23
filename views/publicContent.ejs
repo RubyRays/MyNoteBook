@@ -27,7 +27,7 @@
                             
                             <% newPageContent.reviews.reverse().forEach(function(reviewContent){%>
                                     <% if(reviewContent.author == currentUser){%>
-                                    <form action="/public-pages/<%=pageEntry%>/review/delete?_method=DELETE" method="post" class="icon-style-form">
+                                    <form action="/public-pages/<%=pageEntry%>/review/<%=reviewContent.target%>/delete?_method=DELETE" method="post" class="icon-style-form">
 
                                         <button type="submit" alt="delete review"><i class="fa-solid fa-eraser "></i></button>
                                     </form>
