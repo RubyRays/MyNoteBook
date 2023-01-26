@@ -53,7 +53,8 @@ const verify = require('./routes/verify');
 const register= require('./routes/register');
 const login = require('./routes/login');
 const cancel = require('./routes/cancel');
-const auth = require('./routes/auth.js');
+const auth = require('./routes/auth');
+const logout = require('./routes/logout');
 
 
 
@@ -188,7 +189,8 @@ app.use("/verify", verify);
 app.use("/register", register);
 app.use("/login", login);
 app.use("/cancel", cancel);
-app.use("/auth", auth)
+app.use("/auth", auth);
+app.use("/logout",logout);
 
 //--HOME ROUTE----
 app.get("/", async(req, res)=>{
