@@ -7,6 +7,7 @@ const {isLoggedIn} = require('../middleware/login_middlewaare');
 const {level1Access, level2Access}= require('../middleware/access_middleware');
 
 
+
 //--------------------Public page------------------------------------
 router.get("/",isLoggedIn,level1Access, async(req,res)=>{
 
