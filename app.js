@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require('ejs');
+const expressLayouts = require('express-ejs-layouts');
 const mongoose = require("mongoose");
 const session = require('express-session');
 const flash = require('connect-flash');
@@ -19,9 +20,9 @@ const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const e = require('express');
 const nodemailer = require("nodemailer");
-const {google, dlp_v2} = require ("googleapis");
+const {google, dlp_v2, appengine_v1alpha} = require ("googleapis");
 const { OAuth2Client } = require('google-auth-library');
-const OAuth2 = google.auth.OAuth2
+const OAuth2 = google.auth.OAuth2;
 const stripe= require('stripe')(process.env.STRIPE_PRIVATE_KEY);
 //modules---------------
 const Note = require('./models/Note');
@@ -33,7 +34,9 @@ const Session = require('./models/Session');
 const {isLoggedIn} = require('./middleware/login_middlewaare');
 const {level1Access, level2Access}= require('./middleware/access_middleware');
 const { query } = require('express');
-const ErrorHandle = ('./ErrorHandle.js');
+//error middleware
+const CustomError = require('./middleware/CustomError');
+const catchAsync = require('./middleware/catchAsync');
 //-----------------
 //--helper functions for ejs
 const instaClick = require('./clickBtn.js');
@@ -57,17 +60,14 @@ const auth = require('./routes/auth');
 const logout = require('./routes/logout');
 
 
-
-
-
 app.use(express.json());
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('views', path.join(__dirname, 'views'));
 app.use(flash());
 app.use(methodOverride('_method'));
+app.use(expressLayouts);
 app.set('view engine', 'ejs');
-
 
 
 app.use(session({
@@ -149,35 +149,9 @@ passport.deserializeUser(function(user, cb){
     });
 });
 
-//-----------------Google OAUTH USING PASSPORT--------------------------
-passport.use(new GoogleStrategy ({
-
-    clientID: process.env.CLIENT_ID,
-    clientSecret: process.env.CLIENT_SECRET, 
-    callbackURL: "http://localhost:3000/auth/google/pages",
-    userProfileURL:"https://www.googleapis.com/oauth2/v3/userinfo"
-    },
-        function(accessToken, refreshToken, profile, cb){
-            NoteUser.findOrCreate({
-                googleId: profile.id,
-                username: profile.displayName,
-                profileImage:{
-                    url: "https://res.cloudinary.com/dbvhtpmx4/image/upload/v1671056080/samples/sheep.jpg",
-                    filename:'samples/sheep',
-        }   }, 
-            function(err, user){
-                return cb(err, user);
-            })
-        }
-    ))
-//-----------END OF PASSPORT SETUP--------------------------------------------------------------
 
 
 
-app.use(function(err, req, res, next) {
-    console.log("*************ERROR***************")
-    next(err)
-})
 
 app.use("/pages", pages);
 app.use("/public-pages", public);
@@ -195,7 +169,7 @@ app.use("/logout",logout);
 //--HOME ROUTE----
 app.get("/", async(req, res)=>{
     res.render("home");
-}); 
+});
 
 
 
@@ -222,10 +196,19 @@ app.get("/practice-page", async(req, res)=>{
 app.post("/practice-page", async(req,res)=>{
     const g = req.body;
     console.log(g);
+});
+
+
+//for all other routes that had problems
+//non exsistant page
+app.all('*', (req, res, next)=>{
+    next(new CustomError("Page Not Found", 404));
 })
 
-
-
+app.use((err, req, res, next)=> {
+    const {statusCode= 500, message= 'Something went wrong'} = err;
+    res.status(statusCode).send(message);
+})
 
 
 
