@@ -6,10 +6,12 @@ const NoteUser= require('../models/NoteUser');
 const data = require("../data");
 const nodemailer = require("nodemailer");
 const passport = require("passport");
-const passportLocalMongoose = require("passport-local-mongoose");
-const findOrCreate = require('mongoose-findorcreate');
-const { query } = require('express');
-
+const {google, dlp_v2} = require ("googleapis");
+const { OAuth2Client } = require('google-auth-library');
+const OAuth2 = google.auth.OAuth2;
+//OAuth routes
+const oAuth2Client= new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI)
+oAuth2Client.setCredentials({refresh_token: process.env.REFRESH_TOKEN})
 
 
 //-----------REGISTER----------------------------------------------
