@@ -4,11 +4,11 @@ const NoteUser= require('../models/NoteUser');
 const {isLoggedIn} = require('../middleware/login_middlewaare');
 const stripe= require('stripe')(process.env.STRIPE_PRIVATE_KEY);
 const Session = require('../models/Session');
+const catchAsync = require('../middleware/catchAsync');
 
 
 
-
-router.get("/",isLoggedIn, async(req,res)=>{
+router.get("/",isLoggedIn, catchAsync(async(req,res)=>{
     theUser = req.user.username;
     const session_id = req.query.id
     
@@ -17,9 +17,11 @@ router.get("/",isLoggedIn, async(req,res)=>{
     });
    
     res.render("success", {theUser:theUser, session:session, session_id:session_id});
-})
+}));
 
-router.put("/", isLoggedIn, async(req,res)=>{
+router.put("/", isLoggedIn, catchAsync(async(req,res)=>{
+
+
 
     //if session id == to something in the sessions list then only redirect the page
     //else save the session id and the name of the access
@@ -66,6 +68,6 @@ router.put("/", isLoggedIn, async(req,res)=>{
 
 
 
-})
+}));
 
 module.exports=router;
