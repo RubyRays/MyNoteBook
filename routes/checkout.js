@@ -4,30 +4,36 @@ const NoteUser= require('../models/NoteUser');
 const Subscription = require('../models/Subscription');
 const {isLoggedIn} = require('../middleware/login_middlewaare');
 const stripe= require('stripe')(process.env.STRIPE_PRIVATE_KEY);
+const catchAsync = require('../middleware/catchAsync');
 
 
-router.get("/",isLoggedIn, async(req,res)=>{
-    // finding the document of the current user for the purpos of getting the url
-    NoteUser.findById(req.user.id, function(err, findpic){
-        if(err){
-            console.log(err);
-        }else{    
-            Subscription.find({}, function(err, subscription){
-                if(err){
-                    console.log(err);
-                }else{
+router.get("/",isLoggedIn, catchAsync(async(req,res)=>{
+
+    const noteuser = await NoteUser.findById(req.user.id);
+    const subscription = await Subscription.find({});
+    const pic = noteuser.profileImage.url;
+    res.render("checkout", {pic, subscription: subscription});
+    // // finding the document of the current user for the purpos of getting the url
+    // NoteUser.findById(req.user.id, function(err, findpic){
+    //     if(err){
+    //         console.log(err);
+    //     }else{    
+    //         Subscription.find({}, function(err, subscription){
+    //             if(err){
+    //                 console.log(err);
+    //             }else{
                    
-                    const pic = findpic.profileImage.url;
-                    res.render("checkout", {pic, subscription: subscription});
-                }
+    //                 const pic = findpic.profileImage.url;
+    //                 res.render("checkout", {pic, subscription: subscription});
+    //             }
                     
-            })
-        }
-    });
+    //         })
+    //     }
+    // });
 
-})
+}));
 
-router.post("/", isLoggedIn,async (req,res)=>{
+router.post("/", isLoggedIn, catchAsync(async(req,res)=>{
 
 
         try{        
@@ -62,6 +68,6 @@ router.post("/", isLoggedIn,async (req,res)=>{
         }
 
     
-})
+}));
 
 module.exports=router;
