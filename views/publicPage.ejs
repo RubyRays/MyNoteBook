@@ -1,6 +1,10 @@
 <%-include('partials/nav.ejs')-%>
 
-    <h1>Public Page / Journal</h1>
+    <article class="blog-post">
+        <h2 class="blog-post-title">
+           Public Page / Journal
+        </h2>
+    
 
 <% publicPosts.reverse().forEach(function(post){%>
     <div>
@@ -29,6 +33,7 @@
     </div>
 
     <% }) %>
+    
 
 <div class="back-btn">
     <a class="btn btn-light" href="/pages" role="button"><i class="fas fa-home"></i></a>
