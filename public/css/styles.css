@@ -2,10 +2,15 @@ html {
   overflow: scroll;
 }
 body {
-  background-color: #c04fb5;
+  background-color: blueviolet;
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
   padding: 0 16px;
 }
+.body-dark-mode {
+  background-color: #000000;
+  background-image: url("https://www.transparenttextures.com/patterns/circles.png");
+}
+
 .parent-flex {
   display: flex;
   flex-direction: column;
@@ -32,7 +37,10 @@ a :hover {
 h1 {
   font-size: 2rem;
 }
-
+h2 {
+  font-family: "Playfair Display", Georgia, "Times New Roman",
+    serif /*rtl:Amiri, Georgia, "Times New Roman", serif*/;
+}
 p {
   font-size: 1.5rem;
 }
@@ -66,6 +74,11 @@ p {
   min-height: 100%;
   justify-content: space-evenly;
 }
+.blog-post-title {
+  margin-bottom: 0.25rem;
+  font-size: 2.5rem;
+}
+
 .code_form {
   padding-top: 4rem;
 }
@@ -171,6 +184,12 @@ p {
   margin-left: auto;
   margin-right: auto;
 }
+.nav-block {
+  height: 200rem;
+  position: absolute;
+  background-color: green;
+}
+
 .navbar-toggler {
   margin-bottom: 0.5rem;
 }
@@ -297,6 +316,9 @@ p {
   flex-direction: column;
   align-items: center;
 }
+.search-style {
+  margin-top: 50rem;
+}
 
 .top-buttons {
   position: relative;
@@ -314,8 +336,78 @@ p {
   background-color: #bc2d1a;
   align-items: flex-start;
 } */
-.nav-block {
-  height: 200rem;
+/* toggle */
+.switch {
+  display: inline-block;
+  height: 34px;
+  position: relative;
+  width: 60px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  background-color: #ccc;
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
   position: absolute;
-  background-color: green;
+  right: 0;
+  top: 0;
+  transition: 0.4s;
+}
+
+.slider::before {
+  background-color: #fff;
+  bottom: 4px;
+  content: "";
+  height: 26px;
+  left: 4px;
+  position: absolute;
+  transition: 0.4s;
+  width: 26px;
+}
+
+input:checked + .slider {
+  background-color: #459e63;
+}
+
+input:checked + .slider:before {
+  transform: translateX(30px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet');
+
+/*** Light Mode Theme ***/
+:root,
+[data-theme="default"] {
+  --boday-bg-color: rgb(165, 54, 54);
+  --card-bg-color: rgb(32, 127, 190);
+  --box-shadow-color: rgba(0, 0, 0, 0.2);
+  --text-color: #333;
+  --switch-on-color: #60def1;
+  --switch-off-color: #ccc;
+  --toggler-color: rgb(226, 129, 39);
+}
+/* Dark Mode Theme */
+[data-theme="dark"] {
+  --text-color: #24874a;
+  --toggler-color: #1b10b1;
+  --switch-on-color: rgb(79, 9, 9);
+  --switch-off-color: rgb(111, 22, 22);
+}
+
+* {
+  font-family: "Poppins", sans-serif;
+  color: var(--text-color);
+  transition: color 0.45s ease-in;
 }
