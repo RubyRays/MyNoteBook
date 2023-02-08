@@ -8,9 +8,11 @@
         <div class="card-body">
             <h5 class="card-title">Price: <%=item.price%></h5>
             <p class="card-text">
-                <h4>Main User page</h4>
-                <h4>Trash bin</h4>
-                <h4>Settings</h4>
+              
+                <% item.benefits.forEach(function(i){ %>
+                    <p> <li><%=i%></li></p>
+                <%})%>
+                
             </p>
             <button type="submit" name="subscription_type"  value="<%=item._id%>" class="btn btn-light check-out-btn">Check out</button>
         </div>
