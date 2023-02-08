@@ -42,7 +42,7 @@ router.get("/google",
     );
 router.get("/google/pages",
     passport.authenticate('google',{ failureFlash:true, failureRedirect: "/login",}),
-    function(req, res){
+    (req, res)=>{
         res.redirect('/pages');
     }    
 );
