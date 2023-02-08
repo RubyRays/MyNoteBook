@@ -1,6 +1,7 @@
 //adding the requirements 
 require('dotenv').config();
 const express = require("express");
+const cors = require('cors');
 const bodyParser = require("body-parser");
 const ejs = require('ejs');
 const expressLayouts = require('express-ejs-layouts');
@@ -26,7 +27,7 @@ const OAuth2 = google.auth.OAuth2;
 const stripe= require('stripe')(process.env.STRIPE_PRIVATE_KEY);
 //modules---------------
 const Note = require('./models/Note');
-// const Review = require("./models/Review");
+const Review = require("./models/Review");
 const NoteUser= require('./models/NoteUser');
 // const Subscription = require('./models/Subscription');
 const Session = require('./models/Session');
@@ -61,6 +62,7 @@ const logout = require('./routes/logout');
 
 
 app.use(express.json());
+app.use(cors());
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('views', path.join(__dirname, 'views'));
@@ -109,23 +111,23 @@ app.use((req,res,next)=>{
 //-----------MONGODB CONNECTIONS---------------------------------------------
 
 //--------------FOR MONGODB ATLAS-------------------------------
-// const dbUsername= process.env.DBUSERNAME;
-// const dbPassword= process.env.DBPASSWORD;
-// const cluster =  process.env.CLUSTER;
+const dbUsername= process.env.DBUSERNAME;
+const dbPassword= process.env.DBPASSWORD;
+const cluster =  process.env.CLUSTER;
 //--------------------------------------------------------------
 
-mongoose.connect("mongodb://localhost:27017/noteUserDB");
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", () => {
-    console.log("Database connected");
-});
+// mongoose.connect("mongodb://localhost:27017/noteUserDB");
+// const db = mongoose.connection;
+// db.on("error", console.error.bind(console, "connection error:"));
+// db.once("open", () => {
+//     console.log("Database connected");
+// });
 //--------------FOR MONGODB ATLAS---------------------------------------
-// const dbUrl= "mongodb+srv://"+dbUsername+":"+dbPassword+cluster+"/notesAppDB?retryWrites=true&w=majority"
+const dbUrl= "mongodb+srv://"+dbUsername+":"+dbPassword+cluster+"/notesAppDB?retryWrites=true&w=majority"
 
-// mongoose.connect(dbUrl).then(()=>{
-//     console.info("Database connected");
-// }).catch(err=> {console.log("Error",err);});
+mongoose.connect(dbUrl).then(()=>{
+    console.info("Database connected");
+}).catch(err=> {console.log("Error",err);});
 
 //----------------------------------------------------------------------
 
@@ -173,10 +175,53 @@ app.get("/", async(req, res)=>{
 
 
 
+// app.get("/search-results", isLoggedIn, catchAsync(async(req, res)=>{
+//     const search = req.body.result;
+//     // console.log(search);
+//     const noteuser = await NoteUser.findById(req.user.id);
+//     const pic = noteuser.profileImage.url;
+//     res.render("search-results",{pic, search:search})
+// }))
+// app.post("/search-results", isLoggedIn, catchAsync(async(req, res)=>{
+//     const search = req.body.result;
+//     console.log(search);
+//     res.redirect("search-results",search);
+// }))
 
 
 
+// app.get("/search-results", isLoggedIn, catchAsync(async(req, res)=>{
+    
 
+//     const noteSearch= "New";
+//     const n = req.body.title;
+//     console.log("this is the title part  :"+n)
+//     // const search = req.body.eee;
+//     console.log(".....uuu"+noteSearch);
+//     // const note= await Note.findById(req.user.id);
+//     const note2 = await Note.find({title:{$regex: `${noteSearch}`,  $options:"i"}, owner:{$eq:req.user.username}})
+//     const result ={
+//         error:false,
+//         note2
+//     };
+//     const noteuser= await NoteUser.findById(req.user.id);
+//     const pic = noteuser.profileImage.url;
+//     // res.status(200).json(result);
+//     res.render("search-results", {pic,result:result});
+// }));
+app.post("/search-results", isLoggedIn, catchAsync(async(req, res)=>{
+    const payload = "new";
+    // const a = req.body.a;
+    // console.log("......"+a);
+    const search = await Note.find({title:{$regex: `${payload}`,  $options:"i"}, owner:{$eq:req.user.username}}).exec();
+    // const result ={
+    //     error:false,
+    //     note2
+    // };
+    res.send({payload: search});
+
+
+}))
 
 //Admin product page
 app.get("/practice-page", async(req, res)=>{
