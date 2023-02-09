@@ -14,12 +14,32 @@
             <!-- Right links -->
             <div class="collapse navbar-collapse flex-container" id="navContent">
                 <div class="navbar-nav mt-auto navbar-container">
-                    <div class="nav-align"><a class="btn btn-light nav-link " href="/checkout" role="button">Checkout <i class="fa-regular fa-credit-card fa-xl"></i> </a></div>
-                    <div class="nav-align"><a class="btn btn-light nav-link " href="/settings" role="button">Settings <i class="fa-solid fa-gear fa-xl"></i> </a></div>
-                    <div class="nav-align"><a class="btn btn-light nav-link " href="/public-pages" role="button">Public <i class="fa-sharp fa-solid fa-globe fa-xl"></i></a></div>
-                    <div class="nav-align"><a class="btn btn-light nav-link " href="/trash" role="button">Trash <i class="fa-solid fa-trash fa-xl"></i> </a></div>
-                    <div class="nav-align"><a class="btn btn-light nav-link " href="/logout" role="button">Log Out </a></div>
-                    <div class="nav-align"><a class="btn btn-light nav-link " href="/logout" role="button"><img src="<%=pic%>" class="rounded-circle" height="44" alt="" loading="lazy" /></a></div>
+                    <form action="/search-results" method="Post"></form>
+                        <div class="nav-align">
+                            <input type="search" name="search" class="btn btn-light nav-link ">
+                            <!-- <a class="btn btn-light" href="/search-results" role="button"><i class="fa-solid fa-magnifying-glass"></i> </a> -->
+                            <button type="submit"  class="btn btn-light"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </form>                                
+                    <script >
+                        $(document).ready(function(){
+                            $('#selector').change(function () {
+                                $('body').toggleClass("dark-mode");
+                            })
+                        })
+                        // function styleToggle() {
+                        //     var mode = document.body;
+                        //     mode.classList.toggle("body-dark-mode");
+                        // }
+
+                    </script>                   
+                        <div class="nav-align"><a class="btn btn-light nav-link " href="/checkout" role="button">Checkout <i class="fa-regular fa-credit-card fa-xl"></i> </a></div>
+                        <div class="nav-align"><a class="btn btn-light nav-link " href="/settings" role="button">Settings <i class="fa-solid fa-gear fa-xl"></i> </a></div>
+                        <div class="nav-align"><a class="btn btn-light nav-link " href="/public-pages" role="button">Public <i class="fa-sharp fa-solid fa-globe fa-xl"></i></a></div>
+                        <div class="nav-align"><a class="btn btn-light nav-link " href="/trash" role="button">Trash <i class="fa-solid fa-trash fa-xl"></i> </a></div>
+                        <div class="nav-align"><a class="btn btn-light nav-link " href="/logout" role="button">Log Out </a></div>
+                        <div class="nav-align"><a class="btn btn-light nav-link " href="/logout" role="button"><img src="<%=pic%>" class="rounded-circle" height="44" alt="" loading="lazy" /></a></div>
+                        <div class="nav-align"><a class="btn btn-light nav-link " onclick="javascript:styleToggle()" role="button"><i class="fa-solid fa-moon"></i></a></div>
+                   
                 </div>         
             </div>
 
