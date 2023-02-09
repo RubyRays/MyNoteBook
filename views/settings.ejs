@@ -10,10 +10,103 @@
              
             <label for="formFile" class="form-label">Profile Image</label>
             <input class="form-control" type="file" name="profileImage" id="" required>
-            <button type="submit" class="btn btn-success btn-block update-btn">Update</button>
-        </div>
+            <button type="submit"  class="btn btn-success btn-block update-btn">Update</button>
+        
  </form>
+</div>
+
 </div>  
+<div class="profile-entry">
+    <div class=" profile-form-body">
+        <form action="/search-results" method="POST"></form>
+            <div class="nav-align">
+                <input class="btn btn-light nav-link" type="text" name="search" placeholder="search" >
+                <a class="btn btn-light" href="/search-results" role="button"><i class="fa-solid fa-magnifying-glass"></i> </a>
+                        <!-- <button type="submit" name="eee" href="/search-results" class="btn btn-light"><i class="fa-solid fa-magnifying-glass"></i></button> -->
+        </form>
+</div>
+</div>
+</div>
+<!-- light/dark mode -->
+<div class="profile-entry">
+    <div class=" profile-form-body">
+        
+        <h1>Dark mode :  </h1>
+                <h2>Off </h2>
+                <!-- Controller Row -->
+                <div class="controller-row">
+                    <label class="switch">
+                        <input id="toggler" type="checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                </div><!-- End of controller row -->
+                <h2>    On</h2>
+            <script>
+                var container = document.getElementsByClassName('container')[0];
+                document.getElementById('toggler').addEventListener('change', (event) => {
+                    console.log(toggler)
+                    event.target.checked ? container.removeAttribute('data-theme') : container.setAttribute('data-theme', 'dark');
+                });
+            </script>
+            
+    </div>
+</div>
+
+<div class="profile-entry">
+    <div class=" profile-form-body">
+        <h1>Location : </h1>
+        <h2>Off </h2>
+        <!-- Controller Row -->
+        <div class="controller-row">
+            <form action="/settings/location?_method=PUT" method="post" >
+            
+            <label class="switch">
+                <input id="toggler" type="checkbox" onChange="document" >
+                <span class="slider round"></span>
+            </label>
+
+         </form>
+        </div><!-- End of controller row -->
+        <h2> On</h2>
+
+    </div>
+</div>
+    <!-- <form action="/search-results" method="POST"> -->
+    <!-- <form > -->
+        <!-- <div class="form-group"> -->
+            <!-- <input type="text" class="form-control text-left" name="title" onkeyup="sendData(this)" placeholder="Title of new page" required> -->
+            <!-- <textarea class="form-control" name="content" rows="5" cols="30" placeholder="Contents of page"
+                required></textarea> -->
+            <!-- <a class="btn btn-light" href="/search-results" role="button"><i class="fa-solid fa-magnifying-glass"></i> </a> -->
+
+        <!-- </div> -->
+    
+
+    <!-- </form> -->
+    <input type="text" onkeyup="a()">
+    <script>
+        function a(){
+            console.log("tree")
+        }
+    </script>
+
+        <script>
+        function sendData(e){
+            console.log("works?");
+            fetch("search-results",{
+                method: "POST",
+                headers: {'Content-Type': "application/json"},
+                body: JSON.stringify({payload: e.value})
+            }).then(res => res.json()).then(data=>{
+                let payload =data.search;
+                console.log(payload);
+            });
+        }
+    </script>
+    
+
+
+
 <div class="back-btn">
     <a class="btn btn-light" href="/pages" role="button"><i class="fas fa-home"></i></a>
 </div>
