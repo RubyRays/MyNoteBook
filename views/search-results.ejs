@@ -1,8 +1,43 @@
 <%-include('partials/nav.ejs')-%>
 
 <h1>Hi there</h1>
-<%for(var i=0; i<result.note2.length; i++){%>
-    
-        <h2><%=result.note2[i].title%></h2>
-    
-<%}%>
+<!-- <form> -->
+
+        <input type="text" class="form-control text-left" name="title" onkeyup="sendData(this)" placeholder="Title of new page" required>
+        <!-- <button type="submit"  onclick="sendData(title)" class="btn btn-light">Search</button> -->
+<!-- </form> -->
+<section id="results">
+
+</section>
+
+
+<script language="javascript">
+        function sendData(e) {
+                const results = document.getElementById('results');
+                results.innerHTML="";
+                fetch('search-results', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ payload: e.value })
+                }).then(res => res.json()).then(data => {
+                        let payload = data.payload;
+                        console.log(payload);
+                        if(payload.length < 1){
+                          results.innerHTML ='<h1>Sorry no results here</h1>';
+                          return;      
+                        }
+                        payload.reverse().forEach((item, index)=>{
+                                if(index > 0)
+                                  results.innerHTML += '<hr>'; 
+                                  results.innerHTML += `<p><a href="/pages/${item._id}" class="search-style" > ${item.title}</a></p>`;     
+                                
+                                
+                        });
+                        return;
+                });
+        }
+
+</script>
+
+
+
