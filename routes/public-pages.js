@@ -14,7 +14,9 @@ router.get("/",isLoggedIn,level1Access, catchAsync(async(req,res)=>{
         const noteuser= await NoteUser.findById(req.user.id);
         const publicPosts = await Note.find({"shared": {$eq: "true"}, "deleted":{$ne: "true"}});
         const pic = noteuser.profileImage.url;
-        res.render("publicPage", {pic, publicPosts: publicPosts});              
+        const theme = noteuser.theme;
+        const url = "public-pages";
+        res.render("publicPage", {pic,theme,url, publicPosts: publicPosts});              
         // // finding the document of the current user for the purpos of getting the url
         // NoteUser.findById(req.user.id, function(err, findpic){
         //     if(err){

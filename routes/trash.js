@@ -15,7 +15,9 @@ router.get("/", isLoggedIn,level1Access,catchAsync(async(req,res)=> {
     const noteuser= await NoteUser.findById(req.user.id);
     const foundNoteEntry = await Note.find({"owner": req.user.username, "deleted": "true"});
     const pic = noteuser.profileImage.url;
-    res.render("trashBin", {pic,foundNoteEntry:foundNoteEntry});
+    const theme = noteuser.theme;
+    const url = "trash";
+    res.render("trashBin", {pic,theme,url,foundNoteEntry:foundNoteEntry});
 
         // NoteUser.findById(req.user.id, function(err, findpic) {
 

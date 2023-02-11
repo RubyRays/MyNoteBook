@@ -12,7 +12,9 @@ router.get("/",isLoggedIn, catchAsync(async(req,res)=>{
     const noteuser = await NoteUser.findById(req.user.id);
     const subscription = await Subscription.find({});
     const pic = noteuser.profileImage.url;
-    res.render("checkout", {pic, subscription: subscription});
+    const theme = noteuser.theme;
+    const url = "checkout";
+    res.render("checkout", {pic,theme,url, subscription: subscription});
     // // finding the document of the current user for the purpos of getting the url
     // NoteUser.findById(req.user.id, function(err, findpic){
     //     if(err){

@@ -23,9 +23,11 @@ router.get("/", isLoggedIn, catchAsync(async(req,res)=>{
         const noteuser = await NoteUser.findById(req.user.id);
         const note = await Note.find({"owner":theUser, "deleted":{$ne:"true"}});
         const pic= noteuser.profileImage.url;
+        const theme = noteuser.theme;
+        const url = "pages";
         noteuser.noteBookContents= note;
         await noteuser.save();
-        res.render('page',{pic, messages: req.flash('success'), userContent: noteuser, theUser: theUser });
+        res.render('page',{pic,theme,url, messages: req.flash('success'), userContent: noteuser, theUser: theUser });
 
 
         // const theUser = req.user.username;
@@ -65,91 +67,116 @@ router.get("/", isLoggedIn, catchAsync(async(req,res)=>{
 
 //renders the notebook user page
 router.post("/",isLoggedIn, catchAsync(async(req,res)=>{
-    
-//API SECTION WHERE DATA IS PASSED FROM ONE API TO BE USED IN THE OTHER BY MEANS OF 
-//CALLBACK FUNCTIONS  
-    //USING AN IP ADDRESS FINDER TO GET THE CITY NAME OF THE USER
-    token=process.env.IPINFO_TOKEN;
-    //api endpoint with the access token
-    const ipinfoApi ="https://ipinfo.io?token="+token;
+const noteuser = await NoteUser.findById(req.user.id);
+if(noteuser.locationAccess == "on" ){
+    //API SECTION WHERE DATA IS PASSED FROM ONE API TO BE USED IN THE OTHER BY MEANS OF 
+    //CALLBACK FUNCTIONS  
+        //USING AN IP ADDRESS FINDER TO GET THE CITY NAME OF THE USER
+        token=process.env.IPINFO_TOKEN;
+        //api endpoint with the access token
+        const ipinfoApi ="https://ipinfo.io?token="+token;
 
-    //using the function call the api 
-    function makeCall (ipinfoApi, callback){
+        //using the function call the api 
+        function makeCall (ipinfoApi, callback){
 
-        https.get(ipinfoApi, function(response){
+            https.get(ipinfoApi, function(response){
 
-            // console.log(response.statusCode);
-            response.on("data", function(data){
-
-                const ipData= JSON.parse(data);
-                const city = ipData.city;
-                callback(city);
-                
-            })
-        })
-}
-    function handleResults(results){
-        const query= results;
-        const apiKey = process.env.WEATHER_API_KEY;
-        const unit= "metric"
-        //api url for the weather api
-        const weatherUrl = "https://api.openweathermap.org/data/2.5/weather?q="+query+"&appid="+apiKey+"&units="+unit;
-
-        function makeCall2(weatherUrl, callback){
-
-            https.get(weatherUrl, function(response){
+                // console.log(response.statusCode);
                 response.on("data", function(data){
-                    //converts data to json
-                    const weatherData = JSON.parse(data);
-                    const icon = weatherData.weather[0].icon;
-                    const imageURL = "http://openweathermap.org/img/wn/"+icon+"@2x.png";
-                    callback(imageURL);
+
+                    const ipData= JSON.parse(data);
+                    const city = ipData.city;
+                    callback(city);
+                    
                 })
             })
-        }
+    }
+        function handleResults(results){
+            const query= results;
+            const apiKey = process.env.WEATHER_API_KEY;
+            const unit= "metric"
+            //api url for the weather api
+            const weatherUrl = "https://api.openweathermap.org/data/2.5/weather?q="+query+"&appid="+apiKey+"&units="+unit;
 
-        //THE RESULTS OF "makeCall2"
-        //SENDS THE WEATHER INFO USING "results2"
-        function handleResults2(results2){
-            let date=data.getDay();
-            let time= data.getTime();
-            if(req.body != null){
-                //creates a new post
-                const post=new Note({
-                    title: req.body.title,
-                    content: req.body.content,
-                    owner: req.user.username,
-                    state: "normal-mode",
-                    date: date,
-                    time: time,
-                    imageURL: results2,
-                    shared: "false",
+            function makeCall2(weatherUrl, callback){
 
-
-                });
-            
-                //saving the information entered into the note document 
-                post.save();
+                https.get(weatherUrl, function(response){
+                    response.on("data", function(data){
+                        //converts data to json
+                        const weatherData = JSON.parse(data);
+                        const icon = weatherData.weather[0].icon;
+                        const imageURL = "http://openweathermap.org/img/wn/"+icon+"@2x.png";
+                        callback(imageURL);
+                    })
+                })
             }
 
-            res.redirect("/pages");
+            //THE RESULTS OF "makeCall2"
+            //SENDS THE WEATHER INFO USING "results2"
+            function handleResults2(results2){
+                let date=data.getDay();
+                let time= data.getTime();
+                if(req.body != null){
+                    //creates a new post
+                    const post=new Note({
+                        title: req.body.title,
+                        content: req.body.content,
+                        owner: req.user.username,
+                        state: "normal-mode",
+                        date: date,
+                        time: time,
+                        imageURL: results2,
+                        shared: "false",
 
-        }
 
-        makeCall2(weatherUrl, function(results2) {
-            handleResults2(results2);
+                    });
+                
+                    //saving the information entered into the note document 
+                    post.save();
+                }
+
+                res.redirect("/pages");
+
+            }
+
+            makeCall2(weatherUrl, function(results2) {
+                handleResults2(results2);
+            })
+            }
+
+        makeCall(ipinfoApi, function(results) {
+            
+            handleResults(results);
         })
+
+        
+    }else{
+        let date=data.getDay();
+        let time= data.getTime();
+        if(req.body != null){
+            //creates a new post
+            const post=new Note({
+                title: req.body.title,
+                content: req.body.content,
+                owner: req.user.username,
+                state: "normal-mode",
+                date: date,
+                time: time,
+                imageURL: "/css/images/default-cloud.png",
+                shared: "false",
+
+
+             });
+                
+             //saving the information entered into the note document 
+             post.save();
         }
 
-    makeCall(ipinfoApi, function(results) {
-        
-        handleResults(results);
-    })
+        res.redirect("/pages");
 
-     
+    }
 
-
- }
+    }
 
 ));
 

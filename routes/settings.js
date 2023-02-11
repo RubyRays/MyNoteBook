@@ -34,7 +34,9 @@ router.get("/",isLoggedIn, catchAsync(async(req, res)=>{
 
         const currentUser = await NoteUser.findById(req.user.id);
         const pic = currentUser.profileImage.url;
-        res.render("settings", {pic, currentUser:currentUser} );
+        const theme = currentUser.theme;
+        const url = "settings";
+        res.render("settings", {pic,theme,url, currentUser:currentUser} );
         
         // // finding the document of the current user for the purpos of getting the url
         // NoteUser.findById(req.user.id, function(err, findpic){
@@ -100,7 +102,15 @@ router.put("/profile-image", isLoggedIn, parser.single("profileImage"), catchAsy
 
 }));
 router.put("/location", isLoggedIn, catchAsync(async(req, res)=>{
-    console.log("a");
+    const theUser = req.user.id;
+    const noteuser = await NoteUser.findById(theUser);
+    if(noteuser.locationAccess == "off"){
+        await NoteUser.updateOne({_id: theUser}, {"locationAccess": "on"});
+    }else{
+         await NoteUser.updateOne({_id: theUser}, {"locationAccess": "off"});       
+    }
+    res.redirect("/settings");
+    // res.send("changed location permission");
 }))
 
 //----------------------------------------------------------------------------------------
