@@ -27,9 +27,8 @@
     <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
     <script src="https://js.stripe.com/v3/"></script>
 </head>
-<body class="parent-flex ">
-    
-    <main class="container header" data-theme="dark">
+<body class="parent-flex" data-theme="<%=theme%>">
+    <main class="container header"  data-theme="<%=theme%>" >
         <%- body %>     
     </main>        
     <%- include("partials/footer.ejs")-%> 
