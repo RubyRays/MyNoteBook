@@ -17,6 +17,8 @@ const noteUserSchema =new mongoose.Schema({
         filename: String
     },
     accessType:{type:String, default:"default"},
+    locationAccess: {type: String, default: "off"},
+    theme: {type: String, default: "default"}
 
 });
 noteUserSchema.plugin(passportLocalMongoose);
