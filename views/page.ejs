@@ -3,6 +3,7 @@
     <!-- <p><a class="btn btn-light" href="/settings" role="button"><i class="fa-solid fa-gear">Settings</i></a></p> -->
     <%-include('partials/flash.ejs')-%>
     <h2>Hi <%=theUser%>, are you ready to start your notebook?</h2>
+    <h5>Location permission: <%=userContent.locationAccess%></h5>
     <!-- <div class="top-buttons">
         <p>
             <a class="btn btn-light" href="/publicPage" role="button"><i class="fa-sharp fa-solid fa-globe fa-xl"></i></a>
@@ -16,13 +17,11 @@
         <div class="form-group">
             <input type="text" class="form-control text-left" name="title" placeholder="Title of new page" required>
             <textarea class="form-control" name="content" rows="5" cols="30" placeholder="Contents of page" required></textarea>
-            <button type="submit" class="btn btn-light prettyBtn">Add Page</button>
+            <button type="submit" class="btn btn-light">Add Page</button>
             </div>
 
 
     </form>
-
- 
 
     <!-- Getting the page to only show the userContent with the owner name (username) -->
     <!-- userContent is from the find function where it sends all the things that it found and this for loop loops around it -->
