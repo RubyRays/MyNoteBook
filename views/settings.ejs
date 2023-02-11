@@ -16,54 +16,59 @@
 </div>
 
 </div>  
-<div class="profile-entry">
-    <div class=" profile-form-body">
-        <form action="/search-results" method="POST"></form>
-            <div class="nav-align">
-                <input class="btn btn-light nav-link" type="text" name="search" placeholder="search" >
-                <a class="btn btn-light" href="/search-results" role="button"><i class="fa-solid fa-magnifying-glass"></i> </a>
-                        <!-- <button type="submit" name="eee" href="/search-results" class="btn btn-light"><i class="fa-solid fa-magnifying-glass"></i></button> -->
-        </form>
-</div>
-</div>
-</div>
-<!-- light/dark mode -->
+
+<!-- light/dark mode
 <div class="profile-entry">
     <div class=" profile-form-body">
         
         <h1>Dark mode :  </h1>
                 <h2>Off </h2>
-                <!-- Controller Row -->
+
                 <div class="controller-row">
                     <label class="switch">
                         <input id="toggler" type="checkbox">
                         <span class="slider round"></span>
                     </label>
-                </div><!-- End of controller row -->
+                </div>
                 <h2>    On</h2>
             <script>
-                var container = document.getElementsByClassName('container')[0];
+                var container = document.querySelectorAll('.parent-flex')[0];
                 document.getElementById('toggler').addEventListener('change', (event) => {
                     console.log(toggler)
-                    event.target.checked ? container.removeAttribute('data-theme') : container.setAttribute('data-theme', 'dark');
+                    event.target.checked ? container.setAttribute('data-theme', 'dark'): container.setAttribute('data-theme', 'default') ;
                 });
             </script>
             
     </div>
-</div>
+</div> -->
 
-<div class="profile-entry">
-    <div class=" profile-form-body">
-        <h1>Location : </h1>
-        <h2>Off </h2>
-        <!-- Controller Row -->
-        <div class="controller-row">
-            <form action="/settings/location?_method=PUT" method="post" >
+        <div class="profile-entry">
+            <div class=" profile-form-body">
+                <h1>Location : </h1>
+                <h2>Off </h2>
+                <!-- Controller Row -->
+                <div class="controller-row">
+                    <form action="/settings/location?_method=PUT" method="post" >
+                    <label class="switch">
+                    <% if(currentUser.locationAccess == "on"){%>            
+                        <input id="toggler" type="checkbox" onChange="this.form.submit()" checked>
+                            <span class="slider round"></span>
+                    <%}else{%>
+                            <input id="toggler" type="checkbox" onChange="this.form.submit()">
+                            <span class="slider round"></span> 
+                    <%}%>
+                </label>
+
+        <!-- <script>
+            if(currentUser.locationAccess == "on"){
+                  document.getElementById("toggler").checked = true;
+                  alert("checked")
+            }else{
+                  document.getElementById("toggler").checked = false;
+                    alert("not checked")
+            }
             
-            <label class="switch">
-                <input id="toggler" type="checkbox" onChange="document" >
-                <span class="slider round"></span>
-            </label>
+        </script> -->
 
          </form>
         </div><!-- End of controller row -->
@@ -71,39 +76,52 @@
 
     </div>
 </div>
-    <!-- <form action="/search-results" method="POST"> -->
-    <!-- <form > -->
-        <!-- <div class="form-group"> -->
-            <!-- <input type="text" class="form-control text-left" name="title" onkeyup="sendData(this)" placeholder="Title of new page" required> -->
-            <!-- <textarea class="form-control" name="content" rows="5" cols="30" placeholder="Contents of page"
-                required></textarea> -->
-            <!-- <a class="btn btn-light" href="/search-results" role="button"><i class="fa-solid fa-magnifying-glass"></i> </a> -->
 
-        <!-- </div> -->
-    
 
-    <!-- </form> -->
-    <input type="text" onkeyup="a()">
-    <script>
-        function a(){
-            console.log("tree")
-        }
-    </script>
+<script language="javascript">
+    function alerttest(ei){
+        alert("Hi there!: "+ ei.value);
+        
+    }    
+</script>
+<!-- 
+        <form>
+            
+            <input type="text" class="form-control text-left" name="title" onkeyup="sendData(this)" placeholder="Title of new page" required>
+            <button type="submit" class="btn btn-light">Search</button>
+        </form>
+        <section id="results">
+            
+        </section>
 
-        <script>
-        function sendData(e){
-            console.log("works?");
-            fetch("search-results",{
+
+        <script language="javascript">
+       function sendData(e){
+            const results=document.getElementById('results');
+            fetch('search-results',{
                 method: "POST",
-                headers: {'Content-Type': "application/json"},
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({payload: e.value})
             }).then(res => res.json()).then(data=>{
-                let payload =data.search;
+                let payload = data.payload;
                 console.log(payload);
+                `<h1>${payload}</h1>`
             });
         }
-    </script>
-    
+        
+    </script> -->
+        <!-- <script>
+        fetch("search-results")
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+            }).then(data => {
+                if (data) {
+                    console.log(data);
+                }
+            }).catch(err => console.error(err));
+    </script> -->
 
 
 
