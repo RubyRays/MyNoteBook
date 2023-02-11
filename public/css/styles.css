@@ -6,10 +6,10 @@ body {
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
   padding: 0 16px;
 }
-.body-dark-mode {
+/* .body-dark-mode {
   background-color: #000000;
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
-}
+} */
 
 .parent-flex {
   display: flex;
@@ -45,13 +45,6 @@ p {
   font-size: 1.5rem;
 }
 
-.container {
-  border-radius: 2rem;
-  padding-bottom: 2rem;
-  background-color: #ffffff;
-  background-image: url("https://www.transparenttextures.com/patterns/circles.png");
-}
-
 .action-btn {
   background-color: none;
   border-style: none;
@@ -78,7 +71,11 @@ p {
   margin-bottom: 0.25rem;
   font-size: 2.5rem;
 }
-
+.container {
+  border-radius: 2rem;
+  padding-bottom: 2rem;
+  background-image: url("https://www.transparenttextures.com/patterns/circles.png");
+}
 .code_form {
   padding-top: 4rem;
 }
@@ -388,22 +385,28 @@ input:checked + .slider:before {
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet');
 
 /*** Light Mode Theme ***/
-:root,
-[data-theme="default"] {
-  --boday-bg-color: rgb(165, 54, 54);
-  --card-bg-color: rgb(32, 127, 190);
-  --box-shadow-color: rgba(0, 0, 0, 0.2);
+.container[data-theme="default"] {
+  --background-color: grey;
   --text-color: #333;
-  --switch-on-color: #60def1;
-  --switch-off-color: #ccc;
-  --toggler-color: rgb(226, 129, 39);
 }
+.parent-flex[data-theme="default"] {
+  --background-color: blue;
+  --text-color: #333;
+}
+
 /* Dark Mode Theme */
-[data-theme="dark"] {
-  --text-color: #24874a;
-  --toggler-color: #1b10b1;
-  --switch-on-color: rgb(79, 9, 9);
-  --switch-off-color: rgb(111, 22, 22);
+.container[data-theme="dark"] {
+  --background-color: pink;
+  --text-color: darkblue;
+}
+.parent-flex[data-theme="dark"] {
+  --background-color: black;
+  --text-color: darkblue;
+}
+.container,
+.parent-flex {
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
 * {
