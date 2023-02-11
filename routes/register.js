@@ -16,7 +16,8 @@ oAuth2Client.setCredentials({refresh_token: process.env.REFRESH_TOKEN})
 
 //-----------REGISTER----------------------------------------------
 router.get("/", async(req, res)=>{
-    res.render("register");
+    const theme= "default";
+    res.render("register", {theme:theme});
 });
 
 

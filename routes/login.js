@@ -10,7 +10,8 @@ const catchAsync = require('../middleware/catchAsync');
 router.get("/", async(req, res)=>{
     // const errors = req.flash().error || [];
     // res.render("login", {errors});
-    res.render('login');
+    const theme= "default";
+    res.render('login', {theme:theme});
 }); 
 
 //login page that takes in the information input by the user and 

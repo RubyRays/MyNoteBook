@@ -10,13 +10,15 @@ const catchAsync = require('../middleware/catchAsync');
 
 router.get("/",isLoggedIn, catchAsync(async(req,res)=>{
     theUser = req.user.username;
+    const noteuser = await NoteUser.findById(req.user.id);
+    const theme = noteuser.theme;
     const session_id = req.query.id
     
     const session= await stripe.checkout.sessions.listLineItems(req.query.id,{
         expand:['data'],
     });
    
-    res.render("success", {theUser:theUser, session:session, session_id:session_id});
+    res.render("success", {theme:theme, theUser:theUser, session:session, session_id:session_id});
 }));
 
 router.put("/", isLoggedIn, catchAsync(async(req,res)=>{
