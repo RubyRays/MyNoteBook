@@ -170,55 +170,64 @@ app.use("/logout",logout);
 
 //--HOME ROUTE----
 app.get("/", async(req, res)=>{
-    res.render("home");
+    const theme= "default";
+    res.render("home", {theme:theme});
 });
 
 
 
-// app.get("/search-results", isLoggedIn, catchAsync(async(req, res)=>{
-//     const search = req.body.result;
-//     // console.log(search);
-//     const noteuser = await NoteUser.findById(req.user.id);
-//     const pic = noteuser.profileImage.url;
-//     res.render("search-results",{pic, search:search})
-// }))
-// app.post("/search-results", isLoggedIn, catchAsync(async(req, res)=>{
-//     const search = req.body.result;
-//     console.log(search);
-//     res.redirect("search-results",search);
-// }))
-
-
-
-// app.get("/search-results", isLoggedIn, catchAsync(async(req, res)=>{
+app.get("/search-results", isLoggedIn, catchAsync(async(req, res)=>{
     
 
-//     const noteSearch= "New";
-//     const n = req.body.title;
-//     console.log("this is the title part  :"+n)
-//     // const search = req.body.eee;
-//     console.log(".....uuu"+noteSearch);
-//     // const note= await Note.findById(req.user.id);
-//     const note2 = await Note.find({title:{$regex: `${noteSearch}`,  $options:"i"}, owner:{$eq:req.user.username}})
-//     const result ={
-//         error:false,
-//         note2
-//     };
-//     const noteuser= await NoteUser.findById(req.user.id);
-//     const pic = noteuser.profileImage.url;
-//     // res.status(200).json(result);
-//     res.render("search-results", {pic,result:result});
-// }));
-app.post("/search-results", isLoggedIn, catchAsync(async(req, res)=>{
-    const payload = "new";
-    // const a = req.body.a;
-    // console.log("......"+a);
-    const search = await Note.find({title:{$regex: `${payload}`,  $options:"i"}, owner:{$eq:req.user.username}}).exec();
+    // const noteSearch="new";
+    // const n = res;
+    // console.log("this is the title part  :"+n)
+    // // const search = req.body.eee;
+    // console.log(".....uuu"+noteSearch);
+    // // const note= await Note.findById(req.user.id);
+    // const note2 = await Note.find({title:{$regex: `${noteSearch}`,  $options:"i"}, owner:{$eq:req.user.username}})
     // const result ={
     //     error:false,
     //     note2
     // };
-    res.send({payload: search});
+    const noteuser= await NoteUser.findById(req.user.id);
+    const pic = noteuser.profileImage.url;
+    const theme= noteuser.theme
+    // res.status(200).json(result);
+    res.render("search-results", {pic, theme});
+}));
+
+app.post("/search-results", isLoggedIn, catchAsync(async(req, res)=>{
+    const payload = req.body.payload.trim();
+    console.log("......"+ payload);
+    const search = await Note.find({title:{$regex: `${payload}`,  $options:"i"}, owner:{$eq:req.user.username}}).exec();
+    if(search.length > 10){
+            search = search.slice(0,10);
+    }
+
+    res.send( {payload: search});
+
+
+
+}))
+
+
+app.put("/nav", isLoggedIn, catchAsync(async(req, res)=>{
+
+    const theUser = req.user.id;
+    const prevUrl = req.body.prevUrl;
+    const noteuser = await NoteUser.findById(theUser);
+    console.log(prevUrl);
+    if(noteuser.theme == "default"){
+        await NoteUser.updateOne({_id: theUser}, {"theme": "dark"});
+        
+    }else{
+         await NoteUser.updateOne({_id: theUser}, {"theme": "default"});
+                
+    }
+    // const url = req.url;
+    // console.log(url);
+    res.redirect("/"+prevUrl)
 
 
 }))
