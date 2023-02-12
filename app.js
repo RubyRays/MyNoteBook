@@ -192,9 +192,10 @@ app.get("/search-results", isLoggedIn, catchAsync(async(req, res)=>{
     // };
     const noteuser= await NoteUser.findById(req.user.id);
     const pic = noteuser.profileImage.url;
-    const theme= noteuser.theme
+    const theme= noteuser.theme;
+    const url="search-results"
     // res.status(200).json(result);
-    res.render("search-results", {pic, theme});
+    res.render("search-results", {pic, theme, url});
 }));
 
 app.post("/search-results", isLoggedIn, catchAsync(async(req, res)=>{
