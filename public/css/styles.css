@@ -45,6 +45,10 @@ p {
   font-size: 1.5rem;
 }
 
+#d-button {
+  scale: 1.5;
+}
+
 .action-btn {
   background-color: none;
   border-style: none;
@@ -169,6 +173,10 @@ p {
   background-image: url("https://www.transparenttextures.com/patterns/circles.png");
   margin-top: 2rem;
   margin-bottom: 0;
+}
+.moon-btn {
+  position: relative;
+  z-index: -3;
 }
 .nav-link {
   margin-left: 0.5rem;
