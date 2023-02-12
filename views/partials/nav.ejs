@@ -17,8 +17,8 @@
                 <div class="navbar-nav mt-auto navbar-container">
                     <form action="/search-results" method="Post"></form>
                         <div class="nav-align">
-                            <input type="search" name="search" class="btn btn-light nav-link ">
-                            <a class="btn btn-light" href="/search-results" role="button"><i class="fa-solid fa-magnifying-glass"></i> </a>
+                            
+                            <a class="btn btn-light" href="/search-results" role="button">Search<i class="fa-solid fa-magnifying-glass"></i> </a>
                             <!-- <button type="submit"  class="btn btn-light"><i class="fa-solid fa-magnifying-glass"></i></button> -->
                     </form>                                
                                         <!-- <script>
@@ -34,16 +34,17 @@
                         <div class="nav-align"><a class="btn btn-light nav-link " href="/logout" role="button">Log Out </a></div>
                         <div class="nav-align"><a class="btn btn-light nav-link " href="/logout" role="button"><img src="<%=pic%>" class="rounded-circle" height="44" alt="" loading="lazy" /></a></div>
                         <form action="/nav?_method=PUT" method="POST">
-                        <div id="d-button"class="nav-align"><input type="submit" class="btn btn-light nav-link" name="prevUrl" value="<%=url%>" onclick="this.form.submit()" role="button">
-                            <i class="fa-solid fa-moon"></i></input>
-                            <script>
+                        <div id="d-button"class="nav-align">
+                            <input type="hidden" value="<%=url%>" name="prevUrl">
+                            <input type="submit" class="btn btn-light nav-link" onclick="this.form.submit()" value="🌒" role="button"></input></i>
+                        
+                            <!-- <script>
                                 var container = document.querySelectorAll('.parent-flex')[0];
                                 var container2 = document.querySelectorAll('.container')[0];
                                 document.getElementById('d-button').addEventListener('click', (event) => {
-                                    var c =container.getAttribute('data-theme');
-                                    alert("<%=theme%>")
-                                    i="<%=theme%>";
-                                    if(i == "default"){
+                                    
+                                    theme="<%=theme%>";
+                                    if(theme == "default"){
                                         var theme1 = 'dark';
                                     }else{
                                         var theme1 = 'default';
@@ -56,7 +57,7 @@
                                 
 
                                               
-                            </script>
+                            </script> -->
 
                         </div>                                        
 
