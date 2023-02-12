@@ -1,6 +1,6 @@
 <%-include('partials/nav.ejs')-%>
 
-<h1>Hi there</h1>
+<h1>Search</h1>
 <!-- <form> -->
 
         <input type="text" class="form-control text-left" name="title" onkeyup="sendData(this)" placeholder="Title of new page" required>
@@ -23,7 +23,7 @@
                         let payload = data.payload;
                         console.log(payload);
                         if(payload.length < 1){
-                          results.innerHTML ='<h1>Sorry no results here</h1>';
+                          results.innerHTML ='<h1>Nothing found</h1>';
                           return;      
                         }
                         payload.reverse().forEach((item, index)=>{
