@@ -411,7 +411,9 @@ router.get("/:id",isLoggedIn, catchAsync(async(req,res)=>{
         const pic = noteuser.profileImage.url;
         const post= await NoteUser.findOne({"username": theUser}).populate('noteBookContents');
         const newPage = post.noteBookContents;
-        res.render("userContent",{pic,newPage:newPage, pageEntry: pageEntry}); 
+        const theme = noteuser.theme;
+        const url = "pages/"+pageEntry;
+        res.render("userContent",{pic, theme, url, newPage:newPage, pageEntry: pageEntry}); 
 
     //     //gets the title of the page that is going to be
     //     //created after the click --create page
