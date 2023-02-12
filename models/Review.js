@@ -9,7 +9,9 @@ const reviewSchema = new mongoose.Schema({
     likes: {type: Number, default: 0},
     dislikes:{type: Number, default: 0},
     author: String, 
-    target: {type: String, default: "here"}
+    target: {type: String, default: "here"},
+    // if the user is in the commenter list then disable the likes and dislikes button 
+    commenter:[{name: String, reaction:String}]
 })
 
 const Review = new mongoose.model("Review", reviewSchema);
