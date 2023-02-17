@@ -4,7 +4,7 @@ require('dotenv').config();
 const express = require("express");
 const cors = require('cors');
 const bodyParser = require("body-parser");
-const ejs = require('ejs');
+// const ejs = require('ejs');
 const expressLayouts = require('express-ejs-layouts');
 const mongoose = require("mongoose");
 const session = require('express-session');
@@ -12,36 +12,33 @@ const flash = require('connect-flash');
 const path = require('path');
 const methodOverride=require('method-override');
 const passport = require("passport");
-const passportLocalMongoose = require("passport-local-mongoose");
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const findOrCreate = require('mongoose-findorcreate');
-const _ = require("lodash");
-const https = require("https");
-const multer = require("multer");
-const cloudinary = require("cloudinary").v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const e = require('express');
-const nodemailer = require("nodemailer");
+// const passportLocalMongoose = require("passport-local-mongoose");
+// const GoogleStrategy = require('passport-google-oauth20').Strategy;
+// const findOrCreate = require('mongoose-findorcreate');
+// const _ = require("lodash");
+// const https = require("https");
+// const multer = require("multer");
+// const cloudinary = require("cloudinary").v2;
+// const { CloudinaryStorage } = require('multer-storage-cloudinary');
+// const e = require('express');
+// const nodemailer = require("nodemailer");
 const {google, dlp_v2, appengine_v1alpha} = require ("googleapis");
 const { OAuth2Client } = require('google-auth-library');
 const OAuth2 = google.auth.OAuth2;
-const stripe= require('stripe')(process.env.STRIPE_PRIVATE_KEY);
+// const stripe= require('stripe')(process.env.STRIPE_PRIVATE_KEY);
 //modules---------------
-const Note = require('./models/Note');
-const Review = require("./models/Review");
+// const Note = require('./models/Note');
 const NoteUser= require('./models/NoteUser');
-// const Subscription = require('./models/Subscription');
-const Session = require('./models/Session');
 //middleware-----------------------------
 const {isLoggedIn} = require('./middleware/login_middlewaare');
-const {level1Access, level2Access}= require('./middleware/access_middleware');
-const { query } = require('express');
+// const {level1Access, level2Access}= require('./middleware/access_middleware');
+// const { query } = require('express');
 //error middleware
 const CustomError = require('./middleware/CustomError');
 const catchAsync = require('./middleware/catchAsync');
 //-----------------
 //--helper functions for ejs
-const instaClick = require('./clickBtn.js');
+// const instaClick = require('./clickBtn.js');
 //OAuth routes
 const oAuth2Client= new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI)
 oAuth2Client.setCredentials({refresh_token: process.env.REFRESH_TOKEN})
@@ -186,7 +183,6 @@ app.put("/nav", isLoggedIn, catchAsync(async(req, res)=>{
     const theUser = req.user.id;
     const prevUrl = req.body.prevUrl;
     const noteuser = await NoteUser.findById(theUser);
-    console.log(prevUrl);
     if(noteuser.theme == "default"){
         await NoteUser.updateOne({_id: theUser}, {"theme": "dark"});
         
