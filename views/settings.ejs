@@ -17,36 +17,11 @@
 
 </div>  
 
-<!-- light/dark mode
-<div class="profile-entry">
-    <div class=" profile-form-body">
-        
-        <h1>Dark mode :  </h1>
-                <h2>Off </h2>
-
-                <div class="controller-row">
-                    <label class="switch">
-                        <input id="toggler" type="checkbox">
-                        <span class="slider round"></span>
-                    </label>
-                </div>
-                <h2>    On</h2>
-            <script>
-                var container = document.querySelectorAll('.parent-flex')[0];
-                document.getElementById('toggler').addEventListener('change', (event) => {
-                    console.log(toggler)
-                    event.target.checked ? container.setAttribute('data-theme', 'dark'): container.setAttribute('data-theme', 'default') ;
-                });
-            </script>
-            
-    </div>
-</div> -->
 
         <div class="profile-entry">
             <div class=" profile-form-body">
                 <h1>Location : </h1>
                 <h2>Off </h2>
-                <!-- Controller Row -->
                 <div class="controller-row">
                     <form action="/settings/location?_method=PUT" method="post" >
                     <label class="switch">
@@ -59,19 +34,8 @@
                     <%}%>
                 </label>
 
-        <!-- <script>
-            if(currentUser.locationAccess == "on"){
-                  document.getElementById("toggler").checked = true;
-                  alert("checked")
-            }else{
-                  document.getElementById("toggler").checked = false;
-                    alert("not checked")
-            }
-            
-        </script> -->
-
          </form>
-        </div><!-- End of controller row -->
+        </div>
         <h2> On</h2>
 
     </div>
@@ -84,46 +48,6 @@
         
     }    
 </script>
-<!-- 
-        <form>
-            
-            <input type="text" class="form-control text-left" name="title" onkeyup="sendData(this)" placeholder="Title of new page" required>
-            <button type="submit" class="btn btn-light">Search</button>
-        </form>
-        <section id="results">
-            
-        </section>
-
-
-        <script language="javascript">
-       function sendData(e){
-            const results=document.getElementById('results');
-            fetch('search-results',{
-                method: "POST",
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({payload: e.value})
-            }).then(res => res.json()).then(data=>{
-                let payload = data.payload;
-                console.log(payload);
-                `<h1>${payload}</h1>`
-            });
-        }
-        
-    </script> -->
-        <!-- <script>
-        fetch("search-results")
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                }
-            }).then(data => {
-                if (data) {
-                    console.log(data);
-                }
-            }).catch(err => console.error(err));
-    </script> -->
-
-
 
 <div class="back-btn">
     <a class="btn btn-light" href="/pages" role="button"><i class="fas fa-home"></i></a>
