@@ -9,7 +9,8 @@ const catchAsync = require('../middleware/catchAsync');
 router.get("/", isLoggedIn, catchAsync(async(req, res)=>{
    
     const currentUser = await NoteUser.findById(req.user.id);
-     res.render("verificationPage", {currentUser:currentUser} );
+    const theme= currentUser.theme;
+    res.render("verificationPage", {theme,currentUser:currentUser} );
 
 
      
@@ -26,7 +27,9 @@ router.post("/", isLoggedIn, catchAsync(async(req, res)=> {
         res.redirect("/pages");
     }else{
         verificationMessage.push({msg: "Verification code not correct"});
-        res.render("verificationPage",{verificationMessage, currentUser:currentUser});        
+        const theme = currentUser.theme;
+        console.log(theme);
+        res.render("verificationPage",{theme,verificationMessage, currentUser:currentUser});        
     }
 
 
