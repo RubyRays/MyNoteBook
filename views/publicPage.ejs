@@ -12,19 +12,19 @@
     <!-- displays the users entry -->
     <h1 class="note-heading">
         
-        By <%=post.owner%> : <%=post.title.substring(0,20) + "..." %>
+        By <%=post.owner%> : <%=post.title.substring(0,20) %>
         <span class="date-style">
                 <%=post.date%>
                     <%=post.time%>
             </span>
     </h1>
     <p class="note-body">
-        <%=post.content.substring(0,100) + "..." %>
+        <!-- displays part of the entry content and leads to public contents page -->
+        <%=post.content.substring(0,100) + "..." %> <button class="page-btn"><a href="/public-pages/<%=post._id%>">Go to page</a></button>
     </p>
 
 
-    <!-- button that takes the user to the page with the rest of the entry -->
-    <button class="page-btn"><a href="/public-pages/<%=post._id%>">Go to page</a></button>
+
 
 
     <h2>---</h2>
