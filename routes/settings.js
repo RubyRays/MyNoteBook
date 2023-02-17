@@ -38,28 +38,6 @@ router.get("/",isLoggedIn, catchAsync(async(req, res)=>{
         const url = "settings";
         res.render("settings", {pic,theme,url, currentUser:currentUser} );
         
-        // // finding the document of the current user for the purpos of getting the url
-        // NoteUser.findById(req.user.id, function(err, findpic){
-        //     if(err){
-        //         console.log(err);
-        //     }else{
-        //         //finding the user related entries by the id of currently logged in user
-        //         NoteUser.findById(req.user.id, function(err, currentUser){
-
-        //             if(err){
-        //                 console.log(err);
-                        
-                                
-        //             }else{
-        //                 if(currentUser){
-        //                     //finding the url
-        //                     const pic = findpic.profileImage.url;
-        //                     //rendering the settings page
-        //                     res.render("settings", {pic, currentUser:currentUser} );
-        //                 }
-        //             }
-        //         });
-        //     }});
   
 }));
 //----PROFILE IMAGE reuest 
@@ -76,29 +54,7 @@ router.put("/profile-image", isLoggedIn, parser.single("profileImage"), catchAsy
     await NoteUser.updateOne({_id:req.user.id},{"profileImage":{"url":path, "filename": filename }});
     res.redirect("/settings");
 
-    // const path = req.file.path;
-    // const filename= req.file.filename;
 
-
-    // //find the currently referenced image and delete it
-    // NoteUser.findById(req.user.id, function(err, foundUser){
-    //     if(foundUser.profileImage.filename != 'samples/sheep'){
-    //          cloudinary.uploader.destroy(foundUser.profileImage.filename);
-    //     }
-       
-    // })
-
-    // NoteUser.updateOne(
-    //     {_id:req.user.id},
-    //     {$set: {"profileImage":{"url":path, "filename": filename }}},
-    //     function(err){
-    //                     if(err){
-    //                         console.log(err);
-    //                     }else{
-    //                         res.redirect("/settings");
-    //                     }
-    //                 }
-    // )
 
 }));
 router.put("/location", isLoggedIn, catchAsync(async(req, res)=>{

@@ -18,28 +18,7 @@ router.get("/",isLoggedIn,level1Access, catchAsync(async(req,res)=>{
         const theme = noteuser.theme;
         const url = "public-pages";
         res.render("publicPage", {pic,theme,url, publicPosts: publicPosts});              
-        // // finding the document of the current user for the purpos of getting the url
-        // NoteUser.findById(req.user.id, function(err, findpic){
-        //     if(err){
-        //         console.log(err);
-        //     }else{
-                
 
-        //         //finding the user related entries by the id of currently logged in user
-        //         Note.find({"shared": {$eq: "true"}, "deleted":{$ne: "true"}}, function(err, publicPosts){
-
-        //             if(err){
-        //                 console.log(err);
-                        
-                                
-        //             }else{
-
-        //                     const pic= findpic.profileImage.url;                
-        //                     res.render("publicPage", {pic, publicPosts: publicPosts});
-                        
-        //             }
-        //         });
-        //     }});
  
 }));
 
@@ -47,23 +26,6 @@ router.get("/",isLoggedIn,level1Access, catchAsync(async(req,res)=>{
 //----------------Creating multiple new pages for the public page
 //creating a page to show the entries of users
 router.get("/:id", isLoggedIn, catchAsync(async(req,res)=>{
-
-    // const pageEntry = req.params.id;
-    // const currentUser = req.user.username;
-    // const foundEntry = await Note.findById(pageEntry);
-    // const noteuser = await NoteUser.findById(req.user.id);
-    // const review = await  Review.find({"target":pageEntry});
-    // //await review.save();
-    // foundEntry.reviews= review;
-    // noteuser.reviews=review;
-
-    
-    // const note = await Note.find({}).populate('reviews');
-    // console.log(note.reviews);
-    // const newPublicContent = note;
-    // const pic = noteuser.profileImage.url;
-    // res.render("publicContent",{pic,newPublicContent:newPublicContent, pageEntry: pageEntry, currentUser: currentUser});
-
 
 
 
@@ -150,23 +112,6 @@ router.delete("/:id/review/:target/delete",isLoggedIn,level2Access, catchAsync(a
     await Review.deleteOne({_id:target, author:{$eq:req.user.username}});
     res.redirect("/public-pages/"+clickedEntry);
 
-    // const id= req.params.id;
-    // const target= req.params.target;    
-    // const clickedEntry = id;
-    //     console.log(target);
-    //     Review.deleteOne({target:target, author:{$eq:req.user.username}}, function(err, found){
-    //         if(err){
-    //             console.log(err);
-    //             console.log("hey");
-    //         }else{
-    //             if(found)
-    //             console.log(found)
-    //             console.log("hello");
-    //             //redirects to the page where the target of the review is
-    //              res.redirect("/public-pages/"+clickedEntry);
-
-    //         }
-    //     });
    
 
 }));

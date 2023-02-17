@@ -4,11 +4,10 @@ const Note = require('../models/Note');
 const NoteUser= require('../models/NoteUser');
 const https = require("https");
 const {isLoggedIn} = require('../middleware/login_middlewaare');
-const {level1Access, level2Access}= require('../middleware/access_middleware');
+const {level1Access}= require('../middleware/access_middleware');
 const data = require("../data");
-const CustomError = require('../middleware/CustomError');
 const catchAsync = require('../middleware/catchAsync');
-const { nextTick } = require('process');
+
 
 //-------------------MAIN PAGE FOR USER NOTES--------------------
 router.get("/", isLoggedIn, catchAsync(async(req,res)=>{
@@ -30,38 +29,7 @@ router.get("/", isLoggedIn, catchAsync(async(req,res)=>{
         res.render('page',{pic,theme,url, messages: req.flash('success'), userContent: noteuser, theUser: theUser });
 
 
-        // const theUser = req.user.username;
 
-
-        // //finds the current user using the user.id provided by the passport package
-        // NoteUser.findById(req.user.id,function(err, foundUser) {
-        //     if(err){
-        //         console.log(err);
-                
-        //     }else{
-
-        //         if(foundUser){
-
-        //             //looking for the data in the notes collection where the owner name
-        //             //is the same as the username of the currently logged in user
-        //             Note.find({"owner": req.user.username, "deleted":{$ne:"true"}}, function(err, user2) {
-
-        //                 const pic= foundUser.profileImage.url;
-                                            
-        //                 //saves the notes associated with the user into the notebooks array
-        //                 foundUser.noteBookContents=user2;
-
-        //                 //saves the userinfo into noteUser collection and renders the page
-        //                 foundUser.save(function(){
-
-        //                     res.render("page", {pic, messages: req.flash('success'), userContent: foundUser, theUser: theUser});
-                                
-        //                 })
-        //             })
-        //         }
-        //     }
-        // });
-  
 
 }));
 
@@ -192,35 +160,7 @@ router.put("/delete",isLoggedIn, catchAsync(async(req, res)=>{
     res.redirect("/pages");
 
 
-    // //distinguishing things to delete
-    // const clickedEntry = req.body.deleteEntry;
-
-    //     Note.updateOne(
-    //         {_id: clickedEntry},
-    //         {$set: {"deleted": "true"}},
-    //         function(err) {
-    //             if(err) {
-    //                 console.log(err);
-    //             }
-    //         }
-    //         )
-    //     //Finds the entry with the id of the currently logged in user
-    //     //looks at the notebookContents array and finds the id inside that 
-    //     //corresponds to the clickedEntry (the delete button that corresponds to the entry)
-    //     //then it excludes it from the list after the update
-    //     //this causes the items to be erased from the NoteUser collection.
-    //     NoteUser.findOneAndUpdate({_id:req.user.id},
-    //         {$pull:{noteBookContents:{_id: clickedEntry}}},
-    //         {new:true, useFindAndModify: false},
-    //         function(err){
-    //             if(err){
-    //                 console.log(err);
-    //             }else{
-    //                 res.redirect("/pages");
-                    
-    //             }
-    //         }
-    //         );
+  
 
 }));
 
@@ -238,45 +178,6 @@ router.put("/pre-edit",isLoggedIn, catchAsync(async(req, res)=>{
     }
     res.redirect("/pages");
 
-
-    // //gets information sent by the editEntry/pen button
-    // const editState = req.body.editEntry;
-    // console.log(editState);
-    // //find the state of the entry being clicked and toggle it between edit-mode and normal-mode
-    // Note.findById(editState, function(err, foundEntry){
-    //     if(err){
-    //         console.log(err);
-    //     }else{
-    //         if(foundEntry.state == "edit-mode"){
-    //             Note.updateOne(
-    //                 {_id: editState},
-    //                 {$set: {"state": "normal-mode"}},
-    //                 function(err){
-    //                     if(err){
-    //                         console.log(err);
-    //                     }else{
-                           
-    //                         res.redirect("/pages");
-    //                     }
-    //                 }        
-    //             )                
-    //         }else{
-    //             Note.updateOne(
-    //                 {_id: editState},
-    //                 {$set: {"state": "edit-mode"}},
-    //                 function(err){
-    //                     if(err){
-    //                         console.log(err);
-    //                     }else{
-                            
-    //                         res.redirect("/pages");
-    //                     }
-    //                 }        
-    //             )                
-    //         }
-    //     }
-    // })
-
 }));
 
  
@@ -288,8 +189,6 @@ router.put("/edit",isLoggedIn, catchAsync(async(req,res)=> {
 
     await Note.updateOne({_id: toEdit}, {"title": title, "content": content});
     await Note.updateOne({_id: toEdit}, {"state": "normal-mode"});
-    // const noteuser = await NoteUser.findOne({_id: req.user.id,"noteBookContents":{"$elemMatch": {"id": toEdit}}}).populate("noteBookContents");
-    // console.log("HEEEERRRRR"+ noteuser);
     res.redirect("/pages");
 
 
@@ -297,50 +196,6 @@ router.put("/edit",isLoggedIn, catchAsync(async(req,res)=> {
 
 
 
-    // const toEdit = req.body.Edit;
-    // const title= req.body.title2;
-    // const content=req.body.content2;
-
-    //     //updates the title and content of the note
-    //     Note.updateOne(
-    //         {_id: toEdit},
-    //         {$set: {"title":title, "content":content }},
-    //         function(err){
-    //             if(err){
-    //                 console.log(err);
-    //             }else{
-    //                 console.log("edit page button pressed");
-                   
-    //             }
-    //         }
-    //     );
-    //     //updates the title and content of the noteUser
-    //     NoteUser.updateOne(
-    //     {_id: req.user.id, "noteBookContents":{"$elemMatch": {"_id": toEdit}}},
-    //     {$set: {"noteBookContents.$.title":title, "noteBookContents.$.content":content }},
-    //     function(err){
-    //         if(err){
-    //             console.log(err);
-    //         }else{
-    //             console.log("edit page button pressed");
-                
-    //         }
-    //      }
-    // );
-    //      //updates the state everytime the edit page button is clicked on
-    //     Note.updateOne(
-    //         {_id: toEdit},
-    //         {$set: {"state": "normal-mode"}},
-    //         function(err){
-    //             if(err){
-    //                 console.log(err);
-    //             }else{
-    //                 console.log("edit page button pressed");
-    //                 res.redirect("/pages");
-    //             }
-    //         }        
-    //     )
-   
 
 }));
 
@@ -350,52 +205,17 @@ router.put("/share-unshare",isLoggedIn,level1Access, catchAsync(async(req, res)=
     //finding the entry by its id
     const note = await Note.findById(toShare);
     if(note.shared == "false"){
-        await Note.updateOne({_id:toShare}, {"shared":"true"});
+        await Note.updateOne(
+                    {_id:toShare},
+                    {"shared":"true"});
     }else{
-        await Note.updateOne({_id:toShare}, {"shared":"false"});
+        await Note.updateOne(
+                    {_id:toShare},
+                    {"shared":"false"});
     }
     res.redirect("/pages");
 
 
-
-
-
-    // const toShare= req.body.share;
-    // //finding the entry by its id
-    // Note.findById(toShare, function(err, foundNoteEntry) {
-    //     if(err){
-    //         console.log(err);
-    //     }else{
-    //         //checking the shared state
-    //         //if the state is false when clicked change it to true
-    //         //otherwise change it to false
-    //         if(foundNoteEntry.shared === "false") {
-    //             Note.updateOne(
-    //                 {_id: toShare},
-    //                 {$set: {"shared": "true"}},
-    //                 function(err){
-    //                     if(err){
-    //                         console.log(err);
-    //                     }else{
-    //                         res.redirect("/pages")
-    //                     }
-    //                 }
-    //         ) 
-    //         }else{
-    //             Note.updateOne(
-    //                 {_id:toShare},
-    //                 {$set: {"shared": "false"}},
-    //                 function(err){
-    //                     if(err){
-    //                         console.log(err);
-    //                     }else{
-    //                         res.redirect("/pages")
-    //                     }
-    //                 }
-    //             )    
-    //         }
-    //     }
-    // })
 
 }));
 
@@ -409,41 +229,16 @@ router.get("/:id",isLoggedIn, catchAsync(async(req,res)=>{
         const theUser = req.user.username;
         const noteuser = await NoteUser.findById(req.user.id);
         const pic = noteuser.profileImage.url;
-        const post= await NoteUser.findOne({"username": theUser}).populate('noteBookContents');
+        const post= await NoteUser.findOne(
+                        {"username": theUser})
+                        .populate('noteBookContents'
+                         );
         const newPage = post.noteBookContents;
         const theme = noteuser.theme;
         const url = "pages/"+pageEntry;
         res.render("userContent",{pic, theme, url, newPage:newPage, pageEntry: pageEntry}); 
 
-    //     //gets the title of the page that is going to be
-    //     //created after the click --create page
-    //     const pageEntry = req.params.id;
-
-    //     const theUser = req.user.username;
-
-    //     NoteUser.findById(req.user.id, function(err, findpic){
-    //         if(err){
-    //             console.log(err);
-    //         }else{
-                
-    //     //search for the record with the same username as the currently logged in user
-    //     NoteUser.findOne({"username": theUser}).populate('noteBookContents').exec(function(err, post){
-    //         if(err){
-    //             console.log(err);
-    //         }else{
-    //             const newPage = post.noteBookContents;
-    //             const pic= findpic.profileImage.url;
-    //             //renders the userContent page
-    //             //the data passed into it is the title of the page that the user is looking for
-    //             //also the contents of the relavant noteBookContents of the found post     
-    //             res.render("userContent",{pic,newPage:newPage, pageEntry: pageEntry});    
-
-    //         }
-        
-
-    //     })
-    // }});
-
+ 
 
 }));
 
