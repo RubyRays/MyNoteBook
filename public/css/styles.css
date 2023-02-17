@@ -3,7 +3,7 @@ html {
 }
 body {
   background-color: blueviolet;
-  background-image: url("https://www.transparenttextures.com/patterns/circles.png");
+  /* background-image: url("https://www.transparenttextures.com/patterns/circles.png"); */
   padding: 0 16px;
 }
 /* .body-dark-mode {
@@ -53,6 +53,7 @@ p {
   background-color: none;
   border-style: none;
   margin-top: 2rem;
+  border-radius: 3rem;
 }
 .back-btn {
   display: flex;
@@ -78,16 +79,27 @@ p {
 .container {
   border-radius: 2rem;
   padding-bottom: 2rem;
-  background-image: url("https://www.transparenttextures.com/patterns/circles.png");
+  /* background-image: url("https://www.transparenttextures.com/patterns/circles.png"); */
 }
 .code_form {
   padding-top: 4rem;
 }
+.checkout {
+  display: flex;
+  justify-content: flex-end;
+  align-content: center;
+}
 .check-out-btn {
   margin-top: 0.5rem;
+  position: relative;
+  bottom: 0;
 }
 .check-out-style {
   padding-top: 2rem;
+}
+.card-img-top {
+  border-radius: 0%;
+  height: 10rem;
 }
 
 .delete-btn :hover {
@@ -152,7 +164,9 @@ p {
 .icon-style-form {
   display: inline-block;
 }
+/* .link-style{
 
+} */
 .logoutBtn {
   position: relative;
   margin-top: 5%;
@@ -170,7 +184,7 @@ p {
   color: blue;
 }
 .message {
-  background-image: url("https://www.transparenttextures.com/patterns/circles.png");
+  /* background-image: url("https://www.transparenttextures.com/patterns/circles.png"); */
   margin-top: 2rem;
   margin-bottom: 0;
 }
@@ -201,13 +215,19 @@ p {
 .nav-bar {
   height: 5%;
 }
+.nav-dark {
+  background-color: #17bebb;
+}
+.nav-default {
+  color: #459e63;
+}
 .note {
   margin-left: -0.6rem;
 }
 
 .note-heading {
-  background-color: #c04fb5;
-  background-image: url("https://www.transparenttextures.com/patterns/circles.png");
+  background-color: none;
+  /* background-image: url("https://www.transparenttextures.com/patterns/circles.png"); */
   border-bottom: solid;
   border-bottom-width: 0.1rem;
   margin-bottom: 0px;
@@ -218,22 +238,24 @@ p {
 .note-body {
   margin-top: 0px;
   background-color: #7fffd4;
-  background-image: url("https://www.transparenttextures.com/patterns/circles.png");
+  /* background-image: url("https://www.transparenttextures.com/patterns/circles.png"); */
   word-wrap: break-word;
-  border-bottom-right-radius: 1rem;
+
   font-size: medium;
   white-space: pre-line;
 }
 
 .note-weather-image {
   position: relative;
-  margin-top: -2rem;
+  /* margin-top:-2rem ; */
   margin-bottom: auto;
   margin-left: 0%;
+  max-width: 100%;
+  max-height: 100%;
 }
 .page-btn {
   background-color: #7fffd4;
-  background-image: url("https://www.transparenttextures.com/patterns/circles.png");
+  /* background-image: url("https://www.transparenttextures.com/patterns/circles.png"); */
   border-style: none;
   color: black;
   padding: 0.5rem;
@@ -243,7 +265,7 @@ p {
   border-radius: 0.5rem;
   border-width: 0.1rem;
   color: darkblue;
-  padding: 0.2rem;
+  /* padding: 0.2rem; */
 }
 
 .page-btn :active {
@@ -298,15 +320,15 @@ p {
 
 .social-btn-container {
   background-color: #ffffff;
-  background-image: url("https://www.transparenttextures.com/patterns/circles.png");
+  /* background-image: url("https://www.transparenttextures.com/patterns/circles.png"); */
   border-style: none;
   margin-top: 0.4rem;
 }
 .share-true {
-  color: green;
+  background-color: lightgreen;
 }
 .share-false {
-  color: grey;
+  background-color: white;
 }
 .subscription-cards {
   display: flex;
@@ -390,26 +412,24 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet');
+/* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet'); */
 
 /*** Light Mode Theme ***/
 .container[data-theme="default"] {
-  --background-color: grey;
-  --text-color: #333;
+  --background-color: #007fff;
+  --text-color: #2a20af;
 }
 .parent-flex[data-theme="default"] {
-  --background-color: blue;
-  --text-color: #333;
+  --background-color: #17bebb;
 }
 
 /* Dark Mode Theme */
 .container[data-theme="dark"] {
-  --background-color: pink;
+  --background-color: #4ecdc4;
   --text-color: darkblue;
 }
 .parent-flex[data-theme="dark"] {
-  --background-color: black;
-  --text-color: darkblue;
+  --background-color: #000000;
 }
 .container,
 .parent-flex {
@@ -422,3 +442,8 @@ input:checked + .slider:before {
   color: var(--text-color);
   transition: color 0.45s ease-in;
 }
+/* @media (max-width: 578px) {
+  .parent-flex {
+    background-color: #bc2d1a;
+  }
+} */
