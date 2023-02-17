@@ -1,6 +1,4 @@
- <!--  for(let i=0; i<errors.length; i++){-->
-    <!-- <li>errors[i] </li>
- } -->
+<%-include('partials/nav2.ejs')-%>
 <%-include('partials/flash.ejs')-%>
 <div class="container mt-5">
     <div class="row">
@@ -18,18 +16,17 @@
                         placeholder="password" required>
 
                         <button class="w-100 btn btn-primary" type="submit">Login</button>
-                        <a href="/register">Don't have an account? Click here to register.</a>
+                        <a class="page-link" href="/register">Don't have an account? Click here to register.</a>
         </form>
     <!-- </main> -->
 </div>
     <div class="col-md-4 col-sm-5 social-btn-container">
         <div class="card social-block social-btn-container">
-            <div class="card-body">
                 <a class="btn btn-block btn-social btn-google col-sm-12" href="/auth/google" role="button">
                     <i class="fab fa-google"></i>
                     Sign Up with Google
                 </a>
-            </div>
+            
         </div>
     </div>
 </div>

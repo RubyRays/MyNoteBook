@@ -1,4 +1,4 @@
-
+<%-include('partials/nav2.ejs')-%>
 <div class="container mt-5">
     <div class="row">
     <div class="col-md-8 col-sm-7">
@@ -17,7 +17,7 @@
          <%-include('partials/flash.ejs')-%>
 
         <button class="w-100 btn btn-primary" type="submit">Register</button>
-        <a href="/login">Already have an account? Click here to login.</a>
+        <a class="page-link" href="/login">Already have an account? Click here to login.</a>
 
     </form>
 <!-- </main> -->
@@ -25,12 +25,11 @@
 
 <div class="col-md-4 col-sm-5 social-btn-container">
     <div class="card social-block social-btn-container">
-        <div class="card-body">
             <a class="btn btn-block btn-social btn-google col-sm-12" href="/auth/google" role="button">
                 <i class="fab fa-google "></i>
                 Sign Up with Google
             </a>
-        </div>
+       
     </div>
 </div>
 </div>
