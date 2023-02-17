@@ -1,6 +1,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
-    <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-white fixed-top ">
+    <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-white fixed-top nav-<%=theme%>">
         <!-- Container wrapper -->
         <div class="container-fluid ">
 
@@ -18,15 +18,9 @@
                     <form action="/search-results" method="Post"></form>
                         <div class="nav-align">
                             
-                            <a class="btn btn-light" href="/search-results" role="button">Search<i class="fa-solid fa-magnifying-glass"></i> </a>
-                            <!-- <button type="submit"  class="btn btn-light"><i class="fa-solid fa-magnifying-glass"></i></button> -->
+                            <a class="btn btn-light" href="/search-results" role="button">Search <i class="fa-solid fa-magnifying-glass"></i> </a>
                     </form>                                
-                                        <!-- <script>
-                                            $("#d-button").click(function(){
-                                                $("div").css("color", "red");
-                                            })
-                                           
-                                        </script> -->
+
                         <div class="nav-align"><a class="btn btn-light nav-link " href="/checkout" role="button">Checkout <i class="fa-regular fa-credit-card fa-xl"></i> </a></div>
                         <div class="nav-align"><a class="btn btn-light nav-link " href="/settings" role="button">Settings <i class="fa-solid fa-gear fa-xl"></i> </a></div>
                         <div class="nav-align"><a class="btn btn-light nav-link " href="/public-pages" role="button">Public <i class="fa-sharp fa-solid fa-globe fa-xl"></i></a></div>
@@ -36,46 +30,22 @@
                         <form action="/nav?_method=PUT" method="POST">
                         <div id="d-button"class="nav-align">
                             <input type="hidden" value="<%=url%>" name="prevUrl">
-                            <input type="submit" class="btn btn-light nav-link" onclick="this.form.submit()" value="🌒" role="button"></input></i>
-                        
-                            <!-- <script>
-                                var container = document.querySelectorAll('.parent-flex')[0];
-                                var container2 = document.querySelectorAll('.container')[0];
-                                document.getElementById('d-button').addEventListener('click', (event) => {
-                                    
-                                    theme="<%=theme%>";
-                                    if(theme == "default"){
-                                        var theme1 = 'dark';
-                                    }else{
-                                        var theme1 = 'default';
-                                    }
-                                    
-                                    container.setAttribute('data-theme', theme1);
-                                    container2.setAttribute('data-theme', theme1);    
-                                    
-                                });
-                                
+                                <% if(theme=="dark" ){%>                       
+                                    <input type="submit" class="btn btn-light nav-link" onclick="this.form.submit()" value="🌒" role="button"></input></i>
+                                    <%}else{%>
+                                        <input type="submit" class="btn btn-light nav-link" onclick="this.form.submit()" value="☀️" role="button"></input></i>
+                                        <%}%>
+                            
 
-                                              
-                            </script> -->
+
+
 
                         </div>                                        
 
                    </form>
                 </div>         
             </div>
-                    <!-- <script >
-                        $(document).ready(function(){
-                            $('#selector').change(function () {
-                                $('body').toggleClass("dark-mode");
-                            })
-                        })
-                        // function styleToggle() {
-                        //     var mode = document.body;
-                        //     mode.classList.toggle("body-dark-mode");
-                        // }
 
-                    </script>    -->
 
         </div>
     </nav>
