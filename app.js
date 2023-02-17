@@ -59,6 +59,7 @@ const login = require('./routes/login');
 const cancel = require('./routes/cancel');
 const auth = require('./routes/auth');
 const logout = require('./routes/logout');
+const search = require('./routes/search-results');
 
 
 app.use(express.json());
@@ -167,6 +168,7 @@ app.use("/login", login);
 app.use("/cancel", cancel);
 app.use("/auth", auth);
 app.use("/logout",logout);
+app.use("/search-results", search);
 
 //--HOME ROUTE----
 app.get("/", async(req, res)=>{
@@ -176,41 +178,6 @@ app.get("/", async(req, res)=>{
 
 
 
-app.get("/search-results", isLoggedIn, catchAsync(async(req, res)=>{
-    
-
-    // const noteSearch="new";
-    // const n = res;
-    // console.log("this is the title part  :"+n)
-    // // const search = req.body.eee;
-    // console.log(".....uuu"+noteSearch);
-    // // const note= await Note.findById(req.user.id);
-    // const note2 = await Note.find({title:{$regex: `${noteSearch}`,  $options:"i"}, owner:{$eq:req.user.username}})
-    // const result ={
-    //     error:false,
-    //     note2
-    // };
-    const noteuser= await NoteUser.findById(req.user.id);
-    const pic = noteuser.profileImage.url;
-    const theme= noteuser.theme;
-    const url="search-results"
-    // res.status(200).json(result);
-    res.render("search-results", {pic, theme, url});
-}));
-
-app.post("/search-results", isLoggedIn, catchAsync(async(req, res)=>{
-    const payload = req.body.payload.trim();
-    console.log("......"+ payload);
-    const search = await Note.find({title:{$regex: `${payload}`,  $options:"i"}, owner:{$eq:req.user.username}}).exec();
-    if(search.length > 10){
-            search = search.slice(0,10);
-    }
-
-    res.send( {payload: search});
-
-
-
-}))
 
 
 app.put("/nav", isLoggedIn, catchAsync(async(req, res)=>{
@@ -226,32 +193,12 @@ app.put("/nav", isLoggedIn, catchAsync(async(req, res)=>{
          await NoteUser.updateOne({_id: theUser}, {"theme": "default"});
                 
     }
-    // const url = req.url;
-    // console.log(url);
+
     res.redirect("/"+prevUrl)
 
 
 }))
 
-//Admin product page
-app.get("/practice-page", async(req, res)=>{
-    const a = 1;
-    const b = 2;
-
-    console.info(PerformanceNavigationTiming);
-    if (PerformanceNavigationTiming == PerformanceNavigationTiming.TYPE_RELOAD) {
-  console.info( "This page is reloaded" );
-} else {
-
-  console.info( "This page is not reloaded");
-}
-    // res.render('practicePage', {a:a, b:b, instaClick});
-})
-
-app.post("/practice-page", async(req,res)=>{
-    const g = req.body;
-    console.log(g);
-});
 
 
 //for all other routes that had problems
