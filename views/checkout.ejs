@@ -3,7 +3,6 @@
 <form action="/checkout" class="subscription-cards" method="POST">
 <% subscription.reverse().forEach(function(item){%> 
     <div class="card subscription-basic" style="width: 18rem;">
-        <h1><%=item.type%></h1>
         <img class="card-img-top" src="<%=item.imageUrl%>" alt="Card image cap">
         <div class="card-body">
             <h5 class="card-title">Price: <%=item.price%></h5>
@@ -14,6 +13,8 @@
                 <%})%>
                 
             </p>
+        </div>
+        <div class="checkout">
             <button type="submit" name="subscription_type"  value="<%=item._id%>" class="btn btn-light check-out-btn">Check out</button>
         </div>
     </div>
