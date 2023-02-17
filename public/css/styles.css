@@ -268,6 +268,9 @@ p {
   /* padding: 0.2rem; */
 }
 
+.page-link {
+  text-decoration: none;
+}
 .page-btn :active {
   color: #ffffff;
 }
@@ -319,10 +322,10 @@ p {
 }
 
 .social-btn-container {
-  background-color: #ffffff;
+  background-color: none;
   /* background-image: url("https://www.transparenttextures.com/patterns/circles.png"); */
   border-style: none;
-  margin-top: 0.4rem;
+  margin-top: 2rem;
 }
 .share-true {
   background-color: lightgreen;
