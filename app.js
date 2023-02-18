@@ -8,6 +8,7 @@ const bodyParser = require("body-parser");
 const expressLayouts = require('express-ejs-layouts');
 const mongoose = require("mongoose");
 const session = require('express-session');
+const MongoStore = require('connect-mongo'); 
 const flash = require('connect-flash');
 const path = require('path');
 const methodOverride=require('method-override');
@@ -70,12 +71,65 @@ app.use(methodOverride('_method'));
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
 
+//-----------MONGODB CONNECTIONS---------------------------------------------
 
-app.use(session({
+//--------------FOR MONGODB ATLAS-------------------------------
+const dbUsername= process.env.DBUSERNAME;
+const dbPassword= process.env.DBPASSWORD;
+const cluster =  process.env.CLUSTER;
+//--------------------------------------------------------------
+
+// mongoose.connect("mongodb://localhost:27017/noteUserDB");
+// const db = mongoose.connection;
+// db.on("error", console.error.bind(console, "connection error:"));
+// db.once("open", () => {
+//     console.log("Database connected");
+// });
+//--------------FOR MONGODB ATLAS---------------------------------------
+const dbUrl= "mongodb+srv://"+dbUsername+":"+dbPassword+cluster+"/notesAppDB?retryWrites=true&w=majority"
+
+mongoose.connect(dbUrl).then(()=>{
+    console.info("Database connected");
+}).catch(err=> {console.log("Error",err);});
+
+//----------------------------------------------------------------------
+
+const store = new MongoStore({
+    mongoUrl:  dbUrl,
+    collection:"sessions",
     secret: process.env.SECRET,
-    resave:false, 
-    saveUninitialized: false, 
-}));
+    //only save after 24hours if no change was made
+    touchAfter: 24*60*60
+    });
+store.on("error", function(e){
+    console.log("SESSION STORE ERROR", e);
+})
+
+
+const sessionConfig = {
+    store,
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+    }
+}
+
+app.use(session(sessionConfig));
+
+
+// app.use(session({
+//     secret: process.env.SECRET,
+//     resave:false, 
+//     saveUninitialized: true,
+//     store: new MongoStore({
+//         mongoUrl: dbUrl,
+//         ttl: 24*60*60
+//     })
+
+// }));
+
 
 
 app.use(passport.initialize());
@@ -107,28 +161,6 @@ app.use((req,res,next)=>{
 //     });
 // });
 
-//-----------MONGODB CONNECTIONS---------------------------------------------
-
-//--------------FOR MONGODB ATLAS-------------------------------
-const dbUsername= process.env.DBUSERNAME;
-const dbPassword= process.env.DBPASSWORD;
-const cluster =  process.env.CLUSTER;
-//--------------------------------------------------------------
-
-// mongoose.connect("mongodb://localhost:27017/noteUserDB");
-// const db = mongoose.connection;
-// db.on("error", console.error.bind(console, "connection error:"));
-// db.once("open", () => {
-//     console.log("Database connected");
-// });
-//--------------FOR MONGODB ATLAS---------------------------------------
-const dbUrl= "mongodb+srv://"+dbUsername+":"+dbPassword+cluster+"/notesAppDB?retryWrites=true&w=majority"
-
-mongoose.connect(dbUrl).then(()=>{
-    console.info("Database connected");
-}).catch(err=> {console.log("Error",err);});
-
-//----------------------------------------------------------------------
 
 
 //-----PASSPORT SETUP----------------------------------------------------------------
