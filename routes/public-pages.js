@@ -123,42 +123,46 @@ router.put("/:id/review/:target/like",isLoggedIn,level2Access, catchAsync(async(
     const clickedEntry = id; 
     const likes = await Review.findById(target);
 
-    //look into the list of commenters for the review post
-    //if the current users name is registered and thier reaction was:
-    // a like: varibale c is stored as c 
-    let c = 0;
-    likes.commenter.forEach(function(names){
-        if(names.name == theUser && names.reaction== "like"){
-             c = "liked";
-             return c;
+    if(theUser != likes.author){
+        //look into the list of commenters for the review post
+        //if the current users name is registered and thier reaction was:
+        // a like: varibale c is stored as c 
+        let c = 0;
+        likes.commenter.forEach(function(names){
+            if(names.name == theUser && names.reaction== "like"){
+                c = "liked";
+                return c;
+            }
+            else if(names.name == theUser && names.reaction== "dislike"){
+                c = "disliked";
+                return c;
+            }
+            else{
+                c = "first-reaction";
+                return c;
+            }
+        })
+        console.log(c)
+        
+        const like_count = likes.likes;
+        const dislike_count = likes.dislikes;
+        console.log("target..."+target);
+        if(c == "first-reaction"|| c == 0){
+        await Review.updateOne({_id:target},{likes: (like_count + 1)});
+        await Review.updateOne({_id:target}, {$push: {commenter: [{name:theUser, reaction: "like"}]}});
         }
-        else if(names.name == theUser && names.reaction== "dislike"){
-             c = "disliked";
-             return c;
-        }
-        else{
-            c = "first-reaction";
-            return c;
-        }
-    })
-    console.log(c)
-    
-    const like_count = likes.likes;
-    const dislike_count = likes.dislikes;
-    console.log("target..."+target);
-    if(c == "first-reaction"|| c == 0){
-    await Review.updateOne({_id:target},{likes: (like_count + 1)});
-    await Review.updateOne({_id:target}, {$push: {commenter: [{name:theUser, reaction: "like"}]}});
-    }
-    else if(c == "disliked"){
-    await Review.updateOne({_id:target},{likes: (like_count + 1), dislikes: (dislike_count -1)});
-    await Review.updateOne({_id:target}, {$push: {commenter: [{name:theUser, reaction: "like"}]}});
-    }else if(c=="like"){
-            req.flash('warning', 'You have already liked this');
+        else if(c == "disliked"){
+        await Review.updateOne({_id:target},{likes: (like_count + 1), dislikes: (dislike_count -1)});
+        await Review.updateOne({_id:target}, {$push: {commenter: [{name:theUser, reaction: "like"}]}});
+        }else if(c=="like"){
+                req.flash('warning', 'You have already liked this');
 
+        }
+        res.redirect("/public-pages/"+clickedEntry);
+    }else{
+        //place holder response to keep page from waiting for a response
+       res.status(200);
     }
-    res.redirect("/public-pages/"+clickedEntry);
-
 }));
 router.put("/:id/review/:target/dislike",isLoggedIn,level2Access, catchAsync(async(req, res)=>{
     const id= req.params.id;
@@ -166,41 +170,45 @@ router.put("/:id/review/:target/dislike",isLoggedIn,level2Access, catchAsync(asy
     const theUser = req.user.username;  
     const clickedEntry = id; 
     const dislikes = await Review.findById(target);
-    let c = 0;
-    dislikes.commenter.forEach(function(names){  
+    if(theUser != dislikes.author){
+        let c = 0;
+        dislikes.commenter.forEach(function(names){  
 
-        if(names.name == theUser && names.reaction== "dislike"){
-             c = "dislike";
-             return c;
-        }
-        else if(names.name == theUser && names.reaction== "like"){
-             c = "like";
-             return c;
-        }
-        else{
-            c = "first-reaction";
-            return c;
-        }
-    })
-  
+            if(names.name == theUser && names.reaction== "dislike"){
+                c = "dislike";
+                return c;
+            }
+            else if(names.name == theUser && names.reaction== "like"){
+                c = "like";
+                return c;
+            }
+            else{
+                c = "first-reaction";
+                return c;
+            }
+        })
     
-    const dislike_count = dislikes.dislikes;
-    const like_count = dislikes.likes;    
-    console.log("target..."+target);
-    if(c == "first-reaction" || c == 0){
-    await Review.updateOne({_id:target},{dislikes: (dislike_count + 1)});
-    await Review.updateOne({_id:target}, {$push: {commenter: [{name:theUser, reaction: "dislike"}]}});
+        
+        const dislike_count = dislikes.dislikes;
+        const like_count = dislikes.likes;    
+        console.log("target..."+target);
+        if(c == "first-reaction" || c == 0){
+        await Review.updateOne({_id:target},{dislikes: (dislike_count + 1)});
+        await Review.updateOne({_id:target}, {$push: {commenter: [{name:theUser, reaction: "dislike"}]}});
+        }
+        else if(c == "like"){
+        await Review.updateOne({_id:target},{dislikes: (dislike_count + 1), likes: (like_count - 1)});
+        await Review.updateOne({_id:target}, {$push: {commenter: [{name:theUser, reaction: "dislike"}]}});
+        }else if(c=="dislike"){
+                req.flash('warning', 'You have already disliked this');
+
+        }
+
+        res.redirect("/public-pages/"+clickedEntry);
+    }else{
+        //place holder response to keep page from waiting for a response
+       res.status(200);
     }
-    else if(c == "like"){
-    await Review.updateOne({_id:target},{dislikes: (dislike_count + 1), likes: (like_count - 1)});
-    await Review.updateOne({_id:target}, {$push: {commenter: [{name:theUser, reaction: "dislike"}]}});
-    }else if(c=="dislike"){
-            req.flash('warning', 'You have already disliked this');
-
-    }
-
-    res.redirect("/public-pages/"+clickedEntry);
-
 }));
 
 module.exports=router;
