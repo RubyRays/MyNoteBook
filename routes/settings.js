@@ -1,4 +1,3 @@
-
 const express = require('express');
 const router = express.Router();
 const NoteUser= require('../models/NoteUser');
@@ -47,7 +46,7 @@ router.put("/profile-image", isLoggedIn, parser.single("profileImage"), catchAsy
 
     const path = req.file.path;
     const filename= req.file.filename;
-    const noteuser = NoteUser.findById(req.user.id);
+    const noteuser = await NoteUser.findById(req.user.id);
     if(noteuser.profileImage.filename != 'samples/sheep'){
              cloudinary.uploader.destroy(noteuser.profileImage.filename);
         }    
