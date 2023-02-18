@@ -31,6 +31,7 @@
 
                                         <button type="submit" alt="delete review"><i class="fa-solid fa-eraser "></i></button>
                                     </form>
+                                    <%}%>
                                     <form action="/public-pages/<%=pageEntry%>/review/<%=reviewContent._id%>/like?_method=PUT" method="post"
                                         class="icon-style-form">
                                     
@@ -41,7 +42,7 @@
                                     
                                         <button type="submit" alt="dislike"><i class="fa-solid fa-thumbs-down"><%=reviewContent.dislikes%></i></button>
                                     </form>
-                                   <%}%>
+                                   
                                 <div class="review-style"> 
                                     
 
