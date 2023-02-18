@@ -32,17 +32,29 @@
                                         <button type="submit" alt="delete review"><i class="fa-solid fa-eraser "></i></button>
                                     </form>
                                     <%}%>
+
+                                   
+                                <% if(reviewContent.author !=currentUser){%>
                                     <form action="/public-pages/<%=pageEntry%>/review/<%=reviewContent._id%>/like?_method=PUT" method="post"
-                                        class="icon-style-form">
+                                        class="icon-style-form" >
                                     
-                                        <button type="submit" alt="like"><i class="fa-solid fa-thumbs-up "> <%=reviewContent.likes%></i></button>
+                                        <button type="submit" alt="like"><i class="fa-solid fa-thumbs-up"> <%=reviewContent.likes%></i></button>
                                     </form>
                                     <form action="/public-pages/<%=pageEntry%>/review/<%=reviewContent._id%>/dislike?_method=PUT" method="post"
                                         class="icon-style-form">
-                                    
+                                            
                                         <button type="submit" alt="dislike"><i class="fa-solid fa-thumbs-down"><%=reviewContent.dislikes%></i></button>
                                     </form>
-                                   
+
+                                <%}else {%>
+                                        <i class="fa-solid fa-thumbs-up">
+                                            <%=reviewContent.likes%>
+                                        </i>
+                                        <i class="fa-solid fa-thumbs-down">
+                                            <%=reviewContent.dislikes%>
+                                        </i>
+                                    <%}%>
+
                                 <div class="review-style"> 
                                     
 
