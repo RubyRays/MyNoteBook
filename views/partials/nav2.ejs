@@ -8,30 +8,25 @@
         <a class="navbar-brand" href="/">
             <em>MyNoteBook</em>
         </a>
+        <!-- navbar toggle button -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent"
             aria-controls="navContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon  "></span>
         </button>
-        <!-- Right links -->
+        <!-- Links -->
         <div class="collapse navbar-collapse flex-container" id="navContent">
             <div class="navbar-nav mt-auto navbar-container">
-                <div class="nav-align">
-                    <div class="nav-align">
-                        <a class="btn btn-light nav-link" href="/login" role="button">LogIn </a>
-                    </div>
-                    <div class="nav-align">
-                        <a class="btn btn-light nav-link" href="/register" role="button">Register</a>
-                    </div>
-                    <div class="nav-align">
-                        <a class="btn btn-light nav-link" role="button">
-                            <i class="fa-solid fa-user"></i>
-                        </a>
+                    <!--Login button -->
+                    <div class="nav-align"><a class="btn btn-light nav-link" href="/login" role="button">LogIn </a></div>
+                    <!-- register button -->
+                    <div class="nav-align"><a class="btn btn-light nav-link" href="/register" role="button">Register</a></div>
+                    <!-- default user icon -->
+                    <div class="nav-align"><a class="btn btn-light nav-link" role="button"><i class="fa-solid fa-user"></i></a>
                     </div>
                     <form action="/nav?_method=PUT" method="POST">
 
                     </form>
                 </div>
-            </div>
 
 
         </div>

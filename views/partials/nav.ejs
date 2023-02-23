@@ -1,6 +1,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
-    <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-white fixed-top nav-<%=theme%>">
+    <nav id="main-navbar" class="navbar navbar-expand-lg nav-<%theme%> fixed-top nav-<%=theme%>">
         <!-- Container wrapper -->
         <div class="container-fluid ">
 
@@ -8,25 +8,33 @@
             <a class="navbar-brand" href="/pages">
                 <em>MyNoteBook</em>
             </a>
+            <!-- navbar toggle button -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent"
                 aria-controls="navContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
                 </button>
-            <!-- Right links -->
+            <!-- links -->
             <div class="collapse navbar-collapse flex-container" id="navContent">
                 <div class="navbar-nav mt-auto navbar-container">
-                    <form action="/search-results" method="Post"></form>
+                    <!-- search button -->
+                    <form action="/search-results" method="Post">
                         <div class="nav-align">
                             
                             <a class="btn btn-light nav-link" href="/search-results" role="button">Search <i class="fa-solid fa-magnifying-glass"></i> </a>
                     </form>                                
-
+                        <!-- checkout button -->
                         <div class="nav-align"><a class="btn btn-light nav-link " href="/checkout" role="button">Checkout <i class="fa-regular fa-credit-card fa-xl"></i> </a></div>
+                        <!-- settings button -->
                         <div class="nav-align"><a class="btn btn-light nav-link " href="/settings" role="button">Settings <i class="fa-solid fa-gear fa-xl"></i> </a></div>
+                        <!-- public-pages button -->
                         <div class="nav-align"><a class="btn btn-light nav-link " href="/public-pages" role="button">Public <i class="fa-sharp fa-solid fa-globe fa-xl"></i></a></div>
+                        <!-- trash button -->
                         <div class="nav-align"><a class="btn btn-light nav-link " href="/trash" role="button">Trash <i class="fa-solid fa-trash fa-xl"></i> </a></div>
+                        <!-- logout button -->
                         <div class="nav-align"><a class="btn btn-light nav-link " href="/logout" role="button">Log Out </a></div>
-                        <div class="nav-align"><a class="btn btn-light nav-link " href="/logout" role="button"><img src="<%=pic%>" class="rounded-circle" height="44" alt="" loading="lazy" /></a></div>
+                        <!-- profile picture -->
+                        <div class="nav-align"><a class="btn btn-light nav-link " role="button"><img src="<%=pic%>" class="rounded-circle" height="44" alt="" loading="lazy" /></a></div>
+                        <!-- dark/light button -->
                         <form action="/nav?_method=PUT" method="POST">
                         <div id="d-button"class="nav-align">
                             <input type="hidden" value="<%=url%>" name="prevUrl">
@@ -36,9 +44,6 @@
                                         <input type="submit" class="btn btn-light nav-link" onclick="this.form.submit()" value="☀️" role="button"></input></i>
                                         <%}%>
                             
-
-
-
 
                         </div>                                        
 
