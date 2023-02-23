@@ -1,5 +1,6 @@
 <%-include('partials/nav.ejs')-%>
 
+<!-- card with subscription information and a checkout button-->
 <form action="/checkout" class="subscription-cards" method="POST">
 <% subscription.reverse().forEach(function(item){%> 
     <div class="card subscription-basic" style="width: 18rem;">
@@ -7,13 +8,14 @@
         <div class="card-body">
             <h5 class="card-title">Price: <%=item.price%></h5>
             <p class="card-text">
-              
+              <!-- prints the list of benefits associated with the subscription -->
                 <% item.benefits.forEach(function(i){ %>
                     <p> <li><%=i%></li></p>
                 <%})%>
                 
             </p>
         </div>
+        <!-- checkout button -->
         <div class="checkout">
             <button type="submit" name="subscription_type"  value="<%=item._id%>" class="btn btn-light check-out-btn">Check out</button>
         </div>
