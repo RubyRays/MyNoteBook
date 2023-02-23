@@ -5,9 +5,10 @@
     <h2>Hi <%=theUser%>, are you ready to start your notebook?</h2>
     <h5>Location permission: <%=userContent.locationAccess%></h5>
 
+    <div class="page-form">
     <form action="/pages" method="POST" >
     
-        <div class="form-group">
+        <div class="form-group ">
             <input type="text" class="form-control text-left" name="title" placeholder="Title of new page" required>
             <textarea class="form-control" name="content" rows="3" cols="30" placeholder="Contents of page" required></textarea>
             <button type="submit" class="btn btn-light">Add <i class="fa-sharp fa-solid fa-plus"></i></button>
@@ -15,7 +16,7 @@
 
 
     </form>
-
+    </div>
     <!-- Getting the page to only show the userContent with the owner name (username) -->
     <!-- userContent is from the find function where it sends all the things that it found and this for loop loops around it -->
     <% userContent.noteBookContents.reverse().forEach(function(newContent){%>
