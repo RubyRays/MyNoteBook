@@ -180,6 +180,10 @@ p {
   word-wrap: break-word;
   margin-bottom: auto;
 }
+.page-form {
+  margin-left: 4rem;
+  margin-right: 4rem;
+}
 .message.txt {
   font-size: 0.1rem;
   color: blue;
@@ -221,6 +225,12 @@ p {
 }
 .nav-default {
   color: #459e63;
+}
+.nav-dark {
+  background-color: white;
+}
+.nav-default {
+  background-color: #000000;
 }
 .note {
   margin-left: -0.6rem;
