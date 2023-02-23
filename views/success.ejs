@@ -2,22 +2,21 @@
         <h1>Success!</h1>
         <h1 id="result">Congratulations <%=theUser%> you have bought the plan</h1>
         <h1> Enjoy your: <%= session.data[0].description%> Access!</h5>
-        <h5> Session Id: <%=JSON.stringify(session_id)%></h3>
+        <!-- <h5> Session Id: <%=JSON.stringify(session_id)%></h3> -->
+        <!-- this function submits a form with the "myform" id-->
         <script type="text/javascript">
             function submitform() {
                 document.forms["myform"].submit();
-                // document.getElementById('successBtn').click();
-                // alert("Value is sumitted");
 
             }
 
         </script>
-        
+        <!-- This form gets data from the checkout session or post request -->
+        <!-- The data from this form is automatically submitted to the success put request -->
         <form id="myform" action="/success?_method=PUT" method="post">
             <input type="text" name="Name" value="<%= session.data[0].description%>" hidden="true">
             <input type="text" name="session_id" value="<%= session_id%>" hidden="true" >
             <a href="javascript: submitform()" hidden="true">Submit</a>
-        
         </form>
         <p>Redirecting in 5 seconds.......</p>
 
@@ -27,4 +26,5 @@
             </div>
         </h1>
     </div>
+    <!-- this activates the submit form function -->
     <script>submitform()</script>
