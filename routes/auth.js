@@ -13,12 +13,16 @@ oAuth2Client.setCredentials({refresh_token: process.env.REFRESH_TOKEN})
 //-----------------Google OAUTH USING PASSPORT--------------------------
 passport.use(new GoogleStrategy ({
 
+    //environment variables necessary for google authentication
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET, 
     callbackURL: "http://localhost:3000/auth/google/pages",
     userProfileURL:"https://www.googleapis.com/oauth2/v3/userinfo"
     },
         function(accessToken, refreshToken, profile, cb){
+            //specify the information from the user that the gmail user gets
+            //findOfCreate is a fake method enabled by an npm package that 
+            //creates the user info if the user does not exist and finds if it does
             NoteUser.findOrCreate({
                 googleId: profile.id,
                 username: profile.displayName,
@@ -36,7 +40,7 @@ passport.use(new GoogleStrategy ({
 
 
 
-//route for the google button---
+//routes for the google button---
 router.get("/google",
     passport.authenticate('google', {scope: ["profile","email"]})
     );

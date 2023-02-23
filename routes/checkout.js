@@ -6,7 +6,11 @@ const {isLoggedIn} = require('../middleware/login_middlewaare');
 const stripe= require('stripe')(process.env.STRIPE_PRIVATE_KEY);
 const catchAsync = require('../middleware/catchAsync');
 
+//check out routes
 
+//check out get request that renders the page and sends 
+//user profile picture (pic), theme data, url of page and all of the subscription 
+//documents
 router.get("/",isLoggedIn, catchAsync(async(req,res)=>{
 
     const noteuser = await NoteUser.findById(req.user.id);
@@ -19,6 +23,10 @@ router.get("/",isLoggedIn, catchAsync(async(req,res)=>{
 
 }));
 
+
+//check out post request that:
+//creates a new session along with the necessary information needed for purchase
+//redirects on sucess to the sucess page or cancel page upon failure
 router.post("/", isLoggedIn, catchAsync(async(req,res)=>{
 
 

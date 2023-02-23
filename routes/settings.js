@@ -29,6 +29,8 @@ const parser = multer({storage:storage});
 
 //-----SETTINGS PAGE--------------------------------------------------------------------
 
+//settings page rout that renders the page 
+//sends the current user data, profile picture, theme info and the route name of the page
 router.get("/",isLoggedIn, catchAsync(async(req, res)=>{
 
         const currentUser = await NoteUser.findById(req.user.id);
@@ -47,25 +49,31 @@ router.put("/profile-image", isLoggedIn, parser.single("profileImage"), catchAsy
     const path = req.file.path;
     const filename= req.file.filename;
     const noteuser = await NoteUser.findById(req.user.id);
+    //if the profile picture is not default delete the image from cloudinary
     if(noteuser.profileImage.filename != 'samples/sheep'){
              cloudinary.uploader.destroy(noteuser.profileImage.filename);
         }    
+    //update the profile image url and filename with the uploaded one
     await NoteUser.updateOne({_id:req.user.id},{"profileImage":{"url":path, "filename": filename }});
+    
     res.redirect("/settings");
 
-
-
 }));
+
+
+//toggles the location access by updating the locationAccess field each time it is called
 router.put("/location", isLoggedIn, catchAsync(async(req, res)=>{
     const theUser = req.user.id;
     const noteuser = await NoteUser.findById(theUser);
+
+    //update locationAccess field
     if(noteuser.locationAccess == "off"){
         await NoteUser.updateOne({_id: theUser}, {"locationAccess": "on"});
     }else{
          await NoteUser.updateOne({_id: theUser}, {"locationAccess": "off"});       
     }
+
     res.redirect("/settings");
-    // res.send("changed location permission");
 }))
 
 //----------------------------------------------------------------------------------------

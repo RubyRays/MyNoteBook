@@ -3,7 +3,7 @@ const {Schema} = mongoose;
 
 
 
-
+//review document layout
 const reviewSchema = new mongoose.Schema({
     content: String, 
     likes: {type: Number, default: 0},

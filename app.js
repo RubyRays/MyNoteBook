@@ -71,6 +71,8 @@ app.use(methodOverride('_method'));
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
 
+
+
 //-----------MONGODB CONNECTIONS---------------------------------------------
 
 //--------------FOR MONGODB ATLAS-------------------------------
@@ -79,6 +81,7 @@ const dbPassword= process.env.DBPASSWORD;
 const cluster =  process.env.CLUSTER;
 //--------------------------------------------------------------
 
+//-----code for local database use
 // mongoose.connect("mongodb://localhost:27017/noteUserDB");
 // const db = mongoose.connection;
 // db.on("error", console.error.bind(console, "connection error:"));
@@ -94,6 +97,7 @@ mongoose.connect(dbUrl).then(()=>{
 
 //----------------------------------------------------------------------
 
+//this uses mongo-connect to store the session information
 const store = new MongoStore({
     mongoUrl:  dbUrl,
     collection:"sessions",
@@ -101,11 +105,13 @@ const store = new MongoStore({
     //only save after 24hours if no change was made
     touchAfter: 24*60*60
     });
+
+//outputs a message if there is an error with the stored session
 store.on("error", function(e){
     console.log("SESSION STORE ERROR", e);
 })
 
-
+//this containes the session information or initial cookies 
 const sessionConfig = {
     store,
     secret: process.env.SECRET,
@@ -117,18 +123,6 @@ const sessionConfig = {
 }
 
 app.use(session(sessionConfig));
-
-
-// app.use(session({
-//     secret: process.env.SECRET,
-//     resave:false, 
-//     saveUninitialized: true,
-//     store: new MongoStore({
-//         mongoUrl: dbUrl,
-//         ttl: 24*60*60
-//     })
-
-// }));
 
 
 
@@ -145,28 +139,12 @@ app.use((req,res,next)=>{
 
 
 
-// app.use(async (req, res, next)=> {
-//     const error = new Error("Not found");
-//     error.status = 404;
-//     next(error);
-// })
-
-
-// app.use((error, req, res, next)=>{
-//     res.status(error.status);
-//     res.json({
-//         error:{
-//             message: error.message
-//         }
-//     });
-// });
-
-
-
 //-----PASSPORT SETUP----------------------------------------------------------------
-
+//using passport local mongoose
+//this creates a local mongoose strategy
 passport.use(NoteUser.createStrategy());
 
+//these serialize and deserialize the user
 passport.serializeUser(function(user, cb){
     process.nextTick(function(){
         return cb(null, {
@@ -185,7 +163,7 @@ passport.deserializeUser(function(user, cb){
 
 
 
-
+//routes for js pages 
 app.use("/pages", pages);
 app.use("/public-pages", public);
 app.use("/checkout", checkout);
@@ -209,7 +187,7 @@ app.get("/", async(req, res)=>{
 
 
 
-
+//update theme for darkmode from navbar
 app.put("/nav", isLoggedIn, catchAsync(async(req, res)=>{
 
     const theUser = req.user.id;
@@ -230,8 +208,8 @@ app.put("/nav", isLoggedIn, catchAsync(async(req, res)=>{
 
 
 
-//for all other routes that had problems
-//non exsistant page
+//for all routes
+//throws a page not found error if a page is non exsistent
 app.all('*', (req, res, next)=>{
     next(new CustomError("Page Not Found", 404));
 })
@@ -250,7 +228,7 @@ if (port == null || port == "") {
   port = 3000;
 }
 
-
+//port listener
 app.listen(port, function(){
     console.log("Server has started successfully");
 });

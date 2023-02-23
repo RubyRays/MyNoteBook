@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 const {Schema} = mongoose;
 const Review= require('./Review');
 
-
+//notes document layout 
+//built to contain the information of the entries created by a user
 const notesSchema = new mongoose.Schema({
     title: String,
     content:String,

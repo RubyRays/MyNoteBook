@@ -20,7 +20,8 @@ router.get("/", async(req, res)=>{
     res.render("register", {theme:theme});
 });
 
-
+//register post request that stores a note 
+//that records the time of user account creation
 router.post("/", async(req, res, next)=>{
     let date=data.getDay();
     let time= data.getTime();
@@ -31,6 +32,8 @@ router.post("/", async(req, res, next)=>{
     })
     
 //-----------------------------------------------------
+//creates a random string of numbers and stores it in a 
+//variable called code
 function codeGenerator(){
     let verificationCode= "";
     for(i=0; i<8; i++){
@@ -45,6 +48,9 @@ const code = codeGenerator();
 //NODEMAILER
 async function sendMail(){
     try{
+        //stores the access token and creates a transport 
+        //using the username, app password and other information 
+        //provided by google and gmail that allows node mailer to work with gmail
         const accessToken = await oAuth2Client.getAccessToken();
         const transporter = nodemailer.createTransport({
             service: "gmail",
@@ -59,6 +65,8 @@ async function sendMail(){
             }
         })
 
+        //sends an email with the verifcation code from the specified email to 
+        //the email that the user created their account with
         const mailOptions={
             from: "jereenleblanc.volunteer@rnd4impact.com",
             to: req.body.email,
@@ -66,6 +74,7 @@ async function sendMail(){
             text: "This is the verification code: "+ code
         };
 
+        //Makes sure that the email is sent properly
         const result = transporter.sendMail(mailOptions, function(err){
             if(err){
                 console.log("Error: " + err);
@@ -82,16 +91,16 @@ async function sendMail(){
 
 //--------------------------------------------------------------------
     
-    //trying to set up error messages.
-    const {password, username,email}= req.body; 
-    let errorMessage =[];
-    // console.log(errorMessage);
+    //gets the password from the registration form
+    const password= req.body.password; 
+
+    //Returns an error if the password is less than 8 characters long
     if(password.length < 8){
         req.flash('warning',"Password needs to be 8 or more characters long.");
         res.redirect("/register");
     }else{
 
-
+        //creates the user using the built in register function of passport
         NoteUser.register({
             username:req.body.username,
             email:req.body.email,
@@ -103,7 +112,7 @@ async function sendMail(){
             },
             req.body.password, function(err,user){
              if(err){
-                    // req.flash('warning', err.message)
+                    
                     req.flash('warning', 'There was something wrong-username or email');
                     res.redirect('/register');      
             
@@ -113,6 +122,8 @@ async function sendMail(){
                 // .catch((error)=> console.log(error));
                 note0.save();
                 passport.authenticate("local")(req, res, function(){
+                    //redirects to main page if isVerified is true otherwise 
+                    //redirect to the verify page
                     NoteUser.findById(req.user.id, async (err, found)=>{
                         if(err){
                             console.log(err)

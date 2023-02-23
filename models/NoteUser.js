@@ -4,6 +4,7 @@ const Note = require('./Note');
 const passportLocalMongoose = require("passport-local-mongoose");
 const findOrCreate = require('mongoose-findorcreate');
 
+//user document layout
 const noteUserSchema =new mongoose.Schema({
     username: String,
     email: {type: String, unique: true},
@@ -21,6 +22,10 @@ const noteUserSchema =new mongoose.Schema({
     theme: {type: String, default: "default"}
 
 });
+
+//passportLocalMongoose is used to hash and salt passport and save users to mongodb database
+//adds to schema a username, password and make sure that the usernames are unique
+//also adds some methods
 noteUserSchema.plugin(passportLocalMongoose);
 noteUserSchema.plugin(findOrCreate);
 

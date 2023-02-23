@@ -6,10 +6,9 @@ const catchAsync = require('../middleware/catchAsync');
 
 
 
-
+//login get request that renders login page
+//sends theme variable data
 router.get("/", async(req, res)=>{
-    // const errors = req.flash().error || [];
-    // res.render("login", {errors});
     const theme= "default";
     res.render('login', {theme:theme});
 }); 
@@ -34,7 +33,9 @@ router.post("/", async(req,res)=>{
             failureFlash: true, 
             failureRedirect: '/login',
                 })(req, res, function(){
-
+                   //looks for the user infromation inside of the database
+                   //if it is verified redirect to the main page
+                   //if not verified redirect to verification page
                    NoteUser.findById(req.user.id, function(err, found){
                         if(err){
                             console.log(err);

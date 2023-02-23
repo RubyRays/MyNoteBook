@@ -10,14 +10,17 @@ const catchAsync = require('../middleware/catchAsync');
 
 
 //-------------------MAIN PAGE FOR USER NOTES--------------------
+
+//pages (main user page) route 
 router.get("/", isLoggedIn, catchAsync(async(req,res)=>{
 
-        //find current user by username, save the associated entry to noteuser
-        //find the note of the user whose deleted field is not marked as true
-        //find the url of the profile image inside of pic 
-        //assign the found note to the noteBook contents array
-        //save the noteuser entry
-        //render the page using the things found
+        //finds current user by username, save the associated entry to noteuser
+        //finds the note of the user whose deleted field is not marked as true
+        //stores the url of the profile image inside of pic 
+        //stores the theme data inside of theme 
+        //stores the url of the page inside of url
+        //assigns the found note to the noteBook contents array then saves the noteuser entry
+        //finally renders the page using the things found
         const theUser = req.user.username;
         const noteuser = await NoteUser.findById(req.user.id);
         const note = await Note.find({"owner":theUser, "deleted":{$ne:"true"}});
@@ -33,10 +36,16 @@ router.get("/", isLoggedIn, catchAsync(async(req,res)=>{
 
 }));
 
-//renders the notebook user page
+//pages post request which saves the created note entry into the database
 router.post("/",isLoggedIn, catchAsync(async(req,res)=>{
+
 const noteuser = await NoteUser.findById(req.user.id);
+
+
+//if the location access is on then the user location is used as a parameter for the weather app api 
+//and the corresponding weather icon is saved
 if(noteuser.locationAccess == "on" ){
+
     //API SECTION WHERE DATA IS PASSED FROM ONE API TO BE USED IN THE OTHER BY MEANS OF 
     //CALLBACK FUNCTIONS  
         //USING AN IP ADDRESS FINDER TO GET THE CITY NAME OF THE USER
@@ -49,17 +58,17 @@ if(noteuser.locationAccess == "on" ){
 
             https.get(ipinfoApi, function(response){
 
-                // console.log(response.statusCode);
                 response.on("data", function(data){
-
                     const ipData= JSON.parse(data);
                     const city = ipData.city;
+                    //sends city data
                     callback(city);
                     
                 })
             })
     }
         function handleResults(results){
+            //this stores the city data that was sent by the callback
             const query= results;
             const apiKey = process.env.WEATHER_API_KEY;
             const unit= "metric"
@@ -171,6 +180,9 @@ router.put("/pre-edit",isLoggedIn, catchAsync(async(req, res)=>{
 
     // //find the state of the entry being clicked and toggle it between edit-mode and normal-mode
     const note = await Note.findById(editState);
+
+    //updates the state of the note
+    //used as a marker for entries in or not in the process of being edited
     if(note.state == "edit-mode"){
         await Note.updateOne({_id:editState},{"state":"normal-mode"});
     }else{
@@ -186,8 +198,10 @@ router.put("/edit",isLoggedIn, catchAsync(async(req,res)=> {
     const toEdit = req.body.Edit;
     const title= req.body.title2;
     const content=req.body.content2;
-
+    //updates the title and content of the targeted note
     await Note.updateOne({_id: toEdit}, {"title": title, "content": content});
+    //updates the state of the note to normal mode
+    //used as a marker for entries no longer in the process of being edited
     await Note.updateOne({_id: toEdit}, {"state": "normal-mode"});
     res.redirect("/pages");
 
@@ -200,10 +214,13 @@ router.put("/edit",isLoggedIn, catchAsync(async(req,res)=> {
 }));
 
 //--last icon (arrow in a box) request to share and unshare user entries
+
 router.put("/share-unshare",isLoggedIn,level1Access, catchAsync(async(req, res)=> {
     const toShare= req.body.share;
     //finding the entry by its id
     const note = await Note.findById(toShare);
+    //updates shared field of current user to true if it is false
+    //at the time of request otherwise it is set to false
     if(note.shared == "false"){
         await Note.updateOne(
                     {_id:toShare},
