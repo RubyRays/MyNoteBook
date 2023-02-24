@@ -4,18 +4,19 @@
 <div class="userContent-style">
 <% newPage.forEach(function(newPageContent){%>
     <% if(newPageContent._id == pageEntry){%>
-    <article class="blog-post">
-        <h2 class="blog-post-title">
-            <%=newPageContent.title%>
-        </h2>
-        <p class="blog-post-meta">
-            <%=newPageContent.date%> at <%=newPageContent.time%> by <%=newPageContent.owner%>
-        </p>
 
-        <p class="page-entry full-body">
-            <%=newPageContent.content%>
-        </p>
-    </article>
+        <div class="entry-title entry-div">
+            <div class="entry-title">
+                <h1 class="post-title">
+                    <%=newPageContent.title%>
+                </h1>
+                <p class="post-meta">
+                    Created on <%=newPageContent.date%> at <%=newPageContent.time%>
+                </p>
+            </div>
+            <div class="full-body">
+                <p><%=newPageContent.content%></p>
+            </div>
     <%}%>
     <% }) %>
 <div class="back-btn">
