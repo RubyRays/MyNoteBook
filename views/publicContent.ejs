@@ -5,13 +5,14 @@
 
                 <div class="container-fluid" >
                     <div class="row">
-                        <div class="col-md-7">
-                            <article class="blog-post">
-                                <h2 class="blog-post-title"><%=newPageContent.title%></h2>
-                                <p class="blog-post-meta"><%=newPageContent.date%> at <%=newPageContent.time%> by <%=newPageContent.owner%></p>
-                            
-                                <p class="page-entry full-body"><%=newPageContent.content%></p>
-                            </article>
+                        <div class="col-md-7 entry-div">
+                            <div class="entry-title">
+                                <h1 class="post-title"><%=newPageContent.title%></h1>
+                                <p class="post-meta">Posted by <%=newPageContent.owner%> on <%=newPageContent.date%> at <%=newPageContent.time%>. </p>
+                            </div>
+                            <div class="full-body">
+                                <p><%=newPageContent.content%></p>
+                            </div>
                         </div>
                         <div class="col-md-5">
                             <%-include('partials/flash.ejs')-%>
@@ -29,7 +30,7 @@
                                     <% if(reviewContent.author == currentUser){%>
                                     <form action="/public-pages/<%=pageEntry%>/review/<%=reviewContent._id%>/delete?_method=DELETE" method="post" class="icon-style-form">
 
-                                        <button type="submit" alt="delete review"><i class="fa-solid fa-eraser "></i></button>
+                                        <button class="action-btn" type="submit" alt="delete review"><i class="fa-solid fa-eraser fa-xl"></i></button>
                                     </form>
                                     <%}%>
 
@@ -38,19 +39,19 @@
                                     <form action="/public-pages/<%=pageEntry%>/review/<%=reviewContent._id%>/like?_method=PUT" method="post"
                                         class="icon-style-form" >
                                     
-                                        <button type="submit" alt="like"><i class="fa-solid fa-thumbs-up"> <%=reviewContent.likes%></i></button>
+                                        <button type="submit" alt="like"><i class="fa-solid fa-thumbs-up action-btn"> <%=reviewContent.likes%></i></button>
                                     </form>
                                     <form action="/public-pages/<%=pageEntry%>/review/<%=reviewContent._id%>/dislike?_method=PUT" method="post"
                                         class="icon-style-form">
                                             
-                                        <button type="submit" alt="dislike"><i class="fa-solid fa-thumbs-down"><%=reviewContent.dislikes%></i></button>
+                                        <button type="submit" alt="dislike"><i class="fa-solid fa-thumbs-down action-btn"><%=reviewContent.dislikes%></i></button>
                                     </form>
 
                                 <%}else {%>
-                                        <i class="fa-solid fa-thumbs-up">
+                                        <i class="fa-solid fa-thumbs-up fa-xl ">
                                             <%=reviewContent.likes%>
                                         </i>
-                                        <i class="fa-solid fa-thumbs-down">
+                                        <i class="fa-solid fa-thumbs-down fa-xl ">
                                             <%=reviewContent.dislikes%>
                                         </i>
                                     <%}%>
@@ -58,8 +59,8 @@
                                 <div class="review-style"> 
                                     
 
-                                    <p class="review-text"><%=reviewContent.content%></p>
-                                    <h4>Posted by: <%= reviewContent.author%></h4>
+                                    <p ><%=reviewContent.content%></p>
+                                    <p class="review-text">Posted by <%= reviewContent.author%></p>
                                 </div>                                
 
 
