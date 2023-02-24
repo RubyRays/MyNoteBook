@@ -1,27 +1,16 @@
 <%-include('partials/nav.ejs')-%>
 
 <article class="blog-post">
-    <h2 class="blog-post-title">
+    <h1 class="blog-post-title">
         Trash Bin
-    </h2>
+    </h1>
 <!-- add the deleted entries or the ones that are marked delete on note -->
 <% foundNoteEntry.reverse().forEach(function(deletedContent) { %>
-        <div>
-            <form action="/trash/delete?_method=DELETE" method="POST" class="icon-style-form">
-                <button type="submit" class="delete-btn action-btn" name="deleteEntry" value="<%= deletedContent._id %>" alt="permanent delete">
-                    <i class="fa-solid fa-eraser fa-xl"></i></button>
-            </form>
-            <form action="/trash/salvage?_method=PUT" method="POST" class="icon-style-form">
-                <button type="submit" class="salvage-btn action-btn" name="salvage" value="<%=deletedContent._id %>" alt="resubmit entry data">
-                    <i class="fa-solid fa-wrench fa-xl"></i>
-                </button>
-            </form>
-        </div>
-                <div class="container-fluid">
+                <div class="container-fluid note-entry">
                     <div class="row">
                         <div class="col-lg-10 col-md-10 col-sm-10 note">
                             <h1 class="note-heading">
-                                <%=deletedContent.title.substring(0,20) + "..." %> <span class="date-style">
+                                <%=deletedContent.title.substring(0,20)%> <span class="date-style">
                                         <%=deletedContent.date%>
                                             <%=deletedContent.time%>
                                     </span>
@@ -29,9 +18,21 @@
                             <p class="note-body">
                                 <%=deletedContent.content.substring(0,100) + "..." %>
                             </p>
+                            <form action="/trash/delete?_method=DELETE" method="POST" class="icon-style-form">
+                                <button type="submit" class="delete-btn action-btn" name="deleteEntry" value="<%= deletedContent._id %>"
+                                    alt="permanent delete">
+                                    <i class="fa-solid fa-eraser fa-xl"></i></button>
+                            </form>
+                            <form action="/trash/salvage?_method=PUT" method="POST" class="icon-style-form">
+                                <button type="submit" class="salvage-btn action-btn" name="salvage" value="<%=deletedContent._id %>"
+                                    alt="resubmit entry data">
+                                    <i class="fa-solid fa-wrench fa-xl"></i>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
+                <h1>----</h1>
 <%})%>
 
   <div class="back-btn">
