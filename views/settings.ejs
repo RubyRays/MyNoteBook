@@ -1,45 +1,56 @@
 <%-include('partials/nav.ejs')-%>
-<!-- <h1>Settings</h1> -->
-     <div class="profile-entry">    
-        <div class="profile-form">
-            <img src="<%=currentUser.profileImage.url%>" class="profile-image" alt="...">
-        </div> 
-<div class=" profile-form-body">       
- <form action="/settings/profile-image?_method=PUT" method="post" enctype="multipart/form-data">
+<h1>Settings</h1>
 
-             
-            <label for="formFile" class="form-label">Profile Image</label>
+<div class="profile-entry">    
+    <div>
+        <img src="<%=currentUser.profileImage.url%>" class="profile-image" alt="...">
+    </div> 
+    <div class=" profile-form-body">       
+        <form action="/settings/profile-image?_method=PUT" method="post" enctype="multipart/form-data">
+            <p>Profile Image</p>
             <input class="form-control" type="file" name="profileImage" id="" required>
             <button type="submit"  class="btn btn-success btn-block update-btn">Update</button>
         
- </form>
-</div>
-
-</div>  
-
-
-        <div class="profile-entry">
-            <div class=" profile-form-body">
-                <h1>Location : </h1>
-                <h2>Off </h2>
-                <div class="controller-row">
-                    <form action="/settings/location?_method=PUT" method="post" >
-                    <label class="switch">
-                    <% if(currentUser.locationAccess == "on"){%>            
-                        <input id="toggler" type="checkbox" onChange="this.form.submit()" checked>
-                            <span class="slider round"></span>
-                    <%}else{%>
-                            <input id="toggler" type="checkbox" onChange="this.form.submit()">
-                            <span class="slider round"></span> 
-                    <%}%>
-                </label>
-
-         </form>
-        </div>
-        <h2> On</h2>
-
+        </form>
     </div>
 </div>
+<div class="profile-entry">
+    <div>
+        <img src="/css/images/default-cloud.png" class="profile-image" alt="...">
+    </div>
+    <div class=" profile-form-body">
+        
+        <div class="controller-row">
+            <p>Location</p>
+            <form action="/settings/location?_method=PUT" method="post">
+                <div class="slider-flex">
+                    <div class="slider-flex-content">
+                       <h1>Off  </h1> 
+                    </div>
+                    <div ><label class="switch">
+                        <!-- on each change of the slider the form is submitted -->
+                        <!-- this toggles the location on and off -->
+                        <% if(currentUser.locationAccess=="on" ){%>
+                            <input id="toggler" type="checkbox" onChange="this.form.submit()" checked>
+                            <span class="slider round"></span>
+                            <%}else{%>
+                                <input id="toggler" type="checkbox" onChange="this.form.submit()">
+                                <span class="slider round"></span>
+                                <%}%>
+                    </label></div>
+                    <div class="slider-flex-content slider-flex-content">
+                       <h1> On</h1>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+    </div>
+</div>
+<hr>
+<h3>Account info</h3>
+<p>Username: <%=currentUser.username%> </p>
+<p>Access Level: <%=currentUser.accessType%></p>
 
 
 <script language="javascript">
