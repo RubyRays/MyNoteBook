@@ -13,7 +13,7 @@ const notesSchema = new mongoose.Schema({
     time: String,
     imageURL: String,
     shared: String,
-    deleted: String,
+    deleted: {type:String, default:"false"},
     reviews: [{type: Schema.Types.ObjectId, ref:'Review'}]
 
 });
