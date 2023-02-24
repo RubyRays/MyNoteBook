@@ -1,12 +1,10 @@
 <%-include('partials/nav.ejs')-%>
 
 <h1>Search</h1>
-<!-- <form> -->
 
-        <input type="text" class="form-control text-left" name="title" onkeyup="sendData(this)" placeholder="Title of new page" required>
-        <!-- <button type="submit"  onclick="sendData(title)" class="btn btn-light">Search</button> -->
-<!-- </form> -->
-<section id="results">
+<input type="text" class="form-control text-left" name="title" onkeyup="sendData(this)" placeholder="Title of new page" required>
+
+<section id="results" >
 
 </section>
 
@@ -23,7 +21,7 @@
                         let payload = data.payload;
                         console.log(payload);
                         if(payload.length < 1){
-                          results.innerHTML ='<h1>Nothing found</h1>';
+                          results.innerHTML ='<p>Nothing found<p>';
                           return;      
                         }
                         payload.reverse().forEach((item, index)=>{
