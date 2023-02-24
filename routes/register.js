@@ -1,5 +1,5 @@
 const express = require('express');
-const session = require('express-session');
+// const session = require('express-session');
 const router = express.Router();
 const Note = require('../models/Note');
 const NoteUser= require('../models/NoteUser');
@@ -12,6 +12,8 @@ const OAuth2 = google.auth.OAuth2;
 //OAuth routes
 const oAuth2Client= new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI)
 oAuth2Client.setCredentials({refresh_token: process.env.REFRESH_TOKEN})
+
+
 
 
 //-----------REGISTER----------------------------------------------
@@ -64,14 +66,14 @@ async function sendMail(){
                 accessToken: accessToken     
             }
         })
-
+        
         //sends an email with the verifcation code from the specified email to 
         //the email that the user created their account with
         const mailOptions={
             from: "jereenleblanc.volunteer@rnd4impact.com",
             to: req.body.email,
             subject: "testing email",
-            text: "This is the verification code: "+ code
+            text:"Hi "+req.body.username+",\n\nThanks for registering for an account on MyNoteBook. To verify your account input this code: "+ code+".\n\nBest Regards, MyNoteBook"
         };
 
         //Makes sure that the email is sent properly
@@ -117,9 +119,9 @@ async function sendMail(){
                     res.redirect('/register');      
             
             }else{    
-                // sendMail()
-                // .then((result)=> console.log(result))
-                // .catch((error)=> console.log(error));
+                sendMail()
+                .then((result)=> console.log(result))
+                .catch((error)=> console.log(error));
                 note0.save();
                 passport.authenticate("local")(req, res, function(){
                     //redirects to main page if isVerified is true otherwise 
