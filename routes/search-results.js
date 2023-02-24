@@ -26,7 +26,8 @@ router.post("/", isLoggedIn, catchAsync(async(req, res)=>{
     //searches for the entires similar to payload value and stores them inside of search constant
     const search = await Note.find({
                             title:{$regex: `${payload}`,  $options:"i"},
-                            owner:{$eq:req.user.username}
+                            owner:{$eq:req.user.username},
+                            deleted:{$eq:"false"},
                             }).exec();
 
     //sets a limit of 10 to the search results
