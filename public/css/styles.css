@@ -39,13 +39,14 @@ p {
 }
 
 #d-button {
-  scale: 1.5;
+  scale: 2;
 }
 
 .action-btn {
-  background-color: none;
-  border-style: none;
+  background-color: transparent;
+  border-style: solid;
   border-radius: 3rem;
+  border-color: grey;
 }
 .back-btn {
   display: flex;
@@ -174,6 +175,7 @@ p {
   display: inline-block;
   position: relative;
   top: -0.5rem;
+  color: #000000;
 }
 /* .link-style{
 
@@ -225,19 +227,17 @@ p {
   margin-bottom: 0.5rem;
 }
 .nav-bar {
-  height: 5%;
+  height: 4%;
 }
-.nav-dark {
-  background-color: #17bebb;
-}
+
 .nav-default {
   color: #459e63;
 }
 .nav-dark {
-  background-color: white;
+  background-color: black;
 }
 .nav-default {
-  background-color: #007fff;
+  background-color: white;
 }
 .note {
   position: static;
@@ -246,10 +246,17 @@ p {
 }
 .note-entry {
   position: static;
-  background-color: white;
+  /* background-color: black; */
   height: 100%;
   border-radius: 2rem;
 }
+.note-dark {
+  background-color: black;
+}
+.note-default {
+  background-color: white;
+}
+
 .note-heading {
   background-color: none;
   border-bottom-width: 0.1rem;
@@ -260,7 +267,7 @@ p {
 
 .note-body {
   margin-top: 0px;
-  background-color: #7fffd4;
+  /* background-color: #7fffd4; */
   word-wrap: break-word;
   font-size: medium;
   white-space: pre-line;
@@ -281,7 +288,7 @@ p {
   font-size: 1rem;
 }
 .page-btn {
-  background-color: #7fffd4;
+  background-color: transparent;
   border-style: none;
   color: black;
   padding: 0.5rem;
@@ -323,7 +330,7 @@ p {
 }
 .profile-form-body {
   align-items: center;
-  background-color: #ffffff;
+  /* background-color: #ffffff; */
   display: flex;
   flex-grow: 0.5;
   height: 10rem;
@@ -356,17 +363,25 @@ p {
   font-size: 2rem;
   margin-bottom: 1rem;
 }
+.rounded-circle {
+  scale: 1.5;
+  margin-left: auto;
+  margin-right: auto;
+}
 
+.salvage-btn :hover {
+  color: #007fff;
+}
 .social-btn-container {
   background-color: none;
   border-style: none;
   margin-top: 2rem;
 }
 .share-true {
-  background-color: lightgreen;
+  background-color: green;
 }
 .share-false {
-  background-color: white;
+  background-color: transparent;
 }
 .subscription-cards {
   display: flex;
@@ -475,7 +490,7 @@ input:checked + .slider:before {
 /* Dark Mode Theme */
 .container[data-theme="dark"] {
   --background-color: #4ecdc4;
-  --text-color: darkblue;
+  --text-color: white;
 }
 .parent-flex[data-theme="dark"] {
   --background-color: #000000;
