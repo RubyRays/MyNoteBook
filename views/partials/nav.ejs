@@ -1,12 +1,12 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
-    <nav id="main-navbar" class="navbar navbar-expand-lg nav-<%theme%> fixed-top nav-<%=theme%>">
+    <nav id="main-navbar" class="navbar navbar-expand-lg nav-<%=theme%> fixed-top">
         <!-- Container wrapper -->
         <div class="container-fluid ">
 
             <!-- Brand -->
             <a class="navbar-brand" href="/pages">
-                <em>MyNoteBook</em>
+                <h1><em>MyNoteBook</em></h1>
             </a>
             <!-- navbar toggle button -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent"
@@ -20,34 +20,34 @@
                     <form action="/search-results" method="Post">
                         <div class="nav-align">
                             
-                            <a class="btn btn-light nav-link" href="/search-results" role="button">Search <i class="fa-solid fa-magnifying-glass"></i> </a>
+                            <a class="btn nav-link" href="/search-results" ><i class="fa-solid fa-magnifying-glass fa-xl"></i><p>Search</p> </a>
                     </form>                                
                         <!-- checkout button -->
-                        <div class="nav-align"><a class="btn btn-light nav-link " href="/checkout" role="button">Checkout <i class="fa-regular fa-credit-card fa-xl"></i> </a></div>
+                        <div class="nav-align"><a class="btn  nav-link " href="/checkout" role="button"> <i class="fa-regular fa-credit-card fa-xl"></i> <p>Checkout</p></a></div>
                         <!-- settings button -->
-                        <div class="nav-align"><a class="btn btn-light nav-link " href="/settings" role="button">Settings <i class="fa-solid fa-gear fa-xl"></i> </a></div>
+                        <div class="nav-align"><a class="btn  nav-link " href="/settings" role="button"> <i class="fa-solid fa-gear fa-xl"></i> <p>Settings</p></a></div>
                         <!-- public-pages button -->
-                        <div class="nav-align"><a class="btn btn-light nav-link " href="/public-pages" role="button">Public <i class="fa-sharp fa-solid fa-globe fa-xl"></i></a></div>
+                        <div class="nav-align"><a class="btn  nav-link " href="/public-pages" role="button"> <i class="fa-sharp fa-solid fa-globe fa-xl"></i><p>Public</p></a></div>
                         <!-- trash button -->
-                        <div class="nav-align"><a class="btn btn-light nav-link " href="/trash" role="button">Trash <i class="fa-solid fa-trash fa-xl"></i> </a></div>
+                        <div class="nav-align"><a class="btn  nav-link " href="/trash" role="button"> <i class="fa-solid fa-trash fa-xl"></i><p>Trash</p> </a></div>
                         <!-- dark/light button -->
                         <form action="/nav?_method=PUT" method="POST">
                             <div id="d-button"class="nav-align">
                                 <input type="hidden" value="<%=url%>" name="prevUrl">
-                                    <% if(theme=="dark" ){%>                       
-                                        <input type="submit" class="btn btn-light nav-link" onclick="this.form.submit()" value="🌒" role="button"></input></i>
+                                    <% if(theme!="dark" ){%>                       
+                                        <input type="submit" class="btn  nav-link" onclick="this.form.submit()" value="🌒" role="button"></input></i>
                                         <%}else{%>
-                                            <input type="submit" class="btn btn-light nav-link" onclick="this.form.submit()" value="☀️" role="button"></input></i>
+                                            <input type="submit" class="btn  nav-link" onclick="this.form.submit()" value="☀️" role="button"></input></i>
                                             <%}%>
                                 
 
                             </div>
                         </form>
                         <!-- profile picture -->
-                        <div class="nav-align"><a class="btn btn-light nav-link " role="button"><img src="<%=pic%>" class="rounded-circle"
-                                    height="44" alt="" loading="lazy" /></a></div>
+                        <div class="nav-align"><a class="btn nav-link " role="button"><img src="<%=pic%>" class="rounded-circle"
+                                    alt="" loading="lazy" /></a></div>
                         <!-- logout button -->
-                        <div class="nav-align"><a class="btn btn-light nav-link " href="/logout" role="button">Log Out </a></div>
+                        <div class="nav-align"><a class="btn  nav-link " href="/logout" role="button"><p>Log Out</p> </a></div>
                 </div>         
             </div>
 
