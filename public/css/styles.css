@@ -230,6 +230,10 @@ p {
   position: relative;
   background-color: transparent;
 }
+.nav-image {
+  position: relative;
+  overflow: hidden;
+}
 
 .navbar-toggler {
   margin-bottom: 0.5rem;
@@ -371,12 +375,12 @@ p {
   font-size: 2rem;
   margin-bottom: 1rem;
 }
-.rounded-circle {
+/* .rounded-circle {
   position: relative;
   size: 25%;
   overflow: hidden;
   object-fit: contain;
-}
+} */
 
 .salvage-btn :hover {
   color: #007fff;
