@@ -1,4 +1,8 @@
 <%-include('partials/nav.ejs')-%>
+<%-include('partials/flash.ejs')-%>
+<h1>Checkout</h1>
+<p>This feature is in test mode</p>
+<p>Only use fake data and the test card number 4242 4242 4242 4242</p>
 
 <!-- card with subscription information and a checkout button-->
 <form action="/checkout" class="subscription-cards" method="POST">
@@ -15,10 +19,18 @@
                 
             </p>
         </div>
-        <!-- checkout button -->
-        <div class="checkout note-<%=theme%>">
-            <button type="submit" name="subscription_type"  value="<%=item._id%>" class="btn btn-light check-out-btn">Check out</button>
-        </div>
+        <% if(noteuser.accessType != item.type) {%>
+            <!-- checkout button -->
+            <div class="checkout note-<%=theme%>">
+                <button type="submit" name="subscription_type"  value="<%=item._id%>" class="btn btn-light check-out-btn">Check out</button>
+            </div>
+    
+        <%}else{%>
+            <div class="checkout note-<%=theme%>">
+                <p>Not Available</p>
+            </div>
+        <%}%>
+        
     </div>
     <%})%>
 
