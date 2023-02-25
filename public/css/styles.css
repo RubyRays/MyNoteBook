@@ -223,7 +223,7 @@ p {
 .nav-block {
   height: 3.5rem;
   position: relative;
-  background-color: green;
+  background-color: transparent;
 }
 
 .navbar-toggler {
@@ -367,7 +367,7 @@ p {
   margin-bottom: 1rem;
 }
 .rounded-circle {
-  size: 1rem;
+  size: 25%;
   overflow: hidden;
   object-fit: contain;
 }
