@@ -221,8 +221,8 @@ p {
   margin-right: auto;
 }
 .nav-block {
-  height: 200rem;
-  position: absolute;
+  height: 5rem;
+  position: relative;
   background-color: green;
 }
 
