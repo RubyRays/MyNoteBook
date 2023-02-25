@@ -368,8 +368,8 @@ p {
 }
 .rounded-circle {
   size: 1rem;
-  margin-left: auto;
-  margin-right: auto;
+  overflow: hidden;
+  object-fit: contain;
 }
 
 .salvage-btn :hover {
