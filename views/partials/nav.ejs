@@ -37,15 +37,14 @@
                             <div id="d-button"class="nav-align">
                                 <input type="hidden" value="<%=url%>" name="prevUrl">
                                     <% if(theme!="dark" ){%>                       
-                                        <input type="submit" class="btn  nav-link" onclick="this.form.submit()" value="🌒" role="button"></input></i>
+                                        <input type="submit" class="btn nav-link theme-btn" onclick="this.form.submit()" value="🌒" role="button"></input>
                                         <%}else{%>
-                                            <input type="submit" class="btn  nav-link" onclick="this.form.submit()" value="☀️" role="button"></input></i>
+                                            <input type="submit" class="btn nav-link theme-btn" onclick="this.form.submit()" value="☀️" role="button"></input>
                                             <%}%>
                             </div>
                         </form>
                         <!-- profile picture -->
-                        <div class="nav-align"><a class="btn nav-link " role="button"><img src="<%=pic%>" class="rounded-circle"
-                                    alt="" loading="lazy" /></a></div>
+                        <div class="nav-align"><a class="btn nav-link " role="button"><img src="<%=pic%>" class="rounded-circle" alt="" loading="lazy" /></a></div>
                         <!-- logout button -->
                         <div class="nav-align"><a class="btn  nav-link " href="/logout" role="button"><p>Log Out</p> </a></div>
                 </div>         
