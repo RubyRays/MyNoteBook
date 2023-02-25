@@ -115,7 +115,7 @@ p {
 .footer {
   display: flex;
   /* margin-top: auto; */
-  height: 10rem;
+  height: 20rem;
   align-items: flex-end;
 }
 .footer-text {
@@ -233,6 +233,8 @@ p {
 .nav-image {
   position: relative;
   overflow: hidden;
+  height: 10vh;
+  width: 10vh;
 }
 
 .navbar-toggler {
@@ -375,12 +377,13 @@ p {
   font-size: 2rem;
   margin-bottom: 1rem;
 }
-/* .rounded-circle {
+.rounded-circle {
   position: relative;
-  size: 25%;
   overflow: hidden;
-  object-fit: contain;
-} */
+  height: 4rem;
+  width: 4rem;
+  object-fit: cover;
+}
 
 .salvage-btn :hover {
   color: #007fff;
