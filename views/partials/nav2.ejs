@@ -1,6 +1,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
-<nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-white fixed-top nav-<%=theme%>">
+<nav id="main-navbar2" class="navbar navbar-expand-lg navbar-light bg-white fixed-top nav-<%=theme%>">
     <!-- Container wrapper -->
     <div class="container-fluid ">
 
@@ -9,12 +9,12 @@
             <em>MyNoteBook</em>
         </a>
         <!-- navbar toggle button -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent"
-            aria-controls="navContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon  "></span>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent2"
+            aria-controls="navContent2" aria-expanded="false" aria-label="Toggle navigation2">
+            <span class="navbar-toggler-icon"></span>
         </button>
         <!-- Links -->
-        <div class="collapse navbar-collapse flex-container" id="navContent">
+        <div class="collapse navbar-collapse flex-container" id="navContent2">
             <div class="navbar-nav mt-auto navbar-container">
                     <!--Login button -->
                     <div class="nav-align"><a class="btn nav-link" href="/login" role="button">LogIn </a></div>
@@ -23,12 +23,6 @@
                     <!-- default user icon -->
                     <div class="nav-align"><a class="btn nav-link" role="button"><i class="fa-solid fa-user"></i></a>
                     </div>
-                    <form action="/nav?_method=PUT" method="POST">
-
-                    </form>
                 </div>
-
-
         </div>
 </nav>
-<div class="nav-block"></div>
