@@ -33,16 +33,18 @@
                         <!-- trash button -->
                         <div class="nav-align"><a class="btn  nav-link " href="/trash" role="button"> <i class="fa-solid fa-trash fa-xl"></i><p>Trash</p> </a></div>
                         <!-- dark/light button -->
-                        <form action="/nav?_method=PUT" method="POST">
-                            <div id="d-button"class="nav-align">
-                                <input type="hidden" value="<%=url%>" name="prevUrl">
-                                    <% if(theme!="dark" ){%>                       
-                                        <input type="submit" class="btn nav-link theme-btn" onclick="this.form.submit()" value="🌒" role="button"></input>
-                                        <%}else{%>
-                                            <input type="submit" class="btn nav-link theme-btn" onclick="this.form.submit()" value="☀️" role="button"></input>
-                                            <%}%>
-                            </div>
-                        </form>
+                         <div id="d-button"class="nav-align">
+                            <form action="/nav?_method=PUT" method="POST">
+                            
+                                    <input class="hide" value="<%=url%>" name="prevUrl">
+                                        <% if(theme!="dark" ){%>                       
+                                            <input type="submit" class="btn nav-link " onclick="this.form.submit()" value="🌒" role="button"></input>
+                                            <%}else{%>
+                                                <input type="submit" class="btn nav-link" onclick="this.form.submit()" value="☀️" role="button"></input>
+                                                <%}%>
+                            
+                            </form> 
+                        </div>
                         <!-- profile picture -->
                         <div class="nav-align"><a class="btn nav-link " role="button"><img src="<%=pic%>" class="rounded-circle" alt="" loading="lazy" /></a></div>
                         <!-- logout button -->
