@@ -5,6 +5,7 @@ const Subscription = require('../models/Subscription');
 const {isLoggedIn} = require('../middleware/login_middlewaare');
 const stripe= require('stripe')(process.env.STRIPE_PRIVATE_KEY);
 const catchAsync = require('../middleware/catchAsync');
+const Note = require('../models/Note');
 
 //check out routes
 
@@ -18,7 +19,7 @@ router.get("/",isLoggedIn, catchAsync(async(req,res)=>{
     const pic = noteuser.profileImage.url;
     const theme = noteuser.theme;
     const url = "checkout";
-    res.render("checkout", {pic,theme,url, subscription: subscription});
+    res.render("checkout", {pic,theme,url, noteuser: noteuser, subscription: subscription});
 
 
 }));
@@ -29,10 +30,18 @@ router.get("/",isLoggedIn, catchAsync(async(req,res)=>{
 //redirects on sucess to the sucess page or cancel page upon failure
 router.post("/", isLoggedIn, catchAsync(async(req,res)=>{
 
-
+const id = req.body.subscription_type;
+const data = await Subscription.findById(id);
+const noteuser = await NoteUser.findById(req.user.id);
+//redirects the user if they try to buy a subscription that they already had
+if(noteuser.accessType == data.type){
+    req.flash("warning", "You have already purchased the plan.")
+    res.redirect("/checkout");
+    }
+    else{
         try{        
-            const id = req.body.subscription_type;
-            const data = await Subscription.findById(id);
+
+            
             const session = await stripe.checkout.sessions.create({
                 payment_method_types: ['card'],
                 //array of items that the user wants to purchase
@@ -60,7 +69,7 @@ router.post("/", isLoggedIn, catchAsync(async(req,res)=>{
             res.status(500).json({ error: e.message })
         }
 
-    
+    }
 }));
 
 module.exports=router;
