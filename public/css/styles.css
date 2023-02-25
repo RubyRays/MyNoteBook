@@ -40,6 +40,8 @@ p {
 
 #d-button {
   scale: 2;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
 }
 
 .action-btn {
@@ -173,6 +175,9 @@ p {
   min-width: 50%;
   justify-content: flex-end;
   margin-top: 15%;
+}
+.hide {
+  display: none;
 }
 .icon-style-form {
   display: inline-block;
@@ -367,6 +372,7 @@ p {
   margin-bottom: 1rem;
 }
 .rounded-circle {
+  position: relative;
   size: 25%;
   overflow: hidden;
   object-fit: contain;
