@@ -6,7 +6,7 @@
     </h1>
 <!-- add the deleted entries or the ones that are marked delete on note -->
 <% foundNoteEntry.reverse().forEach(function(deletedContent) { %>
-                <div class="container-fluid note-entry">
+                <div class="container-fluid note-entry note-<%=theme%>">
                     <div class="row">
                         <div class="col-lg-10 col-md-10 col-sm-10 note">
                             <h1 class="note-heading">
@@ -36,7 +36,7 @@
 <%})%>
 
   <div class="back-btn">
-    <a class="btn btn-light" href="/pages" role="button"><i class="fas fa-home"></i></a>
+    <a class="btn" href="/pages" role="button"><i class="fas fa-home"></i></a>
     
 </div>   
 
