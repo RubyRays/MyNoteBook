@@ -4,13 +4,13 @@
             <% if(newPageContent._id==pageEntry){%>
 
                 <div class="container-fluid" >
-                    <div class="row">
+                    <div class="row ">
                         <div class="col-md-7 entry-div">
                             <div class="entry-title">
                                 <h1 class="post-title"><%=newPageContent.title%></h1>
                                 <p class="post-meta">Posted by <%=newPageContent.owner%> on <%=newPageContent.date%> at <%=newPageContent.time%>. </p>
                             </div>
-                            <div class="full-body">
+                            <div class="full-body note-<%=theme%>">
                                 <p><%=newPageContent.content%></p>
                             </div>
                         </div>
@@ -56,10 +56,9 @@
                                         </i>
                                     <%}%>
 
-                                <div class="review-style"> 
+                                <div class="note-<%=theme%>"> 
                                     
-
-                                    <p ><%=reviewContent.content%></p>
+                                    <p><%=reviewContent.content%></p>
                                     <p class="review-text">Posted by <%= reviewContent.author%></p>
                                 </div>                                
 
@@ -70,8 +69,8 @@
                 <%}%>
                     <% }) %>
                         </div>
-                        <div class="back-btn">
-                            <a class="btn btn-light" href="/public-pages" role="button"><i class="fas fa-home"></i></a>
+                        <div class="back-btn ">
+                            <a class="btn " href="/public-pages" role="button"><i class="fas fa-home"></i></a>
                         </div>
     </div>
 

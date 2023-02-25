@@ -5,7 +5,7 @@
     <div>
         <img src="<%=currentUser.profileImage.url%>" class="profile-image" alt="...">
     </div> 
-    <div class=" profile-form-body">       
+    <div class=" profile-form-body note-<%=theme%>">       
         <form action="/settings/profile-image?_method=PUT" method="post" enctype="multipart/form-data">
             <p>Profile Image</p>
             <input class="form-control" type="file" name="profileImage" id="" required>
@@ -18,9 +18,9 @@
     <div>
         <img src="/css/images/default-cloud.png" class="profile-image" alt="...">
     </div>
-    <div class=" profile-form-body">
+    <div class=" profile-form-body note-<%=theme%> ">
         
-        <div class="controller-row">
+        <div class="controller-row note-<%=theme%>">
             <p>Location</p>
             <form action="/settings/location?_method=PUT" method="post">
                 <div class="slider-flex">
@@ -48,7 +48,7 @@
     </div>
 </div>
 <hr>
-<h3>Account info</h3>
+<h2>Account info</h2>
 <p>Username: <%=currentUser.username%> </p>
 <p>Access Level: <%=currentUser.accessType%></p>
 
@@ -61,5 +61,5 @@
 </script>
 
 <div class="back-btn">
-    <a class="btn btn-light" href="/pages" role="button"><i class="fas fa-home"></i></a>
+    <a class="btn" href="/pages" role="button"><i class="fas fa-home"></i></a>
 </div>

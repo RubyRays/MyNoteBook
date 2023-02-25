@@ -24,7 +24,7 @@
 
             <!-- displays the users entry -->
             <div class="container-fluid note-entry">
-                <div class="row note-entry">
+                <div class="row note-entry note-<%=theme%>">
                     <div class="col-lg-2 col-md-2 col-sm-3 col-5">
                         <p class="note-weather-description">Days' Weather </p>
                         <img src="<%= newContent.imageURL%>" class="note-weather-image" alt="weather icon">
@@ -46,7 +46,7 @@
                         </form>
                         <!-- share button to toggle the shared post -->
                         <form action="/pages/share-unshare?_method=PUT" method="POST" class="icon-style-form">
-                            <button type="submit" class="edit-btn action-btn share-<%=newContent.shared%>" name="share" value="<%=newContent._id %>" alt="share"><i class="fa-regular fa-share-from-square"></i></button>
+                            <button type="submit" class="edit-btn action-btn share-<%=newContent.shared%>" name="share" value="<%=newContent._id %>" alt="share"><i class="fa-regular fa-share-from-square "></i></button>
                         </form>
                         
                     </div>

@@ -5,7 +5,7 @@
 <% subscription.reverse().forEach(function(item){%> 
     <div class="card subscription-basic" style="width: 18rem;">
         <img class="card-img-top" src="<%=item.imageUrl%>" alt="Card image cap">
-        <div class="card-body">
+        <div class="card-body note-<%=theme%>">
             <h5 class="card-title">Price: $<%=item.price%> US</h5>
             <p class="card-text">
               <!-- prints the list of benefits associated with the subscription -->
@@ -16,7 +16,7 @@
             </p>
         </div>
         <!-- checkout button -->
-        <div class="checkout">
+        <div class="checkout note-<%=theme%>">
             <button type="submit" name="subscription_type"  value="<%=item._id%>" class="btn btn-light check-out-btn">Check out</button>
         </div>
     </div>

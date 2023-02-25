@@ -8,20 +8,18 @@
 
 <% publicPosts.reverse().forEach(function(post){%>
     <div class="container-fluid note-entry">
-       <div class="row">
+       <div class="row note-entry note-<%=theme%>">
             <div class="col-lg-10 col-md-10 col-sm-10 note">
                 <!-- displays the shared note-->
                 <h1 class="note-heading">
-                     <%=post.title.substring(0,20) %>
-                    <span class="date-style">
-                        Posted by <%=post.owner%> on
-                            <%=post.date%>
-                                <%=post.time%>
+                     <%=post.title.substring(0,20) %></h1>
+                        <span class="date-style">
+                        Posted by <%=post.owner%> on <%=post.date%> <%=post.time%>
                     </span>
                 </h1>
+                <!-- displays part of the entry content and leads to public contents page -->
                 <p class="note-body">
-                    <!-- displays part of the entry content and leads to public contents page -->
-                    <%=post.content.substring(0,100) + "..." %> <button class="page-btn"><a href="/public-pages/<%=post._id%>">Go to page</a></button>
+                <%=post.content.substring(0,100) + "..." %><a href="/public-pages/<%=post._id%>">Go to page</a>
                 </p>
             </div>
         </div>
@@ -33,6 +31,6 @@
     
 
 <div class="back-btn">
-    <a class="btn btn-light" href="/pages" role="button"><i class="fas fa-home"></i></a>
+    <a class="btn" href="/pages" role="button"><i class="fas fa-home"></i></a>
 </div>
 
