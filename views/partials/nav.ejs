@@ -17,11 +17,13 @@
             <div class="collapse navbar-collapse flex-container" id="navContent">
                 <div class="navbar-nav mt-auto navbar-container">
                     <!-- search button -->
+                    <div class="nav-align">
                     <form action="/search-results" method="Post">
-                        <div class="nav-align">
+                        
                             
                             <a class="btn nav-link" href="/search-results" ><i class="fa-solid fa-magnifying-glass fa-xl"></i><p>Search</p> </a>
-                    </form>                                
+                    </form>   
+                     </div>                            
                         <!-- checkout button -->
                         <div class="nav-align"><a class="btn  nav-link " href="/checkout" role="button"> <i class="fa-regular fa-credit-card fa-xl"></i> <p>Checkout</p></a></div>
                         <!-- settings button -->
@@ -39,8 +41,6 @@
                                         <%}else{%>
                                             <input type="submit" class="btn  nav-link" onclick="this.form.submit()" value="☀️" role="button"></input></i>
                                             <%}%>
-                                
-
                             </div>
                         </form>
                         <!-- profile picture -->
@@ -54,4 +54,3 @@
 
         </div>
     </nav>
-<div class="nav-block"></div>
