@@ -95,7 +95,8 @@ async function sendMail(){
     
     //gets the password from the registration form
     const password= req.body.password; 
-
+    const password2 = req.body.password2;
+    if(password == password2){
     //Returns an error if the password is less than 8 characters long
     if(password.length < 8){
         req.flash('warning',"Password needs to be 8 or more characters long.");
@@ -143,6 +144,10 @@ async function sendMail(){
             }
         })
         }
+    }else{
+        req.flash('warning',"Passwords do not match.");
+        res.redirect("/register");
+    }
     
 });  
 
