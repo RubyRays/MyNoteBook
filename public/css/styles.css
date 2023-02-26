@@ -210,10 +210,7 @@ p {
   margin-top: 2rem;
   margin-bottom: 0;
 }
-.moon-btn {
-  position: relative;
-  z-index: -3;
-}
+
 .nav-link {
   margin-left: 0.5rem;
   margin-right: 0.5rem;
@@ -229,6 +226,10 @@ p {
   height: 3.5rem;
   position: relative;
   background-color: transparent;
+}
+.navbar-container {
+  overflow-y: scroll;
+  max-height: 20rem;
 }
 .nav-image {
   position: relative;
