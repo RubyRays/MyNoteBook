@@ -18,37 +18,35 @@
                 <div class="navbar-nav mt-auto navbar-container">
                     <!-- search button -->
                     <div class="nav-align">
-                    <form action="/search-results" method="Post">
-                        
-                            
-                            <a class="btn nav-link" href="/search-results" ><i class="fa-solid fa-magnifying-glass fa-xl"></i><p>Search</p> </a>
-                    </form>   
+                        <form action="/search-results" method="Post">
+                                <a class="btn nav-link" href="/search-results" ><i class="fa-solid fa-magnifying-glass fa-xl"></i><p>Search</p> </a>
+                        </form>   
                      </div>                            
-                        <!-- checkout button -->
-                        <div class="nav-align"><a class="btn  nav-link " href="/checkout" role="button"> <i class="fa-regular fa-credit-card fa-xl"></i> <p>Checkout</p></a></div>
-                        <!-- settings button -->
-                        <div class="nav-align"><a class="btn  nav-link " href="/settings" role="button"> <i class="fa-solid fa-gear fa-xl"></i> <p>Settings</p></a></div>
-                        <!-- public-pages button -->
-                        <div class="nav-align"><a class="btn  nav-link " href="/public-pages" role="button"> <i class="fa-sharp fa-solid fa-globe fa-xl"></i><p>Public</p></a></div>
-                        <!-- trash button -->
-                        <div class="nav-align"><a class="btn  nav-link " href="/trash" role="button"> <i class="fa-solid fa-trash fa-xl"></i><p>Trash</p> </a></div>
-                        <!-- dark/light button -->
-                         <div id="d-button"class="nav-align">
-                            <form action="/nav?_method=PUT" method="POST">
+                    <!-- checkout button -->
+                    <div class="nav-align"><a class="btn  nav-link" href="/checkout" role="button"> <i class="fa-regular fa-credit-card fa-xl"></i> <p>Checkout</p></a></div>
+                    <!-- settings button -->
+                    <div class="nav-align"><a class="btn  nav-link" href="/settings" role="button"> <i class="fa-solid fa-gear fa-xl"></i> <p>Settings</p></a></div>
+                    <!-- public-pages button -->
+                    <div class="nav-align"><a class="btn  nav-link" href="/public-pages" role="button"> <i class="fa-sharp fa-solid fa-globe fa-xl"></i><p>Public</p></a></div>
+                    <!-- trash button -->
+                    <div class="nav-align"><a class="btn  nav-link" href="/trash" role="button"> <i class="fa-solid fa-trash fa-xl"></i><p>Trash</p> </a></div>
+                    <!-- dark/light button -->
+                     <div id="d-button"class="nav-align">
+                        <form action="/nav?_method=PUT" method="POST">
                             
-                                    <input class="hide" value="<%=url%>" name="prevUrl">
-                                        <% if(theme!="dark" ){%>                       
-                                            <input type="submit" class="btn nav-link " onclick="this.form.submit()" value="🌒" role="button"></input>
-                                            <%}else{%>
-                                                <input type="submit" class="btn nav-link" onclick="this.form.submit()" value="☀️" role="button"></input>
-                                                <%}%>
-                            
-                            </form> 
-                        </div>
-                        <!-- profile picture -->
-                        <div class="nav-align"><a class="btn nav-link nav-image" role="button"><img src="<%=pic%>" class="rounded-circle" alt="profile" loading="lazy" /></a></div>
-                        <!-- logout button -->
-                        <div class="nav-align"><a class="btn  nav-link " href="/logout" role="button"><p>Log Out</p> </a></div>
+                            <input class="hide" value="<%=url%>" name="prevUrl">
+                                <% if(theme!="dark" ){%>                       
+                                    <input type="submit" class="btn nav-link " onclick="this.form.submit()" value="🌒" role="button"></input>
+                                    <%}else{%>
+                                        <input type="submit" class="btn nav-link" onclick="this.form.submit()" value="☀️" role="button"></input>
+                                        <%}%>
+                        
+                        </form> 
+                    </div>
+                    <!-- profile picture -->
+                    <div class="nav-align"><a class="btn nav-link nav-image" role="button"><img src="<%=pic%>" class="rounded-circle" alt="profile" loading="lazy" /></a></div>
+                    <!-- logout button -->
+                    <div class="nav-align"><a class="btn  nav-link " href="/logout" role="button"><p>Log Out</p> </a></div>
                 </div>         
             </div>
 
