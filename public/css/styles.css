@@ -98,6 +98,7 @@ p {
   background-color: transparent;
   border-style: none;
 }
+
 .delete-btn :hover {
   color: #bc2d1a;
 }
@@ -321,13 +322,11 @@ p {
 .page-btn :active {
   color: #ffffff;
 }
-
 .profile-image {
-  border-top-left-radius: 2rem;
-  border-bottom-left-radius: 2rem;
   height: 10rem;
   border-style: solid;
-  width: 10rem;
+  width: 11rem;
+  margin-right: 5rem;
 }
 .profile-entry {
   display: flex;
