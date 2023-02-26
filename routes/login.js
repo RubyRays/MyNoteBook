@@ -10,7 +10,7 @@ const catchAsync = require('../middleware/catchAsync');
 //sends theme variable data
 router.get("/", async(req, res)=>{
     const theme= "default";
-    res.render('login', {theme:theme});
+    res.render('login', {theme:theme, error: req.flash("error"),});
 }); 
 
 //login page that takes in the information input by the user and 
@@ -25,11 +25,8 @@ router.post("/", async(req,res)=>{
    req.login(user, function(err){
     if(err){
         console.log(err);
-        req.flash('warning', 'There was something wrong-username or email');
-        res.redirect('/register');    
-
     }else{
-        passport.authenticate("local", {
+        passport.authenticate("local", { 
             failureFlash: true, 
             failureRedirect: '/login',
                 })(req, res, function(){
