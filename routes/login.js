@@ -10,7 +10,7 @@ const catchAsync = require('../middleware/catchAsync');
 //sends theme variable data
 router.get("/", async(req, res)=>{
     const theme= "default";
-    res.render('login', {theme:theme, error: req.flash("error"),});
+    res.render('login', {theme:theme, error: req.flash("error")});
 }); 
 
 //login page that takes in the information input by the user and 
