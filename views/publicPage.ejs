@@ -1,15 +1,15 @@
 <%-include('partials/nav.ejs')-%>
 
-    <article class="blog-post">
+
         <h1 class="post-title">
            Public Page 
         </h1>
     
 
 <% publicPosts.reverse().forEach(function(post){%>
-    <div class="container-fluid note-entry">
-       <div class="row note-entry note-<%=theme%>">
-            <div class="col-lg-10 col-md-10 col-sm-10 note">
+    <!-- <div class="container-fluid note-entry"> -->
+       <!-- <div class="row note-entry note-<%=theme%>"> -->
+            <div class="note-public note-<%=theme%>">
                 <!-- displays the shared note-->
                 <h1 class="note-heading">
                      <%=post.title.substring(0,20) %></h1>
@@ -22,8 +22,8 @@
                 <%=post.content.substring(0,100) + "..." %><a href="/public-pages/<%=post._id%>">Go to page</a>
                 </p>
             </div>
-        </div>
-    </div>
+        <!-- </div> -->
+    <!-- </div> -->
     <h2>---</h2>
 
 

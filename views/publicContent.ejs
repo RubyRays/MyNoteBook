@@ -18,14 +18,14 @@
                             <%-include('partials/flash.ejs')-%>
                             <form action="/public-pages/<%=pageEntry%>/review?_method=PUT" method="POST" class="public-style">
                                 <!-- the class waits for the value of the state to change and the corresponding style is added-->
-                                <label><h5>Reviews</h5></label>
+                                <label><h5 class="review-title">Reviews</h5></label>
                                 <div class="form-group ">
                                     <textarea class="form-control" name="content" rows="5" cols="30" placeholder="Contents" required></textarea>
                                     <button type="submit" class="btn btn-light prettyBtn">Add review</button>
                                     <h2>---</h2>
                                 </div>
                             </form>
-                            
+                        <div class="review-container">
                             <% newPageContent.reviews.reverse().forEach(function(reviewContent){%>
                                     <% if(reviewContent.author == currentUser){%>
                                     <form action="/public-pages/<%=pageEntry%>/review/<%=reviewContent._id%>/delete?_method=DELETE" method="post" class="icon-style-form">
@@ -39,12 +39,12 @@
                                     <form action="/public-pages/<%=pageEntry%>/review/<%=reviewContent._id%>/like?_method=PUT" method="post"
                                         class="icon-style-form" >
                                     
-                                        <button type="submit" alt="like"><i class="fa-solid fa-thumbs-up action-btn"> <%=reviewContent.likes%></i></button>
+                                        <button class="action-btn" type="submit" alt="like"><i class="fa-solid fa-thumbs-up "> <%=reviewContent.likes%></i></button>
                                     </form>
                                     <form action="/public-pages/<%=pageEntry%>/review/<%=reviewContent._id%>/dislike?_method=PUT" method="post"
                                         class="icon-style-form">
                                             
-                                        <button type="submit" alt="dislike"><i class="fa-solid fa-thumbs-down action-btn"><%=reviewContent.dislikes%></i></button>
+                                        <button class="action-btn" type="submit" alt="dislike"><i class="fa-solid fa-thumbs-down "><%=reviewContent.dislikes%></i></button>
                                     </form>
 
                                 <%}else {%>
@@ -68,7 +68,8 @@
                 </div>
                 <%}%>
                     <% }) %>
-                        </div>
+                </div>
+                    </div>
                         <div class="back-btn ">
                             <a class="btn " href="/public-pages" role="button"><i class="fas fa-home"></i></a>
                         </div>

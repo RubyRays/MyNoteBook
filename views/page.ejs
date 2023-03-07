@@ -2,8 +2,8 @@
 <div class="body-dist">
 
     <%-include('partials/flash.ejs')-%>
-    <h1>Hi <%=theUser%>, are you ready to start your notebook?</h1>
-    <h5>Location permission: <%=userContent.locationAccess%></h5>
+    <h1 class="post-title">Hi <%=theUser%>, are you ready to start your notebook?</h1>
+    <h5  class="post-meta">Location permission: <%=userContent.locationAccess%></h5>
 
     <div class="page-form">
     <form action="/pages" method="POST" >
@@ -30,7 +30,8 @@
                         <img src="<%= newContent.imageURL%>" class="note-weather-image" alt="weather icon">
                     </div>
                     <div class="col-lg-10 col-md-10 col-sm-9 col-7 note">
-                        <h1 class="note-heading"><%=newContent.title.substring(0,20)%> <span class="date-style"><%=newContent.date%> <%=newContent.time%></span></h1>
+                        <h1 class="note-heading"><%=newContent.title.substring(0,20)%> </h1>
+                        <span class="post-meta"><%=newContent.date%> <%=newContent.time%></span>
                         <p class="note-body"><%=newContent.content.substring(0,100) + "..."%><!-- button that takes the user to the page with the rest of the entry --><button class="page-btn"><a href="/pages/<%=newContent._id%>">Go to page</a></button></p>
                         
                         <!-- delete form and button -->

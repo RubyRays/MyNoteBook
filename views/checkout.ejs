@@ -1,11 +1,11 @@
 <%-include('partials/nav.ejs')-%>
 <%-include('partials/flash.ejs')-%>
-<h1>Checkout</h1>
-<p>This feature is in test mode</p>
-<p>Only use fake data and the test card number 4242 4242 4242 4242</p>
+<h1 class="post-title">Checkout</h1>
+<p class="post-meta">This feature is in test mode</p>
+<p class="post-meta">Only u se fake data and the test card number 4242 4242 4242 4242</p>
 
 <!-- card with subscription information and a checkout button-->
-<form action="/checkout" class="subscription-cards" method="POST">
+<form action="/checkout" class="align-body subscription-cards" method="POST">
 <% subscription.reverse().forEach(function(item){%> 
     <div class="card subscription-basic" style="width: 18rem;">
         <img class="card-img-top" src="<%=item.imageUrl%>" alt="Card image cap">

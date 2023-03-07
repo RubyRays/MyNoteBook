@@ -1,11 +1,11 @@
 <%-include('partials/nav.ejs')-%>
-<h1>Settings</h1>
+<h1 class="post-title">Settings</h1>
 
 
 <!-- Image update from -->
-<div class="profile-entry">
-     <div class="row">  
-        <div class="col-lg-4 col-md-4 col-sm-4">
+<div class="profile-entry profile-img-container">
+     <div class="row settings-container">  
+        <div class="col-lg-4 col-md-4 col-sm-4 ">
             <img src="<%=currentUser.profileImage.url%>" class="profile-image" alt="...">
         </div> 
         <div class="col-lg-8 col-md-8 col-sm-8  note-<%=theme%>">       
@@ -21,13 +21,11 @@
 
 <!-- Location toggler -->
 <div class="profile-entry">
-    <div class="row">
+    <div class="row settings-container">
     <div class="col-lg-4 col-md-4 col-sm-4 ">
         <img src="/css/images/default-cloud.png" class="profile-image" alt="...">
     </div>
-    <div class="col-lg-8 col-md-8 col-sm-8  note-<%=theme%> ">
-        
-        <div class=" note-<%=theme%>">
+    <div class="col-lg-8 col-md-8 col-sm-8 note-<%=theme%> ">
             <p>Location</p>
             <form action="/settings/location?_method=PUT" method="post">
                 <div class="slider-flex">
@@ -51,9 +49,7 @@
                 </div>
             </form>
         </div>
-        
     </div>
-</div>
 </div>
 <hr>
 <h2>Account info</h2>

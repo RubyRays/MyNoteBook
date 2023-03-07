@@ -1,20 +1,22 @@
 <%-include('partials/nav.ejs')-%>
 
 <article class="blog-post">
-    <h1 class="blog-post-title">
+    <h1 class="post-title">
         Trash Bin
     </h1>
 <!-- add the deleted entries or the ones that are marked delete on note -->
 <% foundNoteEntry.reverse().forEach(function(deletedContent) { %>
+            <div class="note-trashbin">
                 <div class="container-fluid note-entry note-<%=theme%>">
-                    <div class="row">
-                        <div class="col-lg-10 col-md-10 col-sm-10 note">
+                        <div class="note">
                             <h1 class="note-heading">
-                                <%=deletedContent.title.substring(0,20)%> <span class="date-style">
+                                <%=deletedContent.title.substring(0,20)%> 
+                            </h1>
+                                <span class="date-style">
                                         <%=deletedContent.date%>
                                             <%=deletedContent.time%>
                                     </span>
-                            </h1>
+                            
                             <p class="note-body">
                                 <%=deletedContent.content.substring(0,100) + "..." %>
                             </p>

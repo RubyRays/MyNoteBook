@@ -1,9 +1,9 @@
 <%-include('partials/nav.ejs')-%>
 
-<h1>Search</h1>
-
-<input type="text" class="form-control text-left" name="title" onkeyup="sendData(this)" placeholder="Title of new page" required>
-
+<h1 class="post-title">Search</h1>
+<div class="search-container">
+        <input type="text" class="form-control" name="title" onkeyup="sendData(this)" placeholder="Title of new page" required>
+</div>
 <section id="results" >
 
 </section>
