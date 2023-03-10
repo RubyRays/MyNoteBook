@@ -337,7 +337,9 @@ p {
   color: #ffffff;
 }
 .profile-image {
-  /* position: relative; */
+  display: flex;
+  flex-shrink: 0;
+  position: relative;
   height: 10rem;
   border-style: solid;
   color: #000000;
@@ -351,6 +353,7 @@ p {
   position: relative;
   padding-bottom: 1rem;
   padding-left: 0.5rem;
+  flex-shrink: 0;
   /* overflow: hidden; */
 }
 .profile-form-style {
@@ -364,6 +367,8 @@ p {
   /* background-color: #ffffff; */
   display: flex;
   flex-grow: 0.5;
+  flex-shrink: 0;
+  flex-wrap: wrap;
   height: 10rem;
   width: 20rem;
   margin-bottom: -2rem;
@@ -408,9 +413,11 @@ p {
 .rounded-circle {
   position: relative;
   overflow: hidden;
-  height: 4rem;
-  width: 4rem;
-  object-fit: contain;
+  height: 3rem;
+  width: 3rem;
+  object-fit: cover;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .salvage-btn :hover {
@@ -449,12 +456,29 @@ p {
   margin-right: 1rem;
 }
 .settings-container {
+  display: flex;
+  flex-shrink: 0;
   position: relative;
   width: 100%;
   margin-left: 0.05rem;
   margin-right: 1rem;
+  margin-bottom: 1rem;
+  justify-content: space-between;
 }
-
+.settings-body {
+  display: flex;
+  flex-grow: 1;
+  flex-shrink: 0;
+  position: relative;
+  flex-wrap: wrap;
+  margin-right: 2rem;
+  margin-left: 0.9rem;
+  width: 50%;
+}
+.settings-image {
+  display: flex;
+  flex-shrink: 0;
+}
 .top-buttons {
   position: relative;
 }
