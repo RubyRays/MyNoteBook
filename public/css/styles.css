@@ -515,15 +515,23 @@ p {
   top: 0;
   transition: 0.4s;
 }
+
 .slider-flex {
   display: flex;
   flex-direction: row;
+  flex-shrink: 0;
+  position: relative;
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
-.slider-flex-content {
+
+.slider-text {
+  display: flex;
+  flex-shrink: 0;
   margin-top: auto;
   margin-bottom: auto;
-  font-size: 2rem;
-  margin-right: 0.5rem;
+  margin-right: 1rem;
 }
 
 .slider::before {
