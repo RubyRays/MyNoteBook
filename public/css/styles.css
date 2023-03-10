@@ -494,9 +494,9 @@ p {
 /* toggle */
 .switch {
   display: inline-block;
-  height: 58px;
+  height: 3rem;
   position: relative;
-  width: 110px;
+  width: 5rem;
   margin-top: 0.5rem;
   margin-right: 0.5rem;
 }
@@ -512,7 +512,7 @@ p {
   left: 0;
   position: absolute;
   right: 0;
-  top: 0;
+  top: 0.2rem;
   transition: 0.4s;
 }
 
@@ -536,13 +536,13 @@ p {
 
 .slider::before {
   background-color: #fff;
-  bottom: 2px;
+  bottom: 0;
   content: "";
-  height: 49px;
-  left: 2px;
+  height: 2.5rem;
+  left: 0;
   position: absolute;
   transition: 0.4s;
-  width: 49px;
+  width: 2rem;
   border-style: solid;
 }
 
@@ -551,11 +551,11 @@ input:checked + .slider {
 }
 
 input:checked + .slider:before {
-  transform: translateX(55px);
+  transform: translateX(2.8rem);
 }
 
 .slider.round {
-  border-radius: 64px;
+  border-radius: 2rem;
   border-style: solid;
   border-color: #000000;
 }
