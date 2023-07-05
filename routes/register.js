@@ -55,8 +55,7 @@ async function sendMail(){
         //provided by google and gmail that allows node mailer to work with gmail
         const accessToken = await oAuth2Client.getAccessToken();
         const transporter = nodemailer.createTransport({
-            service: "gmail",
-            sendmail:true,
+            host: "smtp.gmail.com",
             auth:{
                 type: 'OAuth2',
                 user: process.env.MAIL_USERNAME,
@@ -73,12 +72,12 @@ async function sendMail(){
         const mailOptions={
             from: "jereenleblanc.volunteer@rnd4impact.com",
             to: req.body.email,
-            subject: "testing email",
-            text:"Hi "+req.body.username+",\n\nThanks for registering for an account on MyNoteBook. To verify your account input this code: "+ code+".\n\nBest Regards, MyNoteBook"
+            subject: "Verification email",
+            text:"Hi "+req.body.username+",\n\nThanks for registering for an account on MyNoteBook. To verify your account input this code: "+ code+".\n\nBest Regards,\n\nMyNoteBook"
         };
 
         //Makes sure that the email is sent properly
-        const result = transporter.sendMail(mailOptions, function(err){
+        const result = await transporter.sendMail(mailOptions, function(err){
             if(err){
                 console.log("Error: " + err);
             }else{
