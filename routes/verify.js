@@ -13,8 +13,8 @@ router.get("/", isLoggedIn, catchAsync(async(req, res)=>{
    
     const currentUser = await NoteUser.findById(req.user.id);
     const theme= currentUser.theme;
-    const vCode= currentUser.verificationCode;
-    res.render("verificationPage", {theme,vCode,currentUser:currentUser} );
+    
+    res.render("verificationPage", {theme,currentUser:currentUser} );
 
 
      
