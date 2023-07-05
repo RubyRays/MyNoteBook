@@ -96,12 +96,19 @@ async function sendMail(){
     //gets the password from the registration form
     const password= req.body.password; 
     const password2 = req.body.password2;
+    let regex= /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9])[\w!@#$%&*]{8,}$/;
     if(password == password2){
     //Returns an error if the password is less than 8 characters long
     if(password.length < 8){
         req.flash('warning',"Password needs to be 8 or more characters long.");
         res.redirect("/register");
-    }else{
+    }
+    else if(regex.test(password) === false){
+        console.log("not valid");
+        req.flash('warning',"Password needs at least 1 uppercase character, 1 digit, and 1 special character");
+        res.redirect("/register");
+    }
+    else{
 
         //creates the user using the built in register function of passport
         NoteUser.register({
